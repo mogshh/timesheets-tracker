@@ -1,19 +1,20 @@
 import './App.scss';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Timeline from './components/Timeline/Timeline';
 import { addHours, endOfDay, startOfDay, subHours } from 'date-fns';
 import { TimelineEvent } from './components/Timeline/Timeline.types';
 import { useDefaultServiceActivitiesControllerFindAll } from './generated/api/queries';
 import { Activity } from '../../types/types';
 import { COLOR_LIST } from './App.consts';
-import { maxBy, minBy } from 'lodash-es';
+import { clamp, maxBy, minBy } from 'lodash-es';
 
 function App() {
-  const { data: programs, isLoading: isLoadingPrograms } = useDefaultServiceActivitiesControllerFindAll({
-    startedAt: startOfDay(new Date()).toISOString(),
-    endedAt: endOfDay(new Date()).toISOString(),
-  });
+  const { data: programs, isLoading: isLoadingPrograms } =
+    useDefaultServiceActivitiesControllerFindAll({
+      startedAt: startOfDay(new Date()).toISOString(),
+      endedAt: endOfDay(new Date()).toISOString(),
+    });
   const events = (programs || []).map((program: Activity, programIndex: number): TimelineEvent => {
     return {
       info: {
@@ -26,18 +27,103 @@ function App() {
     };
   });
 
+  const [selectionStartPercent, setSelectionStartPercent] = useState<number | null>(null);
+  const [selectionMovePercent, setSelectionMovePercent] = useState<number | null>(null);
+  const [selectionEndPercent, setSelectionEndPercent] = useState<number | null>(null);
+  const [activeSelectionTimeline, setActiveSelectionTimeline] = useState<string | null>(null);
+
+  const handleMouseDown = (timelineId: string, posX: number) => {
+    setSelectionStartPercent(clamp(posX, 0, 100));
+    setSelectionMovePercent(null);
+    setSelectionEndPercent(null);
+    setActiveSelectionTimeline(timelineId);
+  };
+
+  const handleMouseMove = (timelineId: string, posX: number) => {
+    if (!selectionStartPercent) {
+      // No selection started yet
+      return;
+    }
+    if (selectionStartPercent && selectionEndPercent) {
+      // Selection already ended
+      return;
+    }
+    setSelectionMovePercent(posX);
+  };
+
+  const handleMouseUp = (timelineId: string, posX: number) => {
+    if (posX === selectionStartPercent) {
+      setSelectionStartPercent(null);
+      setSelectionEndPercent(null);
+      setActiveSelectionTimeline(null);
+    } else {
+      setSelectionEndPercent(clamp(posX, 0, 100));
+    }
+  };
+
   if (isLoadingPrograms) {
     return 'Loading program activity...';
   }
 
-  const minTime = subHours(minBy(events, (event: TimelineEvent) => event.startedAt.getTime())?.startedAt || startOfDay(new Date()), 1);
-  const maxTime = addHours(maxBy(events, (event: TimelineEvent) => event.endedAt.getTime())?.endedAt || endOfDay(new Date()), 1);
+  const minTime = subHours(
+    minBy(events, (event: TimelineEvent) => event.startedAt.getTime())?.startedAt ||
+      startOfDay(new Date()),
+    1
+  );
+  const maxTime = addHours(
+    maxBy(events, (event: TimelineEvent) => event.endedAt.getTime())?.endedAt ||
+      endOfDay(new Date()),
+    1
+  );
+  const selection =
+    selectionStartPercent && (selectionEndPercent || selectionMovePercent)
+      ? {
+          start: selectionStartPercent,
+          end: (selectionEndPercent || selectionMovePercent) as number,
+        }
+      : null;
   return (
     <div className="c-app">
-      <Timeline name="Tags" events={[]} minTime={minTime} maxTime={maxTime}></Timeline>
-      <Timeline name="Auto tags" events={[]} minTime={minTime} maxTime={maxTime}></Timeline>
-      <Timeline name="Active" events={[]} minTime={minTime} maxTime={maxTime}></Timeline>
-      <Timeline name="Programs" events={events} minTime={minTime} maxTime={maxTime}></Timeline>
+      <Timeline
+        name="Tags"
+        events={[]}
+        minTime={minTime}
+        maxTime={maxTime}
+        onMouseDown={(posX: number) => handleMouseDown('tags', posX)}
+        onMouseMove={(posX: number) => handleMouseMove('tags', posX)}
+        onMouseUp={(posX: number) => handleMouseUp('tags', posX)}
+        selectionPercentages={activeSelectionTimeline === 'tags' ? selection : null}
+      ></Timeline>
+      <Timeline
+        name="Auto tags"
+        events={[]}
+        minTime={minTime}
+        maxTime={maxTime}
+        onMouseDown={(posX: number) => handleMouseDown('autoTags', posX)}
+        onMouseMove={(posX: number) => handleMouseMove('autoTags', posX)}
+        onMouseUp={(posX: number) => handleMouseUp('autoTags', posX)}
+        selectionPercentages={activeSelectionTimeline === 'autoTags' ? selection : null}
+      ></Timeline>
+      <Timeline
+        name="Active"
+        events={[]}
+        minTime={minTime}
+        maxTime={maxTime}
+        onMouseDown={(posX: number) => handleMouseDown('active', posX)}
+        onMouseMove={(posX: number) => handleMouseMove('active', posX)}
+        onMouseUp={(posX: number) => handleMouseUp('active', posX)}
+        selectionPercentages={activeSelectionTimeline === 'active' ? selection : null}
+      ></Timeline>
+      <Timeline
+        name="Programs"
+        events={events}
+        minTime={minTime}
+        maxTime={maxTime}
+        onMouseDown={(posX: number) => handleMouseDown('programs', posX)}
+        onMouseMove={(posX: number) => handleMouseMove('programs', posX)}
+        onMouseUp={(posX: number) => handleMouseUp('programs', posX)}
+        selectionPercentages={activeSelectionTimeline === 'programs' ? selection : null}
+      ></Timeline>
     </div>
   );
 }

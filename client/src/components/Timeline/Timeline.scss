@@ -34,15 +34,19 @@ $timelineHeight: 10rem;
 
   .c-timeline__hour-tick {
     border-right: 2px solid #ddd;
+    pointer-events: none;
   }
 
   .c-timeline__quarter-tick {
     border-right: 1px solid #ddd;
+    pointer-events: none;
   }
 }
 
-.c-timeline__event__tooltip {
-  padding: 0rem 1rem;
+.tippy-content {
+  ul {
+    padding: 0 1rem;
+  }
 
   li {
     list-style: none;

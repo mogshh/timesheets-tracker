@@ -2,10 +2,9 @@ import './Timeline.scss';
 
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
-import React, { MouseEvent, useState } from 'react';
+import React, { MouseEvent } from 'react';
 import { TimelineEvent } from './Timeline.types';
 import { addHours, addMinutes, differenceInMilliseconds, endOfHour, format, isBefore, roundToNearestMinutes, addMilliseconds, differenceInSeconds } from 'date-fns';
-import { clamp } from 'lodash-es';
 import { formatDuration } from '../../helpers/format-duration';
 
 interface TimelineProps {
@@ -13,13 +12,13 @@ interface TimelineProps {
   events: TimelineEvent[];
   minTime: Date;
   maxTime: Date;
+  onMouseDown: (posX: number) => void;
+  onMouseMove: (posX: number) => void;
+  onMouseUp: (posX: number) => void;
+  selectionPercentages: { start: number; end: number } | null;
 }
 
-function Timeline({ name, events, minTime, maxTime }: TimelineProps) {
-  const [selectionStartPercent, setSelectionStartPercent] = useState<number | null>(null);
-  const [selectionMovePercent, setSelectionMovePercent] = useState<number | null>(null);
-  const [selectionEndPercent, setSelectionEndPercent] = useState<number | null>(null);
-
+function Timeline({ name, events, minTime, maxTime, onMouseDown, onMouseMove, onMouseUp, selectionPercentages }: TimelineProps) {
   const windowInMilliseconds = differenceInMilliseconds(minTime, maxTime);
 
   /**
@@ -55,47 +54,29 @@ function Timeline({ name, events, minTime, maxTime }: TimelineProps) {
 
   const handleMouseDown = (evt: MouseEvent) => {
     const posX = getMousePositionXPercent(evt);
-    console.log('mouse down ', posX);
-    setSelectionStartPercent(clamp(posX, 0, 100));
-    setSelectionEndPercent(null);
+    onMouseDown(posX);
   };
 
   const handleMouseMove = (evt: MouseEvent) => {
-    if (!selectionStartPercent) {
-      // No selection started yet
-      return;
-    }
-    if (selectionStartPercent && selectionEndPercent) {
-      // Selection already ended
-      return;
-    }
-
     const posX = getMousePositionXPercent(evt);
 
     if (posX < 0 || posX > 100) {
       // Ignore impossible values
       return;
     }
-    console.log('mouse move ', posX);
-    setSelectionMovePercent(posX);
+    onMouseMove(posX);
   };
 
   const handleMouseUp = (evt: MouseEvent) => {
     const posX = getMousePositionXPercent(evt);
     console.log('mouse up ', posX);
-    if (posX === selectionStartPercent) {
-      setSelectionStartPercent(null);
-      setSelectionEndPercent(null);
-    } else {
-      setSelectionEndPercent(clamp(posX, 0, 100));
-    }
+    onMouseUp(posX);
   };
 
   const hourTicks = getTicks(minTime, maxTime, 60);
   const quarterTicks = getTicks(minTime, maxTime, 15);
-  const selectionEndPercentageComputed = selectionEndPercent || selectionMovePercent;
-  const selectionStartTime = addMilliseconds(minTime, (windowInMilliseconds / 100) * (selectionStartPercent || 0));
-  const selectionEndTime = addMilliseconds(minTime, (windowInMilliseconds / 100) * (selectionEndPercentageComputed || 0));
+  const selectionStartTime = addMilliseconds(minTime, (windowInMilliseconds / 100) * (selectionPercentages?.start || 0));
+  const selectionEndTime = addMilliseconds(minTime, (windowInMilliseconds / 100) * (selectionPercentages?.end || 0));
   return (
     <div className="c-timeline" onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseMove={handleMouseMove}>
       <div className="c-timeline__title">{name}</div>
@@ -149,7 +130,7 @@ function Timeline({ name, events, minTime, maxTime }: TimelineProps) {
         })}
 
         {/* Selection */}
-        {!!selectionStartPercent && !!selectionEndPercentageComputed && (
+        {selectionPercentages && (
           <Tippy
             className="c-timeline__selection__tooltip--ended"
             content={
@@ -161,10 +142,10 @@ function Timeline({ name, events, minTime, maxTime }: TimelineProps) {
               </ul>
             }
             visible
-            followCursor={!!selectionStartPercent && !selectionEndPercent ? 'horizontal' : false}
+            followCursor={!!selectionPercentages.start && !selectionPercentages.end ? 'horizontal' : false}
             placement="top-end"
           >
-            <div className="c-timeline__selection" style={{ left: selectionStartPercent + '%', right: 100 - selectionEndPercentageComputed + '%' }}></div>
+            <div className="c-timeline__selection" style={{ left: selectionPercentages.start + '%', right: 100 - selectionPercentages.end + '%' }}></div>
           </Tippy>
         )}
       </div>
