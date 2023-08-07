@@ -1,0 +1,24 @@
+{
+  "name": "timesheets-tracker",
+  "version": "1.0.0",
+  "description": "Track active window and tag activities to easily track timesheets",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "bump": ""
+  },
+  "author": "Bert Verhelst",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.4.5",
+    "@types/uuid": "^9.0.2",
+    "bump-package-versions": "^1.0.6",
+    "prettier": "^3.0.0",
+    "ts-node": "^10.9.1",
+    "eslint": "^8.42.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "@typescript-eslint/eslint-plugin": "^5.59.11",
+    "@typescript-eslint/parser": "^5.59.11"
+  }
+}

@@ -1,0 +1,50 @@
+$timelineHeight: 10rem;
+
+.c-timeline {
+  height: $timelineHeight;
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid #666;
+
+  .c-timeline__title {
+    line-height: $timelineHeight;
+    width: 5rem;
+  }
+
+  .c-timeline__track {
+    position: relative;
+    height: $timelineHeight;
+    flex-grow: 1;
+
+    .c-timeline__selection {
+      height: $timelineHeight;
+      background-color: #99999955;
+      position: absolute;
+      pointer-events: none;
+    }
+  }
+
+  .c-timeline__hour-tick,
+  .c-timeline__quarter-tick,
+  .c-timeline__event {
+    position: absolute;
+    top: 0;
+    height: $timelineHeight;
+  }
+
+  .c-timeline__hour-tick {
+    border-right: 2px solid #ddd;
+  }
+
+  .c-timeline__quarter-tick {
+    border-right: 1px solid #ddd;
+  }
+}
+
+.c-timeline__event__tooltip {
+  padding: 0rem 1rem;
+
+  li {
+    list-style: none;
+  }
+}
