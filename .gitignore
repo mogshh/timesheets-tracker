@@ -1,2 +1,4 @@
 node_modules/
 .idea/
+
+api/timesheets-tracker-database.sqlite3
