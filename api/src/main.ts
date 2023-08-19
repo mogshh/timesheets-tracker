@@ -3,12 +3,18 @@ import { AppModule } from './app.module';
 import SysTray from 'systray';
 import { iconIcoDataUri } from './icon';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import open from 'open';
 import pkg from '../package.json';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const config = new DocumentBuilder().setTitle('Timesheets Tracker').setDescription('API for manipulating activities and tagging them').setVersion(pkg.version).build();
+  const config = new DocumentBuilder()
+    .setTitle('Timesheets Tracker')
+    .setDescription('API for manipulating activities and tagging them')
+    .setVersion(pkg.version)
+    .addServer('http://localhost:55577')
+    .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
 
@@ -46,6 +52,7 @@ systray.onClick((action) => {
   if (action.seq_id === 0) {
     // open the pwa
     console.log('open the url', action);
+    open('http://localhost:55588');
   } else if (action.seq_id === 1) {
     systray.kill();
   }

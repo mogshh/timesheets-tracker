@@ -4,28 +4,48 @@ import React, { useState } from 'react';
 import Timeline from './components/Timeline/Timeline';
 import { addHours, endOfDay, startOfDay, subHours } from 'date-fns';
 import { TimelineEvent } from './components/Timeline/Timeline.types';
-import { useDefaultServiceActivitiesControllerFindAll } from './generated/api/queries';
-import { Activity } from '../../types/types';
+import {
+  useDefaultServiceActivitiesControllerFindAll,
+  useDefaultServiceTagsControllerCreate,
+  useDefaultServiceTagsControllerFindAll,
+} from './generated/api/queries';
+import { Activity, Tag } from '../../types/types';
 import { COLOR_LIST } from './App.consts';
 import { clamp, maxBy, minBy } from 'lodash-es';
 
 function App() {
+  const { data: tags, isLoading: isLoadingTags } = useDefaultServiceTagsControllerFindAll({
+    startedAt: startOfDay(new Date()).toISOString(),
+    endedAt: endOfDay(new Date()).toISOString(),
+  });
   const { data: programs, isLoading: isLoadingPrograms } =
     useDefaultServiceActivitiesControllerFindAll({
       startedAt: startOfDay(new Date()).toISOString(),
       endedAt: endOfDay(new Date()).toISOString(),
     });
-  const events = (programs || []).map((program: Activity, programIndex: number): TimelineEvent => {
+  const tagEvents = (tags || []).map((tag: Tag, tagIndex: number): TimelineEvent => {
     return {
       info: {
-        programName: program.programName,
-        windowTitle: program.windowTitle,
+        name: tag.tagName?.name as string,
       },
-      color: COLOR_LIST[programIndex % COLOR_LIST.length],
-      startedAt: new Date(program.startedAt),
-      endedAt: new Date(program.endedAt),
+      color: tag.tagName?.color as string,
+      startedAt: new Date(tag.startedAt),
+      endedAt: new Date(tag.endedAt),
     };
   });
+  const programEvents = (programs || []).map(
+    (program: Activity, programIndex: number): TimelineEvent => {
+      return {
+        info: {
+          programName: program.programName,
+          windowTitle: program.windowTitle,
+        },
+        color: COLOR_LIST[programIndex % COLOR_LIST.length],
+        startedAt: new Date(program.startedAt),
+        endedAt: new Date(program.endedAt),
+      };
+    }
+  );
 
   const [selectionStartPercent, setSelectionStartPercent] = useState<number | null>(null);
   const [selectionMovePercent, setSelectionMovePercent] = useState<number | null>(null);
@@ -62,31 +82,37 @@ function App() {
   };
 
   if (isLoadingPrograms) {
-    return 'Loading program activity...';
+    return <>Loading program activity...</>;
   }
 
   const minTime = subHours(
-    minBy(events, (event: TimelineEvent) => event.startedAt.getTime())?.startedAt ||
+    minBy(programEvents, (event: TimelineEvent) => event.startedAt.getTime())?.startedAt ||
       startOfDay(new Date()),
     1
   );
   const maxTime = addHours(
-    maxBy(events, (event: TimelineEvent) => event.endedAt.getTime())?.endedAt ||
+    maxBy(programEvents, (event: TimelineEvent) => event.endedAt.getTime())?.endedAt ||
       endOfDay(new Date()),
     1
   );
   const selection =
     selectionStartPercent && (selectionEndPercent || selectionMovePercent)
       ? {
-          start: selectionStartPercent,
-          end: (selectionEndPercent || selectionMovePercent) as number,
+          start: Math.min(
+            selectionStartPercent,
+            (selectionEndPercent || selectionMovePercent) as number
+          ),
+          end: Math.max(
+            selectionStartPercent,
+            (selectionEndPercent || selectionMovePercent) as number
+          ),
         }
       : null;
   return (
     <div className="c-app">
       <Timeline
         name="Tags"
-        events={[]}
+        events={tagEvents}
         minTime={minTime}
         maxTime={maxTime}
         onMouseDown={(posX: number) => handleMouseDown('tags', posX)}
@@ -116,7 +142,7 @@ function App() {
       ></Timeline>
       <Timeline
         name="Programs"
-        events={events}
+        events={programEvents}
         minTime={minTime}
         maxTime={maxTime}
         onMouseDown={(posX: number) => handleMouseDown('programs', posX)}
