@@ -2,19 +2,32 @@ import './App.scss';
 
 import React, { useState } from 'react';
 import Timeline from './components/Timeline/Timeline';
-import { addHours, endOfDay, startOfDay, subHours } from 'date-fns';
+import {
+  addHours,
+  addMilliseconds,
+  differenceInMilliseconds,
+  endOfDay,
+  startOfDay,
+  subHours,
+} from 'date-fns';
 import { TimelineEvent } from './components/Timeline/Timeline.types';
 import {
   useDefaultServiceActivitiesControllerFindAll,
+  useDefaultServiceTagNamesControllerCount,
+  useDefaultServiceTagNamesControllerCreate,
   useDefaultServiceTagsControllerCreate,
   useDefaultServiceTagsControllerFindAll,
 } from './generated/api/queries';
-import { Activity, Tag } from '../../types/types';
+import { Activity, Tag, TagName } from '../../types/types';
 import { COLOR_LIST } from './App.consts';
 import { clamp, maxBy, minBy } from 'lodash-es';
 
 function App() {
-  const { data: tags, isLoading: isLoadingTags } = useDefaultServiceTagsControllerFindAll({
+  const {
+    data: tags,
+    isLoading: isLoadingTags,
+    refetch: refetchTags,
+  } = useDefaultServiceTagsControllerFindAll({
     startedAt: startOfDay(new Date()).toISOString(),
     endedAt: endOfDay(new Date()).toISOString(),
   });
@@ -23,8 +36,11 @@ function App() {
       startedAt: startOfDay(new Date()).toISOString(),
       endedAt: endOfDay(new Date()).toISOString(),
     });
+  const { data: tagNamesCount, isLoading: isLoadingTagNamesCount } =
+    useDefaultServiceTagNamesControllerCount();
   const tagEvents = (tags || []).map((tag: Tag, tagIndex: number): TimelineEvent => {
     return {
+      id: tag.id,
       info: {
         name: tag.tagName?.name as string,
       },
@@ -36,6 +52,7 @@ function App() {
   const programEvents = (programs || []).map(
     (program: Activity, programIndex: number): TimelineEvent => {
       return {
+        id: program.id,
         info: {
           programName: program.programName,
           windowTitle: program.windowTitle,
@@ -47,10 +64,35 @@ function App() {
     }
   );
 
+  const { mutateAsync: createTagName } = useDefaultServiceTagNamesControllerCreate();
+  const { mutateAsync: createTag } = useDefaultServiceTagsControllerCreate();
+
   const [selectionStartPercent, setSelectionStartPercent] = useState<number | null>(null);
   const [selectionMovePercent, setSelectionMovePercent] = useState<number | null>(null);
   const [selectionEndPercent, setSelectionEndPercent] = useState<number | null>(null);
   const [activeSelectionTimeline, setActiveSelectionTimeline] = useState<string | null>(null);
+
+  const [selectedEvent, setSelectedEvent] = useState<TimelineEvent | null>(null);
+
+  const minTime = subHours(
+    minBy(programEvents, (event: TimelineEvent) => event.startedAt.getTime())?.startedAt ||
+      startOfDay(new Date()),
+    1
+  );
+  const maxTime = addHours(
+    maxBy(programEvents, (event: TimelineEvent) => event.endedAt.getTime())?.endedAt ||
+      endOfDay(new Date()),
+    1
+  );
+  const windowInMilliseconds = differenceInMilliseconds(maxTime, minTime);
+  const selectionStartTime = addMilliseconds(
+    minTime,
+    (windowInMilliseconds / 100) * (selectionStartPercent || 0)
+  );
+  const selectionEndTime = addMilliseconds(
+    minTime,
+    (windowInMilliseconds / 100) * (selectionEndPercent || 0)
+  );
 
   const handleMouseDown = (timelineId: string, posX: number) => {
     setSelectionStartPercent(clamp(posX, 0, 100));
@@ -81,20 +123,29 @@ function App() {
     }
   };
 
+  const handleCreateTagName = async (name: string): Promise<TagName> => {
+    return createTagName({
+      requestBody: {
+        name,
+        color: COLOR_LIST[tagNamesCount.count % COLOR_LIST.length], // Get a new color that has,'t been recently used
+      },
+    });
+  };
+
+  const handleCreateTag = async (tagNameId: string): Promise<void> => {
+    await createTag({
+      requestBody: {
+        tagNameId,
+        startedAt: selectionStartTime.toISOString(),
+        endedAt: selectionEndTime.toISOString(),
+      },
+    });
+    await refetchTags();
+  };
+
   if (isLoadingPrograms) {
     return <>Loading program activity...</>;
   }
-
-  const minTime = subHours(
-    minBy(programEvents, (event: TimelineEvent) => event.startedAt.getTime())?.startedAt ||
-      startOfDay(new Date()),
-    1
-  );
-  const maxTime = addHours(
-    maxBy(programEvents, (event: TimelineEvent) => event.endedAt.getTime())?.endedAt ||
-      endOfDay(new Date()),
-    1
-  );
   const selection =
     selectionStartPercent && (selectionEndPercent || selectionMovePercent)
       ? {
@@ -119,6 +170,10 @@ function App() {
         onMouseMove={(posX: number) => handleMouseMove('tags', posX)}
         onMouseUp={(posX: number) => handleMouseUp('tags', posX)}
         selectionPercentages={activeSelectionTimeline === 'tags' ? selection : null}
+        onCreateTagName={handleCreateTagName}
+        onCreateTag={handleCreateTag}
+        selectedEvent={selectedEvent}
+        setSelectedEvent={setSelectedEvent}
       ></Timeline>
       <Timeline
         name="Auto tags"
@@ -129,6 +184,10 @@ function App() {
         onMouseMove={(posX: number) => handleMouseMove('autoTags', posX)}
         onMouseUp={(posX: number) => handleMouseUp('autoTags', posX)}
         selectionPercentages={activeSelectionTimeline === 'autoTags' ? selection : null}
+        onCreateTagName={handleCreateTagName}
+        onCreateTag={handleCreateTag}
+        selectedEvent={selectedEvent}
+        setSelectedEvent={setSelectedEvent}
       ></Timeline>
       <Timeline
         name="Active"
@@ -139,6 +198,10 @@ function App() {
         onMouseMove={(posX: number) => handleMouseMove('active', posX)}
         onMouseUp={(posX: number) => handleMouseUp('active', posX)}
         selectionPercentages={activeSelectionTimeline === 'active' ? selection : null}
+        onCreateTagName={handleCreateTagName}
+        onCreateTag={handleCreateTag}
+        selectedEvent={selectedEvent}
+        setSelectedEvent={setSelectedEvent}
       ></Timeline>
       <Timeline
         name="Programs"
@@ -149,6 +212,10 @@ function App() {
         onMouseMove={(posX: number) => handleMouseMove('programs', posX)}
         onMouseUp={(posX: number) => handleMouseUp('programs', posX)}
         selectionPercentages={activeSelectionTimeline === 'programs' ? selection : null}
+        onCreateTagName={handleCreateTagName}
+        onCreateTag={handleCreateTag}
+        selectedEvent={selectedEvent}
+        setSelectedEvent={setSelectedEvent}
       ></Timeline>
     </div>
   );

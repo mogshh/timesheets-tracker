@@ -47,6 +47,10 @@ $timelineHeight: 10rem;
     border-right: 3px solid red;
     pointer-events: none;
   }
+
+  .c-timeline__event--selected {
+    opacity: 0.6;
+  }
 }
 
 .tippy-content {

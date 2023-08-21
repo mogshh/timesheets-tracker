@@ -18,14 +18,9 @@ import {
   isAfter,
 } from 'date-fns';
 import { formatDuration } from '../../helpers/format-duration';
-import { Tag, TagName } from '../../../../types/types';
+import { TagName } from '../../../../types/types';
 import { DefaultService } from '../../generated/api/requests';
 import { ActionMeta, MultiValue, OnChangeValue } from 'react-select/dist/declarations/src/types';
-import {
-  useDefaultServiceTagNamesControllerCreate,
-  useDefaultServiceTagsControllerCreate,
-} from '../../generated/api/queries';
-import { COLOR_LIST } from '../../App.consts';
 
 interface TimelineProps {
   name: string;
@@ -36,6 +31,10 @@ interface TimelineProps {
   onMouseMove: (posX: number) => void;
   onMouseUp: (posX: number) => void;
   selectionPercentages: { start: number; end: number } | null;
+  onCreateTagName: (name: string) => Promise<TagName>;
+  onCreateTag: (tagNameId: string) => Promise<void>;
+  selectedEvent: TimelineEvent | null;
+  setSelectedEvent: (event: TimelineEvent) => void;
 }
 
 function Timeline({
@@ -47,10 +46,12 @@ function Timeline({
   onMouseMove,
   onMouseUp,
   selectionPercentages,
+  onCreateTagName,
+  onCreateTag,
+  selectedEvent,
+  setSelectedEvent,
 }: TimelineProps) {
   const windowInMilliseconds = differenceInMilliseconds(maxTime, minTime);
-  const { mutateAsync: createTagName } = useDefaultServiceTagNamesControllerCreate();
-  const { mutateAsync: createTag } = useDefaultServiceTagsControllerCreate();
 
   const selectionStartTime = addMilliseconds(
     minTime,
@@ -124,7 +125,7 @@ function Timeline({
   };
 
   const handleTagNameChange = async (
-    option: OnChangeValue<TagName, true> | { label: string; value: string },
+    option: OnChangeValue<TagName, true> | { label: string; value: string }[],
     actionMeta: ActionMeta<TagName>
   ) => {
     if (!option) {
@@ -135,31 +136,16 @@ function Timeline({
         if (!selectionPercentages) {
           return;
         }
-        const newTagName: TagName = await createTagName({
-          requestBody: {
-            name: (option as { label: string; value: string })?.value,
-            color: COLOR_LIST[0], // TODO change this to NUM_OF_TAGS % 50
-          },
-        });
-        const newTag: Tag = await createTag({
-          requestBody: {
-            tagNameId: newTagName.id,
-            startedAt: selectionStartTime.toISOString(),
-            endedAt: selectionEndTime.toISOString(),
-          },
-        });
+        const newTagName: TagName = await onCreateTagName(
+          (option as { label: string; value: string }[])?.[0]?.value
+        );
+        await onCreateTag(newTagName.id);
         break;
       }
 
       case 'select-option': {
         const tagNameId = (option as MultiValue<TagName>)?.[0]?.id;
-        const newTag: Tag = await createTag({
-          requestBody: {
-            tagNameId,
-            startedAt: selectionStartTime.toISOString(),
-            endedAt: selectionEndTime.toISOString(),
-          },
-        });
+        await onCreateTag(tagNameId);
         break;
       }
     }
@@ -251,7 +237,10 @@ function Timeline({
               }
             >
               <div
-                className="c-timeline__event"
+                className={
+                  'c-timeline__event' +
+                  (selectedEvent?.id === event.id ? ' c-timeline__event--selected' : '')
+                }
                 key={'c-timeline__' + name + '__event__div__' + event.startedAt.toISOString()}
                 style={{
                   left:
@@ -261,6 +250,7 @@ function Timeline({
                   width,
                   backgroundColor: event.color,
                 }}
+                onClick={() => setSelectedEvent(event)}
               ></div>
             </Tippy>
           );

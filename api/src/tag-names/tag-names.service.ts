@@ -8,15 +8,16 @@ import { TagName } from '../types/types';
 export class TagNamesService {
   constructor(@Inject(DatabaseService) private databaseService: DatabaseService) {}
 
-  async create(tagName: CreateTagNameDto): Promise<void> {
-    await this.databaseService.db
+  async create(tagName: CreateTagNameDto): Promise<TagName> {
+    return this.databaseService.db
       .insertInto('tagNames')
       .values({
         id: uuid(),
         name: tagName.name,
         color: tagName.color,
       })
-      .execute();
+      .returning(['id', 'name', 'color'])
+      .executeTakeFirstOrThrow();
   }
 
   async findAll(searchTerm: string | undefined): Promise<TagName[]> {
@@ -25,6 +26,14 @@ export class TagNamesService {
       .selectAll()
       .where('name', 'like', '%' + searchTerm + '%')
       .execute();
+  }
+
+  async count(): Promise<number> {
+    const result = await this.databaseService.db
+      .selectFrom('tagNames')
+      .select(({ fn }) => [fn.count<number>('id').as('count')])
+      .executeTakeFirstOrThrow();
+    return result.count;
   }
 
   //

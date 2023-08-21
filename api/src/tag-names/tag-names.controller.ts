@@ -17,6 +17,13 @@ export class TagNamesController {
     return this.tagNamesService.findAll(term);
   }
 
+  @Get('/count')
+  async count(): Promise<{ count: number }> {
+    return {
+      count: await this.tagNamesService.count(),
+    };
+  }
+
   // @Get(':id')
   // findOne(@Param('id') id: string) {
   //   return this.tagNamesService.findOne(+id);

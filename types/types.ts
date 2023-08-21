@@ -1,4 +1,5 @@
 export interface Activity {
+  id: string;
   programName: string;
   windowTitle: string;
   startedAt: string;

@@ -121,4 +121,15 @@ term: string,
         });
     }
 
+    /**
+     * @returns any 
+     * @throws ApiError
+     */
+    public static tagNamesControllerCount(): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/tag-names/count',
+        });
+    }
+
 }
