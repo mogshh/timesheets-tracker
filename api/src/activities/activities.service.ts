@@ -4,13 +4,14 @@ import { DatabaseService } from '../database/database.service';
 import ActiveWindow, { WindowInfo } from '@paymoapp/active-window';
 import { v4 as uuid } from 'uuid';
 import { differenceInSeconds, max, min } from 'date-fns';
+import { CreateActivityDto } from './dto/create-activity.dto';
 
 const MINIMUM_ACTIVITY_DURATION_SECONDS = 5;
 
 @Injectable()
 export class ActivitiesService implements OnApplicationBootstrap {
   private activeWindowSubscriptionId: number;
-  private lastActivity: Activity | null = null;
+  private lastActivity: CreateActivityDto | null = null;
 
   constructor(@Inject(DatabaseService) private databaseService: DatabaseService) {}
 
@@ -33,7 +34,7 @@ export class ActivitiesService implements OnApplicationBootstrap {
         if (!windowInfo) {
           return;
         }
-        const currentActivity: Activity = {
+        const currentActivity: CreateActivityDto = {
           programName: windowInfo.application,
           windowTitle: windowInfo.title,
           startedAt: new Date().toISOString(),
@@ -75,7 +76,7 @@ export class ActivitiesService implements OnApplicationBootstrap {
     this.lastActivity = null;
   }
 
-  async create(activity: Activity): Promise<void> {
+  async create(activity: CreateActivityDto): Promise<void> {
     await this.databaseService.db
       .insertInto('activities')
       .values({

@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { TagNamesService } from './tag-names.service';
 import { CreateTagNameDto } from './dto/create-tag-name.dto';
+import { ApiQuery } from '@nestjs/swagger';
 // import { UpdateTagNameDto } from './dto/update-tag-name.dto';
 
 @Controller('tag-names')
@@ -13,7 +14,8 @@ export class TagNamesController {
   }
 
   @Get()
-  findAll(@Query('term') term: string) {
+  @ApiQuery({ name: 'term', required: false, type: 'string' })
+  findAll(@Query('term') term?: string) {
     return this.tagNamesService.findAll(term);
   }
 

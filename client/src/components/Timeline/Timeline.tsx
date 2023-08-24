@@ -206,6 +206,7 @@ function Timeline({
           return (
             <Tippy
               key={'c-timeline__' + name + '__event__tippy__' + event.startedAt.toISOString()}
+              visible={selectedEvent?.id === event.id}
               content={
                 <ul
                   className="c-timeline__event__tooltip"
@@ -284,7 +285,7 @@ function Timeline({
                 ></AsyncCreatableSelect>
               </ul>
             }
-            visible
+            visible={!!selectionPercentages.start && !!selectionPercentages.end && !selectedEvent}
             // followCursor={
             //   !!selectionPercentages.start && !selectionPercentages.end ? 'horizontal' : false
             // }

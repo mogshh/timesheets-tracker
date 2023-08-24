@@ -89,6 +89,23 @@ endedAt: string,
     }
 
     /**
+     * @param id 
+     * @returns any 
+     * @throws ApiError
+     */
+    public static tagsControllerRemove(
+id: string,
+): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/tags/{id}',
+            path: {
+                'id': id,
+            },
+        });
+    }
+
+    /**
      * @param requestBody 
      * @returns any 
      * @throws ApiError
@@ -110,7 +127,7 @@ requestBody: CreateTagNameDto,
      * @throws ApiError
      */
     public static tagNamesControllerFindAll(
-term: string,
+term?: string,
 ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'GET',

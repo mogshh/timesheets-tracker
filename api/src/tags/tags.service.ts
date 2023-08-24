@@ -70,8 +70,8 @@ export class TagsService {
   // update(id: number, updateTagDto: UpdateTagDto) {
   //   return `This action updates a #${id} tag`;
   // }
-  //
-  // remove(id: number) {
-  //   return `This action removes a #${id} tag`;
-  // }
+
+  async remove(id: string): Promise<void> {
+    await this.databaseService.db.deleteFrom('tags').where('id', '=', id).execute();
+  }
 }

@@ -18,12 +18,15 @@ export const useDefaultServiceTagsControllerFindAll = <TQueryKey extends Array<u
     startedAt: string;
     endedAt: string;
 }, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<Awaited<ReturnType<typeof DefaultService.tagsControllerFindAll>>, unknown, Awaited<ReturnType<typeof DefaultService.tagsControllerFindAll>>, unknown[]>, "queryKey" | "queryFn" | "initialData">) => useQuery([useDefaultServiceTagsControllerFindAllKey, ...(queryKey ?? [{ startedAt, endedAt }])], () => DefaultService.tagsControllerFindAll(startedAt, endedAt), options);
+export const useDefaultServiceTagsControllerRemove = (options?: Omit<UseMutationOptions<Awaited<ReturnType<typeof DefaultService.tagsControllerRemove>>, unknown, {
+    id: string;
+}, unknown>, "mutationFn">) => useMutation(({ id }) => DefaultService.tagsControllerRemove(id), options);
 export const useDefaultServiceTagNamesControllerCreate = (options?: Omit<UseMutationOptions<Awaited<ReturnType<typeof DefaultService.tagNamesControllerCreate>>, unknown, {
     requestBody: CreateTagNameDto;
 }, unknown>, "mutationFn">) => useMutation(({ requestBody }) => DefaultService.tagNamesControllerCreate(requestBody), options);
 export const useDefaultServiceTagNamesControllerFindAllKey = "DefaultServiceTagNamesControllerFindAll";
 export const useDefaultServiceTagNamesControllerFindAll = <TQueryKey extends Array<unknown> = unknown[]>({ term }: {
-    term: string;
+    term?: string;
 }, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<Awaited<ReturnType<typeof DefaultService.tagNamesControllerFindAll>>, unknown, Awaited<ReturnType<typeof DefaultService.tagNamesControllerFindAll>>, unknown[]>, "queryKey" | "queryFn" | "initialData">) => useQuery([useDefaultServiceTagNamesControllerFindAllKey, ...(queryKey ?? [{ term }])], () => DefaultService.tagNamesControllerFindAll(term), options);
 export const useDefaultServiceTagNamesControllerCountKey = "DefaultServiceTagNamesControllerCount";
 export const useDefaultServiceTagNamesControllerCount = <TQueryKey extends Array<unknown> = unknown[]>(queryKey?: TQueryKey, options?: Omit<UseQueryOptions<Awaited<ReturnType<typeof DefaultService.tagNamesControllerCount>>, unknown, Awaited<ReturnType<typeof DefaultService.tagNamesControllerCount>>, unknown[]>, "queryKey" | "queryFn" | "initialData">) => useQuery([useDefaultServiceTagNamesControllerCountKey, ...(queryKey ?? [])], () => DefaultService.tagNamesControllerCount(), options);

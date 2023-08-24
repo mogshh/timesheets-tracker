@@ -1,6 +1,6 @@
 import './App.scss';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Timeline from './components/Timeline/Timeline';
 import {
   addHours,
@@ -10,13 +10,14 @@ import {
   startOfDay,
   subHours,
 } from 'date-fns';
-import { TimelineEvent } from './components/Timeline/Timeline.types';
+import { TimelineEvent, TimelineEventType } from './components/Timeline/Timeline.types';
 import {
   useDefaultServiceActivitiesControllerFindAll,
   useDefaultServiceTagNamesControllerCount,
   useDefaultServiceTagNamesControllerCreate,
   useDefaultServiceTagsControllerCreate,
   useDefaultServiceTagsControllerFindAll,
+  useDefaultServiceTagsControllerRemove,
 } from './generated/api/queries';
 import { Activity, Tag, TagName } from '../../types/types';
 import { COLOR_LIST } from './App.consts';
@@ -36,8 +37,12 @@ function App() {
       startedAt: startOfDay(new Date()).toISOString(),
       endedAt: endOfDay(new Date()).toISOString(),
     });
-  const { data: tagNamesCount, isLoading: isLoadingTagNamesCount } =
-    useDefaultServiceTagNamesControllerCount();
+  const {
+    data: tagNamesCount,
+    isLoading: isLoadingTagNamesCount,
+    refetch: refetchTagNamesCount,
+  } = useDefaultServiceTagNamesControllerCount();
+  const { mutateAsync: deleteTag } = useDefaultServiceTagsControllerRemove();
   const tagEvents = (tags || []).map((tag: Tag, tagIndex: number): TimelineEvent => {
     return {
       id: tag.id,
@@ -47,6 +52,7 @@ function App() {
       color: tag.tagName?.color as string,
       startedAt: new Date(tag.startedAt),
       endedAt: new Date(tag.endedAt),
+      type: TimelineEventType.Tag,
     };
   });
   const programEvents = (programs || []).map(
@@ -60,6 +66,7 @@ function App() {
         color: COLOR_LIST[programIndex % COLOR_LIST.length],
         startedAt: new Date(program.startedAt),
         endedAt: new Date(program.endedAt),
+        type: TimelineEventType.Activity,
       };
     }
   );
@@ -94,6 +101,29 @@ function App() {
     (windowInMilliseconds / 100) * (selectionEndPercent || 0)
   );
 
+  useEffect(() => {
+    document.addEventListener('keyup', handleKeyUpEvent);
+
+    return () => {
+      document.removeEventListener('keyup', handleKeyUpEvent);
+    };
+  }, []);
+
+  const handleKeyUpEvent = async (evt: KeyboardEvent) => {
+    if (evt.key === 'Delete') {
+      // Delete selected event
+      if (selectedEvent && selectedEvent.type === TimelineEventType.Tag) {
+        await deleteTag({
+          id: selectedEvent.id,
+        });
+        await refetchTags();
+      } else {
+        // toast
+        // TODO show toast: Can't delete anything since no tags are selected
+      }
+    }
+  };
+
   const handleMouseDown = (timelineId: string, posX: number) => {
     setSelectionStartPercent(clamp(posX, 0, 100));
     setSelectionMovePercent(null);
@@ -118,6 +148,7 @@ function App() {
       setSelectionStartPercent(null);
       setSelectionEndPercent(null);
       setActiveSelectionTimeline(null);
+      setSelectedEvent(null);
     } else {
       setSelectionEndPercent(clamp(posX, 0, 100));
     }
@@ -140,10 +171,13 @@ function App() {
         endedAt: selectionEndTime.toISOString(),
       },
     });
-    await refetchTags();
+    await Promise.all([refetchTags(), refetchTagNamesCount()]);
   };
 
   if (isLoadingPrograms) {
+    return <>Loading program activity...</>;
+  }
+  if (isLoadingTags) {
     return <>Loading program activity...</>;
   }
   const selection =
