@@ -1,0 +1,18 @@
+.c-tabs {
+  display: block;
+  background-color: #ccc;
+
+  > span {
+    display: inline-block;
+    padding: 1rem;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #ddd;
+    }
+
+    &.c-tabs__tab--active {
+      background-color: white;
+    }
+  }
+}

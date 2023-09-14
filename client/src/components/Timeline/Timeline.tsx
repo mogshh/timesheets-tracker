@@ -21,6 +21,7 @@ import { formatDuration } from '../../helpers/format-duration';
 import { TagName } from '../../../../types/types';
 import { DefaultService } from '../../generated/api/requests';
 import { ActionMeta, MultiValue, OnChangeValue } from 'react-select/dist/declarations/src/types';
+import TagSelectMulti from '../TagSelect/TagSelectMulti';
 
 interface TimelineProps {
   name: string;
@@ -273,16 +274,7 @@ function Timeline({
                   {format(selectionStartTime, 'HH:mm:ss')} - {format(selectionEndTime, 'HH:mm:ss')}
                 </li>
                 <li>{formatDuration(differenceInSeconds(selectionEndTime, selectionStartTime))}</li>
-                <AsyncCreatableSelect
-                  loadOptions={(searchTerm) => DefaultService.tagNamesControllerFindAll(searchTerm)}
-                  autoFocus={true}
-                  formatOptionLabel={(option: TagName) => option.name}
-                  placeholder="Tag selection..."
-                  isClearable
-                  isMulti
-                  isSearchable
-                  onChange={handleTagNameChange}
-                ></AsyncCreatableSelect>
+                <TagSelectMulti onChange={handleTagNameChange} />
               </ul>
             }
             visible={!!selectionPercentages.start && !!selectionPercentages.end && !selectedEvent}

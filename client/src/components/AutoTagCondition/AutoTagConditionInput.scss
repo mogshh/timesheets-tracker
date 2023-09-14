@@ -1,0 +1,29 @@
+.c-auto-tag-condition {
+  display: flex;
+  flex-direction: row;
+  padding-left: 3.5rem;
+  gap: 0.5rem;
+  position: relative;
+
+  &--and {
+    margin-top: 0.2rem;
+  }
+
+  &--or {
+    margin-top: 0.5rem;
+  }
+
+  &__boolean-operator-button {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3rem;
+    text-align: center;
+    transform: translateY(calc(-50% - 0.25rem));
+  }
+
+  &__variable-select,
+  &__operator-select {
+    width: 15rem;
+  }
+}

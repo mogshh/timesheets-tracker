@@ -51,5 +51,15 @@ export class DatabaseService implements OnModuleInit {
             FOREIGN KEY ("tagNameId") REFERENCES "tagNames" ("id") ON DELETE CASCADE ON UPDATE CASCADE
         );
 		`.execute(this.db);
+
+    await sql`
+        CREATE TABLE IF NOT EXISTS autoTags
+        (
+            "id"        text NOT NULL PRIMARY KEY,
+            "tagNameId" text NOT NULL,
+            "rules"     text NOT NULL,
+            FOREIGN KEY ("tagNameId") REFERENCES "tagNames" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+        );
+		`.execute(this.db);
   }
 }
