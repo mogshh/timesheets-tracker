@@ -1,23 +1,32 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
 export class CreateAutoTagDto {
   @IsString()
   @Type(() => String)
   @ApiPropertyOptional({
     type: String,
-    description: 'Name of the tag',
+    description: 'Id of the tagName',
     default: undefined,
   })
-  name: string;
+  tagNameId: string;
+
+  @IsNumber()
+  @Type(() => Number)
+  @ApiPropertyOptional({
+    type: Number,
+    description: 'Priority order in which the auto tags are checked',
+    default: 0,
+  })
+  priority: number;
 
   @IsString()
   @Type(() => String)
   @ApiPropertyOptional({
     type: String,
-    description: 'Hex code of the color to give tags with this tag name',
-    default: undefined,
+    description: 'Conditions for the auto tag',
+    default: '[]',
   })
-  color: string;
+  conditions: string;
 }

@@ -20,6 +20,13 @@ export interface TagName {
   color: string;
 }
 
+export interface AutoTag {
+  id: string;
+  tagNameId: string;
+  priority: number;
+  conditions: AutoTagCondition[];
+}
+
 export interface AutoTagCondition {
   booleanOperator: BooleanOperator;
   variable: ConditionVariable | null;

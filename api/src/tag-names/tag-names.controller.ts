@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Param } from '@nestjs/common';
 import { TagNamesService } from './tag-names.service';
 import { CreateTagNameDto } from './dto/create-tag-name.dto';
 import { ApiQuery } from '@nestjs/swagger';
@@ -26,11 +26,11 @@ export class TagNamesController {
     };
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.tagNamesService.findOne(+id);
-  // }
-  //
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.tagNamesService.findOne(id);
+  }
+
   // @Patch(':id')
   // update(@Param('id') id: string, @Body() updateTagNameDto: UpdateTagNameDto) {
   //   return this.tagNamesService.update(+id, updateTagNameDto);

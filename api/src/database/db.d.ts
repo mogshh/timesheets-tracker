@@ -6,6 +6,13 @@ export interface Activities {
   endedAt: string;
 }
 
+export interface AutoTags {
+  id: string;
+  tagNameId: string;
+  priority: string;
+  conditions: string;
+}
+
 export interface TagNames {
   id: string;
   name: string;
@@ -21,6 +28,7 @@ export interface Tags {
 
 export interface DB {
   activities: Activities;
+  autoTags: AutoTags;
   tagNames: TagNames;
   tags: Tags;
 }

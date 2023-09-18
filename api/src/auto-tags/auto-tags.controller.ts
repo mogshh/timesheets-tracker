@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Query } from '@nestjs/common';
-import { AutoTagsService } from './auto-tags.service';
+import { Controller, Get, Post, Body, Query, Param } from '@nestjs/common';
+// import { AutoTagsService } from './auto-tags.service';
 import { CreateAutoTagDto } from './dto/create-auto-tag.dto';
 import { ApiQuery } from '@nestjs/swagger';
+import { AutoTagsService } from './auto-tags.service';
 // import { UpdateTagNameDto } from './dto/update-tag-name.dto';
 
 @Controller('tag-names')
@@ -25,11 +26,10 @@ export class AutoTagsController {
       count: await this.tagNamesService.count(),
     };
   }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.tagNamesService.findOne(+id);
-  // }
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.tagNamesService.findOne(+id);
+  }
   //
   // @Patch(':id')
   // update(@Param('id') id: string, @Body() updateTagNameDto: UpdateTagNameDto) {

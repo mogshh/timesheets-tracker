@@ -6,16 +6,20 @@ import AutoTagConditionInput from '../AutoTagCondition/AutoTagConditionInput';
 import { cloneDeep } from 'lodash-es';
 import TagSelectSingle from '../TagSelect/TagSelectSingle';
 import {
+  AutoTag,
   AutoTagCondition,
   BooleanOperator,
   ConditionOperator,
   ConditionVariable,
   TagName,
 } from '../../../../types/types';
+import { useDefaultServiceTagNamesControllerCreate } from '../../generated/api/queries';
 
-interface AddAutoTagProps {
+interface EditAutoTagProps {
   isOpen: boolean;
   onClose: () => void;
+  onSave: (autoTag: Omit<AutoTag, 'id'>) => void;
+  autoTag: AutoTag;
 }
 
 const NEW_CONDITION = {
@@ -25,8 +29,10 @@ const NEW_CONDITION = {
   value: '',
 };
 
-function AddAutoTagModal({ isOpen, onClose }: AddAutoTagProps) {
-  const [tagName, setTagName] = useState<TagName | null>(null);
+function EditAutoTagModal({ isOpen, onClose, onSave, autoTag }: EditAutoTagProps) {
+  const { data: tagName } = useDefaultServiceTagNamesController;
+  const [tagName, setTagName] = useState<TagName | null>();
+  const [priority, setPriority] = useState<number>(0); // TODO allow drag and drop
   const [conditions, setConditions] = useState<AutoTagCondition[]>([NEW_CONDITION, NEW_CONDITION]);
 
   useEffect(() => {
@@ -70,7 +76,7 @@ function AddAutoTagModal({ isOpen, onClose }: AddAutoTagProps) {
     >
       <h3>Add auto tag</h3>
       <h4>Tag</h4>
-      <TagSelectSingle value={tagName} onChange={setTagName} autoFocus={true} />
+      <TagSelectSingle value={tagNameId} onChange={setTagNameId} autoFocus={true} />
       <h4>Conditions</h4>
       <div>
         {conditions.map((condition, i) => (
@@ -83,11 +89,33 @@ function AddAutoTagModal({ isOpen, onClose }: AddAutoTagProps) {
               handleChangeCondition(i, booleanOperator, variable, operator, value)
             }
             onDelete={handleDeleteCondition}
+            showDelete={conditions.length > 1}
           ></AutoTagConditionInput>
         ))}
+      </div>
+      <div className="flex flex-row justify-end gap-2 mt-48">
+        <button className="c-button" onClick={onClose}>
+          Cancel
+        </button>
+        <button
+          className="c-button"
+          disabled={
+            !tagNameId ||
+            !conditions[0]?.variable ||
+            !conditions[0]?.operator ||
+            !conditions[0]?.value
+          }
+          onClick={() => {
+            if (tagNameId) {
+              onSave({ tagNameId: tagNameId.id, priority, conditions });
+            }
+          }}
+        >
+          Save
+        </button>
       </div>
     </Modal>
   );
 }
 
-export default AddAutoTagModal;
+export default EditAutoTagModal;

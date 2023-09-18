@@ -23,6 +23,7 @@ interface AutoTagConditionInputProps {
     value: string
   ) => void;
   onDelete: (index: number) => void;
+  showDelete: boolean;
 }
 
 function AutoTagConditionInput({
@@ -34,6 +35,7 @@ function AutoTagConditionInput({
   value,
   onChange,
   onDelete,
+  showDelete,
 }: AutoTagConditionInputProps) {
   const variableOptions: SelectOption<ConditionVariable>[] = Object.values(ConditionVariable).map(
     (condition) => ({ label: condition, value: condition })
@@ -88,9 +90,11 @@ function AutoTagConditionInput({
         value={value}
         onChange={(evt) => onChange(booleanOperator, variable, operator, evt.target.value)}
       />
-      <button className="c-button c-button--small" onClick={() => onDelete(index)}>
-        delete
-      </button>
+      {showDelete && (
+        <button className="c-button c-button--small" onClick={() => onDelete(index)}>
+          delete
+        </button>
+      )}
     </div>
   );
 }

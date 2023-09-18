@@ -57,7 +57,8 @@ export class DatabaseService implements OnModuleInit {
         (
             "id"        text NOT NULL PRIMARY KEY,
             "tagNameId" text NOT NULL,
-            "rules"     text NOT NULL,
+            "priority"  int NOT NULL,
+            "conditions" text NOT NULL,
             FOREIGN KEY ("tagNameId") REFERENCES "tagNames" ("id") ON DELETE CASCADE ON UPDATE CASCADE
         );
 		`.execute(this.db);

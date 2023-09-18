@@ -1,6 +1,7 @@
 import './AutoTagsPage.scss';
-import AddAutoTagModal from '../AddAutoTagModal/AddAutoTagModal';
+import EditAutoTagModal from '../AddAutoTagModal/EditAutoTagModal';
 import { useNavigate, useParams } from 'react-router-dom';
+import { AutoTag } from '../../../../types/types';
 interface AutoTagsPageProps {}
 
 function AutoTagsPage({}: AutoTagsPageProps) {
@@ -8,15 +9,24 @@ function AutoTagsPage({}: AutoTagsPageProps) {
   const params = useParams();
   const action = params.action;
 
+  const {} = useDefaultServiceAuto;
+
+  const handleClose = () => navigate('/auto-tag-rules');
+
+  const handleSave = (autoTag: AutoTag) => {
+    handleClose();
+  };
+
   return (
     <div>
       <button className="c-button" onClick={() => navigate('/auto-tag-rules/create')}>
         Add auto tag
       </button>
-      <AddAutoTagModal
+      <EditAutoTagModal
         isOpen={action === 'create'}
-        onClose={() => navigate('/auto-tag-rules')}
-      ></AddAutoTagModal>
+        onClose={handleClose}
+        onSave={handleSave}
+      ></EditAutoTagModal>
     </div>
   );
 }

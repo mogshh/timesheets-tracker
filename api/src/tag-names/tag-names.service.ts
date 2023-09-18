@@ -36,11 +36,14 @@ export class TagNamesService {
     return result.count;
   }
 
-  //
-  // findOne(id: number) {
-  //   return `This action returns a #${id} tag`;
-  // }
-  //
+  findOne(id: string) {
+    return this.databaseService.db
+      .selectFrom('tagNames')
+      .selectAll()
+      .where('id', '=', id)
+      .executeTakeFirstOrThrow();
+  }
+
   // update(id: number, updateTagDto: UpdateTagDto) {
   //   return `This action updates a #${id} tag`;
   // }
