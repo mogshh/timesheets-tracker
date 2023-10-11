@@ -19,7 +19,7 @@ interface EditAutoTagProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (autoTag: Omit<AutoTag, 'id'>) => void;
-  autoTag: AutoTag;
+  autoTag: AutoTag | null;
 }
 
 const NEW_CONDITION = {
@@ -30,7 +30,6 @@ const NEW_CONDITION = {
 };
 
 function EditAutoTagModal({ isOpen, onClose, onSave, autoTag }: EditAutoTagProps) {
-  const { data: tagName } = useDefaultServiceTagNamesController;
   const [tagName, setTagName] = useState<TagName | null>();
   const [priority, setPriority] = useState<number>(0); // TODO allow drag and drop
   const [conditions, setConditions] = useState<AutoTagCondition[]>([NEW_CONDITION, NEW_CONDITION]);
@@ -76,7 +75,7 @@ function EditAutoTagModal({ isOpen, onClose, onSave, autoTag }: EditAutoTagProps
     >
       <h3>Add auto tag</h3>
       <h4>Tag</h4>
-      <TagSelectSingle value={tagNameId} onChange={setTagNameId} autoFocus={true} />
+      <TagSelectSingle value={tagName || null} onChange={setTagName} autoFocus={true} />
       <h4>Conditions</h4>
       <div>
         {conditions.map((condition, i) => (
@@ -100,14 +99,14 @@ function EditAutoTagModal({ isOpen, onClose, onSave, autoTag }: EditAutoTagProps
         <button
           className="c-button"
           disabled={
-            !tagNameId ||
+            !tagName ||
             !conditions[0]?.variable ||
             !conditions[0]?.operator ||
             !conditions[0]?.value
           }
           onClick={() => {
-            if (tagNameId) {
-              onSave({ tagNameId: tagNameId.id, priority, conditions });
+            if (tagName) {
+              onSave({ tagNameId: tagName.id, priority, conditions });
             }
           }}
         >

@@ -3,7 +3,7 @@ import './TagSelect.scss';
 import React from 'react';
 import AsyncCreatableSelect from 'react-select/async-creatable';
 import { DefaultService } from '../../generated/api/requests';
-import { TagName } from '../../../../types/types';
+import type { TagName } from '../../types/types';
 
 interface TagSelectProps {
   value: TagName | null;
@@ -23,6 +23,8 @@ function TagSelectSingle({ value, onChange, autoFocus }: TagSelectProps) {
       isMulti={false}
       isSearchable
       onChange={(newValue) => onChange(newValue)}
+      cacheOptions
+      defaultOptions
     ></AsyncCreatableSelect>
   );
 }

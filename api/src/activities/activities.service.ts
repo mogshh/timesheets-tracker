@@ -1,5 +1,5 @@
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import { Activity } from '../types/types';
+import type { Activity } from '../types/types';
 import { DatabaseService } from '../database/database.service';
 import ActiveWindow, { WindowInfo } from '@paymoapp/active-window';
 import { v4 as uuid } from 'uuid';
@@ -92,7 +92,7 @@ export class ActivitiesService implements OnApplicationBootstrap {
   async findAll(startedAt: string, endedAt: string): Promise<Activity[]> {
     const results = await this.databaseService.db
       .selectFrom('activities')
-      .selectAll()
+      .select(['id', 'programName', 'windowTitle', 'startedAt', 'endedAt'])
       .where('activities.startedAt', '>', startedAt)
       .where('activities.endedAt', '<', endedAt)
       .execute();

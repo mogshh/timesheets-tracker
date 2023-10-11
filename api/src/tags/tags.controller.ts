@@ -1,19 +1,30 @@
 import { Controller, Get, Post, Body, Query, Delete, Param } from '@nestjs/common';
 import { TagsService } from './tags.service';
 import { CreateTagDto } from './dto/create-tag.dto';
-import { Tag } from '../types/types';
-import { ApiQuery } from '@nestjs/swagger';
+import type { Tag } from '../types/types';
+import { ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { endOfDay, startOfDay } from 'date-fns';
+import { TagDto } from './dto/response-tag.dto';
 
+@ApiTags('tags')
 @Controller('tags')
 export class TagsController {
   constructor(private readonly tagsService: TagsService) {}
 
+  @ApiOkResponse({
+    description: 'Create a new tag entry',
+    type: TagDto,
+  })
   @Post()
   create(@Body() createTagDto: CreateTagDto) {
     return this.tagsService.create(createTagDto);
   }
 
+  @ApiOkResponse({
+    description: 'Get all tag entries filtered by date',
+    type: TagDto,
+    isArray: true,
+  })
   @Get()
   @ApiQuery({
     type: 'string',
@@ -44,6 +55,9 @@ export class TagsController {
   //   return this.tagsService.update(+id, updateTagDto);
   // }
 
+  @ApiOkResponse({
+    description: 'Delete one tag by id',
+  })
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.tagsService.remove(id);

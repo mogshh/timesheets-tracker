@@ -6,6 +6,7 @@ export { CancelablePromise, CancelError } from './core/CancelablePromise';
 export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
+export type { CreateAutoTagDto } from './models/CreateAutoTagDto';
 export type { CreateTagDto } from './models/CreateTagDto';
 export type { CreateTagNameDto } from './models/CreateTagNameDto';
 

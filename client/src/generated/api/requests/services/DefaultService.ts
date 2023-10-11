@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { CreateAutoTagDto } from '../models/CreateAutoTagDto';
 import type { CreateTagDto } from '../models/CreateTagDto';
 import type { CreateTagNameDto } from '../models/CreateTagNameDto';
 
@@ -146,6 +147,84 @@ term?: string,
         return __request(OpenAPI, {
             method: 'GET',
             url: '/tag-names/count',
+        });
+    }
+
+    /**
+     * @param id 
+     * @returns any 
+     * @throws ApiError
+     */
+    public static tagNamesControllerFindOne(
+id: string,
+): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/tag-names/{id}',
+            path: {
+                'id': id,
+            },
+        });
+    }
+
+    /**
+     * @param requestBody 
+     * @returns any 
+     * @throws ApiError
+     */
+    public static autoTagsControllerCreate(
+requestBody: CreateAutoTagDto,
+): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/auto-tags',
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+
+    /**
+     * @param term 
+     * @returns any 
+     * @throws ApiError
+     */
+    public static autoTagsControllerFindAll(
+term?: string,
+): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/auto-tags',
+            query: {
+                'term': term,
+            },
+        });
+    }
+
+    /**
+     * @returns any 
+     * @throws ApiError
+     */
+    public static autoTagsControllerCount(): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/auto-tags/count',
+        });
+    }
+
+    /**
+     * @param id 
+     * @returns any 
+     * @throws ApiError
+     */
+    public static autoTagsControllerFindOne(
+id: string,
+): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/auto-tags/{id}',
+            path: {
+                'id': id,
+            },
         });
     }
 

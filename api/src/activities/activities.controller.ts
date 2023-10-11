@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { ActivitiesService } from './activities.service';
-import { Activity } from '../types/types';
+import type { Activity } from '../types/types';
 import { ApiQuery } from '@nestjs/swagger';
 import { endOfDay, startOfDay } from 'date-fns';
 

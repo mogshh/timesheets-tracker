@@ -18,8 +18,7 @@ import {
   isAfter,
 } from 'date-fns';
 import { formatDuration } from '../../helpers/format-duration';
-import { TagName } from '../../../../types/types';
-import { DefaultService } from '../../generated/api/requests';
+import type { TagName } from '../../types/types';
 import { ActionMeta, MultiValue, OnChangeValue } from 'react-select/dist/declarations/src/types';
 import TagSelectMulti from '../TagSelect/TagSelectMulti';
 

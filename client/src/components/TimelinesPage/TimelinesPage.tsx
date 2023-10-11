@@ -19,7 +19,7 @@ import {
   useDefaultServiceTagsControllerFindAll,
   useDefaultServiceTagsControllerRemove,
 } from '../../generated/api/queries';
-import { Activity, Tag, TagName } from '../../../../types/types';
+import type { Activity, Tag, TagName } from '../../types/types';
 import { COLOR_LIST } from './TimelinesPage.consts';
 import { clamp, maxBy, minBy } from 'lodash-es';
 

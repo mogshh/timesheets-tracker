@@ -22,9 +22,11 @@ export interface TagName {
 
 export interface AutoTag {
   id: string;
+  name: string;
   tagNameId: string;
   priority: number;
   conditions: AutoTagCondition[];
+  tagName?: TagName;
 }
 
 export interface AutoTagCondition {

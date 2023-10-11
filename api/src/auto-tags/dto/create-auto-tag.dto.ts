@@ -1,6 +1,13 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNumber, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsNumber, IsObject, IsString } from 'class-validator';
+import {
+  AutoTagCondition,
+  BooleanOperator,
+  ConditionOperator,
+  ConditionVariable,
+  TagName,
+} from '../../types/types';
 
 export class CreateAutoTagDto {
   @IsString()
@@ -11,6 +18,15 @@ export class CreateAutoTagDto {
     default: undefined,
   })
   tagNameId: string;
+
+  @IsString()
+  @Type(() => String)
+  @ApiPropertyOptional({
+    type: String,
+    description: 'Name of the tagName',
+    default: undefined,
+  })
+  name: string;
 
   @IsNumber()
   @Type(() => Number)

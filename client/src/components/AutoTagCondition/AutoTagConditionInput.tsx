@@ -2,7 +2,7 @@ import './AutoTagConditionInput.scss';
 
 import React from 'react';
 import Select from 'react-select';
-import { BooleanOperator, ConditionOperator, ConditionVariable } from '../../../../types/types';
+import * as types from '../../types/types'; //{ BooleanOperator, types.ConditionOperator, ConditionVariable } from '../../types/types';
 
 interface SelectOption<T> {
   label: string;
@@ -12,14 +12,14 @@ interface SelectOption<T> {
 interface AutoTagConditionInputProps {
   index: number;
   showBooleanOperator: boolean;
-  booleanOperator: BooleanOperator;
-  variable: ConditionVariable | null;
-  operator: ConditionOperator | null;
+  booleanOperator: types.BooleanOperator;
+  variable: types.ConditionVariable | null;
+  operator: types.ConditionOperator | null;
   value: string;
   onChange: (
-    booleanOperator: BooleanOperator,
-    variable: ConditionVariable | null,
-    operator: ConditionOperator | null,
+    booleanOperator: types.BooleanOperator,
+    variable: types.ConditionVariable | null,
+    operator: types.ConditionOperator | null,
     value: string
   ) => void;
   onDelete: (index: number) => void;
@@ -37,17 +37,17 @@ function AutoTagConditionInput({
   onDelete,
   showDelete,
 }: AutoTagConditionInputProps) {
-  const variableOptions: SelectOption<ConditionVariable>[] = Object.values(ConditionVariable).map(
-    (condition) => ({ label: condition, value: condition })
-  );
-  const operatorOptions: SelectOption<ConditionOperator>[] = Object.values(ConditionOperator).map(
-    (condition) => ({ label: condition, value: condition })
-  );
+  const variableOptions: SelectOption<types.ConditionVariable>[] = Object.values(
+    types.ConditionVariable
+  ).map((condition) => ({ label: condition, value: condition }));
+  const operatorOptions: SelectOption<types.ConditionOperator>[] = Object.values(
+    types.ConditionOperator
+  ).map((condition) => ({ label: condition, value: condition }));
   return (
     <div
       className={
         'c-auto-tag-condition' +
-        (booleanOperator === BooleanOperator.AND
+        (booleanOperator === types.BooleanOperator.AND
           ? ' c-auto-tag-condition--and'
           : ' c-auto-tag-condition--or')
       }
@@ -57,7 +57,9 @@ function AutoTagConditionInput({
           className="c-auto-tag-condition__boolean-operator-button c-button c-button--small"
           onClick={() =>
             onChange(
-              booleanOperator === BooleanOperator.AND ? BooleanOperator.OR : BooleanOperator.AND,
+              booleanOperator === types.BooleanOperator.AND
+                ? types.BooleanOperator.OR
+                : types.BooleanOperator.AND,
               variable,
               operator,
               value
@@ -67,7 +69,7 @@ function AutoTagConditionInput({
           {booleanOperator}
         </button>
       )}
-      <Select<SelectOption<ConditionVariable>>
+      <Select<SelectOption<types.ConditionVariable>>
         className="c-auto-tag-condition__variable-select"
         value={variable ? { label: variable, value: variable } : null}
         options={variableOptions}
@@ -76,7 +78,7 @@ function AutoTagConditionInput({
         }
         isMulti={false}
       ></Select>
-      <Select<SelectOption<ConditionOperator>>
+      <Select<SelectOption<types.ConditionOperator>>
         className="c-auto-tag-condition__operator-select"
         value={operator ? { label: operator, value: operator } : null}
         options={operatorOptions}

@@ -1,14 +1,13 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Kysely, sql, SqliteDialect } from 'kysely';
-import { DB } from './db';
 import Database from 'better-sqlite3';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
-  public db: Kysely<DB>;
+  public db: Kysely<any>;
 
   async onModuleInit(): Promise<void> {
-    this.db = new Kysely<DB>({
+    this.db = new Kysely<any>({
       dialect: new SqliteDialect({
         database: new Database('./timesheets-tracker-database.sqlite3'),
       }),
@@ -56,11 +55,12 @@ export class DatabaseService implements OnModuleInit {
         CREATE TABLE IF NOT EXISTS autoTags
         (
             "id"        text NOT NULL PRIMARY KEY,
+            "name"      text NOT NULL,
             "tagNameId" text NOT NULL,
             "priority"  int NOT NULL,
             "conditions" text NOT NULL,
             FOREIGN KEY ("tagNameId") REFERENCES "tagNames" ("id") ON DELETE CASCADE ON UPDATE CASCADE
         );
-		`.execute(this.db);
+    `.execute(this.db);
   }
 }

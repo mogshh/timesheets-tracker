@@ -2,7 +2,7 @@ import { CreateTagNameDto } from './dto/create-tag-name.dto';
 import { Inject, Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { v4 as uuid } from 'uuid';
-import { TagName } from '../types/types';
+import type { TagName } from '../types/types';
 
 @Injectable()
 export class TagNamesService {
@@ -23,7 +23,7 @@ export class TagNamesService {
   async findAll(searchTerm: string | undefined): Promise<TagName[]> {
     return this.databaseService.db
       .selectFrom('tagNames')
-      .selectAll()
+      .select(['id', 'name', 'color'])
       .where('name', 'like', '%' + searchTerm + '%')
       .execute();
   }

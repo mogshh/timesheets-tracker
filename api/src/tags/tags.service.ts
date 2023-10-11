@@ -2,12 +2,22 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { DatabaseService } from '../database/database.service';
 import { v4 as uuid } from 'uuid';
-import { Tag } from '../types/types';
+import type { Tag } from '../types/types';
 import { unflatten } from 'nested-objects-util';
 import { max, min } from 'date-fns';
 
 @Injectable()
 export class TagsService {
+  private selectList = [
+    'tags.id',
+    'tags.tagNameId',
+    'tags.startedAt',
+    'tags.endedAt',
+    'tagNames.id as tagName.id',
+    'tagNames.name as tagName.name',
+    'tagNames.color as tagName.color',
+  ] as const;
+
   constructor(@Inject(DatabaseService) private databaseService: DatabaseService) {}
 
   async create(createTagDto: CreateTagDto): Promise<Tag> {
@@ -25,24 +35,17 @@ export class TagsService {
           new Date(createTagDto.endedAt),
         ]).toISOString(),
       })
-      .returning(['tags.id'])
+      .returning(this.selectList)
       .executeTakeFirstOrThrow();
-    return this.findOne(newTag.id);
+
+    return unflatten(newTag);
   }
 
   async findAll(startedAt: string, endedAt: string): Promise<Tag[]> {
     const rawTags = await this.databaseService.db
       .selectFrom('tags')
       .leftJoin('tagNames', 'tagNames.id', 'tags.tagNameId')
-      .select([
-        'tags.id',
-        'tags.tagNameId',
-        'tags.startedAt',
-        'tags.endedAt',
-        'tagNames.id as tagName.id',
-        'tagNames.name as tagName.name',
-        'tagNames.color as tagName.color',
-      ])
+      .select(this.selectList)
       .where('startedAt', '>', startedAt)
       .where('endedAt', '<', endedAt)
       .execute();
@@ -53,15 +56,7 @@ export class TagsService {
     const rawTag = await this.databaseService.db
       .selectFrom('tags')
       .leftJoin('tagNames', 'tagNames.id', 'tags.tagNameId')
-      .select([
-        'tags.id',
-        'tags.tagNameId',
-        'tags.startedAt',
-        'tags.endedAt',
-        'tagNames.id as tagName.id',
-        'tagNames.name as tagName.name',
-        'tagNames.color as tagName.color',
-      ])
+      .select(this.selectList)
       .where('tags.id', '=', id)
       .executeTakeFirstOrThrow();
     return unflatten(rawTag);

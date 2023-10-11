@@ -3,7 +3,7 @@ import './TagSelect.scss';
 import React from 'react';
 import AsyncCreatableSelect from 'react-select/async-creatable';
 import { DefaultService } from '../../generated/api/requests';
-import { TagName } from '../../../../types/types';
+import type { TagName } from '../../types/types';
 import { ActionMeta, OnChangeValue } from 'react-select/dist/declarations/src/types';
 
 interface TagSelectProps {
