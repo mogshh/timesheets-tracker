@@ -7,4 +7,7 @@ export default defineConfig({
   server: {
     port: 55588,
   },
+  resolve: {
+    preserveSymlinks: true
+  } 
 });
