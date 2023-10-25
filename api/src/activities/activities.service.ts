@@ -5,6 +5,7 @@ import ActiveWindow, { WindowInfo } from '@paymoapp/active-window';
 import { v4 as uuid } from 'uuid';
 import { differenceInSeconds, max, min } from 'date-fns';
 import { CreateActivityDto } from './dto/create-activity.dto';
+import { unflatten } from 'nested-objects-util';
 
 const MINIMUM_ACTIVITY_DURATION_SECONDS = 5;
 
@@ -12,6 +13,7 @@ const MINIMUM_ACTIVITY_DURATION_SECONDS = 5;
 export class ActivitiesService implements OnApplicationBootstrap {
   private activeWindowSubscriptionId: number;
   private lastActivity: CreateActivityDto | null = null;
+  private selectList: string[] = ['id', 'programName', 'windowTitle', 'startedAt', 'endedAt'];
 
   constructor(@Inject(DatabaseService) private databaseService: DatabaseService) {}
 
@@ -76,8 +78,12 @@ export class ActivitiesService implements OnApplicationBootstrap {
     this.lastActivity = null;
   }
 
-  async create(activity: CreateActivityDto): Promise<void> {
-    await this.databaseService.db
+  adapt(rawActivity: Record<string, any>): Activity {
+    return unflatten(rawActivity) as Activity;
+  }
+
+  async create(activity: CreateActivityDto): Promise<Activity> {
+    const createdActivity = await this.databaseService.db
       .insertInto('activities')
       .values({
         id: uuid(),
@@ -86,20 +92,23 @@ export class ActivitiesService implements OnApplicationBootstrap {
         startedAt: min([new Date(activity.startedAt), new Date(activity.endedAt)]).toISOString(),
         endedAt: max([new Date(activity.startedAt), new Date(activity.endedAt)]).toISOString(),
       })
+      .returning(this.selectList)
       .execute();
+    return this.adapt(createdActivity);
   }
 
   async findAll(startedAt: string, endedAt: string): Promise<Activity[]> {
     const results = await this.databaseService.db
       .selectFrom('activities')
-      .select(['id', 'programName', 'windowTitle', 'startedAt', 'endedAt'])
+      .select(this.selectList)
       .where('activities.startedAt', '>', startedAt)
       .where('activities.endedAt', '<', endedAt)
       .execute();
-    return results.filter((result) => {
+    const realResults = results.filter((result) => {
       const diff = differenceInSeconds(new Date(result.endedAt), new Date(result.startedAt));
       return diff > MINIMUM_ACTIVITY_DURATION_SECONDS;
     });
+    return realResults.map(this.adapt);
   }
 
   // findOne(id: number) {

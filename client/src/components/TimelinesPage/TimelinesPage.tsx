@@ -12,12 +12,12 @@ import {
 } from 'date-fns';
 import { TimelineEvent, TimelineEventType } from '../Timeline/Timeline.types';
 import {
-  useDefaultServiceActivitiesControllerFindAll,
-  useDefaultServiceTagNamesControllerCount,
-  useDefaultServiceTagNamesControllerCreate,
-  useDefaultServiceTagsControllerCreate,
-  useDefaultServiceTagsControllerFindAll,
-  useDefaultServiceTagsControllerRemove,
+  useActivitiesServiceActivitiesControllerFindAll,
+  useTagNamesServiceTagNamesControllerCount,
+  useTagNamesServiceTagNamesControllerCreate,
+  useTagsServiceTagsControllerCreate,
+  useTagsServiceTagsControllerFindAll,
+  useTagsServiceTagsControllerRemove,
 } from '../../generated/api/queries';
 import type { Activity, Tag, TagName } from '../../types/types';
 import { COLOR_LIST } from './TimelinesPage.consts';
@@ -28,12 +28,12 @@ function TimelinesPage() {
     data: tags,
     isLoading: isLoadingTags,
     refetch: refetchTags,
-  } = useDefaultServiceTagsControllerFindAll({
+  } = useTagsServiceTagsControllerFindAll({
     startedAt: startOfDay(new Date()).toISOString(),
     endedAt: endOfDay(new Date()).toISOString(),
   });
   const { data: programs, isLoading: isLoadingPrograms } =
-    useDefaultServiceActivitiesControllerFindAll({
+    useActivitiesServiceActivitiesControllerFindAll({
       startedAt: startOfDay(new Date()).toISOString(),
       endedAt: endOfDay(new Date()).toISOString(),
     });
@@ -41,8 +41,8 @@ function TimelinesPage() {
     data: tagNamesCount,
     isLoading: isLoadingTagNamesCount,
     refetch: refetchTagNamesCount,
-  } = useDefaultServiceTagNamesControllerCount();
-  const { mutateAsync: deleteTag } = useDefaultServiceTagsControllerRemove();
+  } = useTagNamesServiceTagNamesControllerCount();
+  const { mutateAsync: deleteTag } = useTagsServiceTagsControllerRemove();
   const tagEvents = (tags || []).map((tag: Tag, tagIndex: number): TimelineEvent => {
     return {
       id: tag.id,
@@ -71,8 +71,8 @@ function TimelinesPage() {
     }
   );
 
-  const { mutateAsync: createTagName } = useDefaultServiceTagNamesControllerCreate();
-  const { mutateAsync: createTag } = useDefaultServiceTagsControllerCreate();
+  const { mutateAsync: createTagName } = useTagNamesServiceTagNamesControllerCreate();
+  const { mutateAsync: createTag } = useTagsServiceTagsControllerCreate();
 
   const [selectionStartPercent, setSelectionStartPercent] = useState<number | null>(null);
   const [selectionMovePercent, setSelectionMovePercent] = useState<number | null>(null);
@@ -158,7 +158,7 @@ function TimelinesPage() {
     return createTagName({
       requestBody: {
         name,
-        color: COLOR_LIST[tagNamesCount.count % COLOR_LIST.length], // Get a new color that has,'t been recently used
+        color: COLOR_LIST[(tagNamesCount?.count || 0) % COLOR_LIST.length], // Get a new color that has,'t been recently used
       },
     });
   };

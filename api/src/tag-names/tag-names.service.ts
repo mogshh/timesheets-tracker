@@ -21,11 +21,18 @@ export class TagNamesService {
   }
 
   async findAll(searchTerm: string | undefined): Promise<TagName[]> {
-    return this.databaseService.db
-      .selectFrom('tagNames')
-      .select(['id', 'name', 'color'])
-      .where('name', 'like', '%' + searchTerm + '%')
-      .execute();
+    if (searchTerm) {
+      return this.databaseService.db
+        .selectFrom('tagNames')
+        .select(['id', 'name', 'color'])
+        .where('name', 'like', '%' + searchTerm + '%')
+        .execute();
+    } else {
+      return this.databaseService.db
+        .selectFrom('tagNames')
+        .select(['id', 'name', 'color'])
+        .execute();
+    }
   }
 
   async count(): Promise<number> {

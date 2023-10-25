@@ -8,6 +8,7 @@ export interface Activities {
 
 export interface AutoTags {
   id: string;
+  name: string;
   tagNameId: string;
   priority: string;
   conditions: string;

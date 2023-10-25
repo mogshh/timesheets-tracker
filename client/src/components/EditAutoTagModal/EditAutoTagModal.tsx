@@ -1,6 +1,6 @@
-import './AddAutoTagModal.scss';
+import './EditAutoTagModal.scss';
 
-import React, { useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Modal } from 'react-responsive-modal';
 import AutoTagConditionInput from '../AutoTagCondition/AutoTagConditionInput';
 import { cloneDeep } from 'lodash-es';
@@ -13,7 +13,6 @@ import {
   ConditionVariable,
   TagName,
 } from '../../../../types/types';
-import { useDefaultServiceTagNamesControllerCreate } from '../../generated/api/queries';
 
 interface EditAutoTagProps {
   isOpen: boolean;
@@ -30,9 +29,23 @@ const NEW_CONDITION = {
 };
 
 function EditAutoTagModal({ isOpen, onClose, onSave, autoTag }: EditAutoTagProps) {
-  const [tagName, setTagName] = useState<TagName | null>();
+  const [name, setName] = useState<string>('');
+  const [tagName, setTagName] = useState<TagName | null>(null);
   const [priority, setPriority] = useState<number>(0); // TODO allow drag and drop
   const [conditions, setConditions] = useState<AutoTagCondition[]>([NEW_CONDITION, NEW_CONDITION]);
+
+  useEffect(() => {
+    if (autoTag) {
+      setName(autoTag.name);
+      if (autoTag.tagName) {
+        setTagName(autoTag.tagName);
+      }
+      setPriority(autoTag.priority);
+      if (autoTag.conditions?.length !== 0) {
+        setConditions(autoTag.conditions);
+      }
+    }
+  }, [autoTag]);
 
   useEffect(() => {
     const lastCondition = conditions.at(-1);
@@ -74,6 +87,11 @@ function EditAutoTagModal({ isOpen, onClose, onSave, autoTag }: EditAutoTagProps
       classNames={{ modal: 'c-add-auto-tag-modal', closeButton: 'c-button c-button--small' }}
     >
       <h3>Add auto tag</h3>
+      <h4>Name</h4>
+      <input
+        value={name}
+        onChange={(evt: ChangeEvent<HTMLInputElement>) => setName(evt.target?.value)}
+      />
       <h4>Tag</h4>
       <TagSelectSingle value={tagName || null} onChange={setTagName} autoFocus={true} />
       <h4>Conditions</h4>
@@ -106,7 +124,12 @@ function EditAutoTagModal({ isOpen, onClose, onSave, autoTag }: EditAutoTagProps
           }
           onClick={() => {
             if (tagName) {
-              onSave({ tagNameId: tagName.id, priority, conditions });
+              onSave({
+                tagNameId: tagName.id,
+                name,
+                priority,
+                conditions: conditions.filter((condition) => !!condition.value),
+              });
             }
           }}
         >

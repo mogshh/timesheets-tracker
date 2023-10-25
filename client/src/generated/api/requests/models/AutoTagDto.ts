@@ -4,7 +4,11 @@
 
 import type { AutoTagConditionDto } from './AutoTagConditionDto';
 
-export type CreateAutoTagDto = {
+export type AutoTagDto = {
+    /**
+     * Id of the auto tag
+     */
+    id?: string;
     /**
      * Id of the tagName
      */
@@ -14,11 +18,15 @@ export type CreateAutoTagDto = {
      */
     name?: string;
     /**
-     * Priority order in which the auto tags are checked
+     * Priority order in which the auto tags are checked. 0 is checked first, 1 second, ...
      */
     priority?: number;
     /**
      * Conditions for the auto tag
      */
     conditions?: Array<AutoTagConditionDto>;
+    /**
+     * The tag name linked to this auto tag
+     */
+    tagName?: string;
 };

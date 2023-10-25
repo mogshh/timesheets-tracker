@@ -20,7 +20,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "bump": "npx bump-package-versions --part=patch --strategy=highest ./package.json .../package.json ../client/package.json",
-    "generate-database-types": "kysely-codegen --camel-case --dialect=sqlite --url=./timesheets-tracker-database.sqlite3 --out-file=./src/database/db.d.ts"
+    "generate-database-types": "rm src/database/db.d.ts && kysely-codegen --camel-case --dialect=sqlite --url=./timesheets-tracker-database.sqlite3 --out-file=./src/database/db.d.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

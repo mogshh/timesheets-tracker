@@ -2,6 +2,7 @@ import { IsArray, IsEnum, IsNumber, IsObject, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  AutoTag,
   AutoTagCondition,
   BooleanOperator,
   ConditionOperator,
@@ -10,7 +11,7 @@ import {
 } from '../../types/types';
 import { TagNameDto } from '../../tag-names/dto/response-tag-name.dto';
 
-export class AutoTagConditionDto {
+export class AutoTagConditionDto implements AutoTagCondition {
   @IsString()
   @Type(() => String)
   @ApiPropertyOptional({
@@ -23,20 +24,22 @@ export class AutoTagConditionDto {
   @IsEnum(ConditionVariable)
   @Type(() => String)
   @ApiPropertyOptional({
-    type: String,
+    type: ConditionVariable,
     description: 'Variable to check',
     default: ConditionVariable.programName,
-    enum: ConditionOperator,
+    enum: ConditionVariable,
+    nullable: true,
   })
   variable: ConditionVariable | null;
 
   @IsEnum(ConditionOperator)
   @Type(() => String)
   @ApiPropertyOptional({
-    type: String,
+    type: ConditionOperator,
     description: 'Operator of the condition',
     default: 'OR',
     enum: ConditionOperator,
+    nullable: true,
   })
   operator: ConditionOperator | null;
 
@@ -49,7 +52,16 @@ export class AutoTagConditionDto {
   value: string;
 }
 
-export class AutoTagDto {
+export class AutoTagDto implements AutoTag {
+  @IsString()
+  @Type(() => String)
+  @ApiPropertyOptional({
+    type: String,
+    description: 'Id of the auto tag',
+    default: undefined,
+  })
+  id: string;
+
   @IsString()
   @Type(() => String)
   @ApiPropertyOptional({

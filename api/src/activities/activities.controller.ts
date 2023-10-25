@@ -1,9 +1,10 @@
 import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { ActivitiesService } from './activities.service';
 import type { Activity } from '../types/types';
-import { ApiQuery } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { endOfDay, startOfDay } from 'date-fns';
 
+@ApiTags('activities')
 @Controller('activities')
 export class ActivitiesController {
   constructor(private readonly activitiesService: ActivitiesService) {}

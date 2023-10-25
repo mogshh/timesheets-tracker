@@ -2,7 +2,7 @@ import './TagSelect.scss';
 
 import React from 'react';
 import AsyncCreatableSelect from 'react-select/async-creatable';
-import { DefaultService } from '../../generated/api/requests';
+import { TagNamesService } from '../../generated/api/requests';
 import type { TagName } from '../../types/types';
 
 interface TagSelectProps {
@@ -15,7 +15,10 @@ function TagSelectSingle({ value, onChange, autoFocus }: TagSelectProps) {
   return (
     <AsyncCreatableSelect
       value={value}
-      loadOptions={(searchTerm) => DefaultService.tagNamesControllerFindAll(searchTerm)}
+      getOptionValue={(value) => value.id}
+      loadOptions={(searchTerm) =>
+        TagNamesService.tagNamesControllerFindAll(searchTerm) as Promise<TagName[]>
+      }
       autoFocus={autoFocus ?? false}
       formatOptionLabel={(option: TagName) => option.name}
       placeholder="Tag selection..."

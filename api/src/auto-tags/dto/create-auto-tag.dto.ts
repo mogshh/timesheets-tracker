@@ -8,6 +8,7 @@ import {
   ConditionVariable,
   TagName,
 } from '../../types/types';
+import { AutoTagConditionDto } from './response-auto-tag.dto';
 
 export class CreateAutoTagDto {
   @IsString()
@@ -40,9 +41,10 @@ export class CreateAutoTagDto {
   @IsString()
   @Type(() => String)
   @ApiPropertyOptional({
-    type: String,
+    type: AutoTagConditionDto,
     description: 'Conditions for the auto tag',
-    default: '[]',
+    isArray: true,
+    default: [],
   })
-  conditions: string;
+  conditions: AutoTagCondition[];
 }

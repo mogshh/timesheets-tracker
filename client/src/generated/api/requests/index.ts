@@ -6,8 +6,16 @@ export { CancelablePromise, CancelError } from './core/CancelablePromise';
 export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
+export { AutoTagConditionDto } from './models/AutoTagConditionDto';
+export type { AutoTagDto } from './models/AutoTagDto';
 export type { CreateAutoTagDto } from './models/CreateAutoTagDto';
 export type { CreateTagDto } from './models/CreateTagDto';
 export type { CreateTagNameDto } from './models/CreateTagNameDto';
+export type { TagDto } from './models/TagDto';
+export type { TagNameDto } from './models/TagNameDto';
 
-export { DefaultService } from './services/DefaultService';
+export { ActivitiesService } from './services/ActivitiesService';
+export { AutoTagsService } from './services/AutoTagsService';
+export { StatusService } from './services/StatusService';
+export { TagNamesService } from './services/TagNamesService';
+export { TagsService } from './services/TagsService';

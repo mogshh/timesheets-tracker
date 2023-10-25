@@ -8,4 +8,7 @@ exports.default = (0, vite_1.defineConfig)({
     server: {
         port: 55588,
     },
+    resolve: {
+        preserveSymlinks: true
+    }
 });

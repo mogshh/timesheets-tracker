@@ -14,8 +14,8 @@ export class AutoTagsService {
     'autoTags.priority',
     'autoTags.conditions',
     'tagNames.id as tagName.id',
-    'tagNames.name as tagNames.name',
-    'tagNames.color as tagNames.color',
+    'tagNames.name as tagName.name',
+    'tagNames.color as tagName.color',
   ] as const;
 
   constructor(@Inject(DatabaseService) private databaseService: DatabaseService) {}
