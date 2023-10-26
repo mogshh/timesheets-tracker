@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Param, Patch, Delete } from '@nestjs/common';
 import { ActivitiesService } from './activities.service';
 import type { Activity } from '../types/types';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { endOfDay, startOfDay } from 'date-fns';
 
 @ApiTags('activities')
@@ -32,5 +32,25 @@ export class ActivitiesController {
     @Query('endedAt') endedAt: string
   ): Promise<Activity[]> {
     return this.activitiesService.findAll(startedAt, endedAt);
+  }
+
+  @Patch()
+  @ApiParam({
+    type: 'string',
+    name: 'id',
+    required: true,
+  })
+  findOne(@Param('id') id: string): Promise<Activity> {
+    return this.activitiesService.findOne(id);
+  }
+
+  @Delete()
+  @ApiParam({
+    type: 'string',
+    name: 'id',
+    required: true,
+  })
+  async delete(@Param('id') id: string): Promise<void> {
+    await this.activitiesService.delete(id);
   }
 }

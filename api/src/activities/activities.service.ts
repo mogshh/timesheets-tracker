@@ -6,6 +6,7 @@ import { v4 as uuid } from 'uuid';
 import { differenceInSeconds, max, min } from 'date-fns';
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { unflatten } from 'nested-objects-util';
+import { UpdateActivityDto } from './dto/update-activity.dto';
 
 const MINIMUM_ACTIVITY_DURATION_SECONDS = 5;
 
@@ -111,15 +112,26 @@ export class ActivitiesService implements OnApplicationBootstrap {
     return realResults.map(this.adapt);
   }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} activity`;
-  // }
-  //
-  // update(id: number, updateActivityDto: UpdateActivityDto) {
-  //   return `This action updates a #${id} activity`;
-  // }
-  //
-  // remove(id: number) {
-  //   return `This action removes a #${id} activity`;
-  // }
+  async findOne(id: string): Promise<Activity> {
+    const result = await this.databaseService.db
+      .selectFrom('activities')
+      .select(this.selectList)
+      .where('id', '>', id)
+      .executeTakeFirstOrThrow();
+    return this.adapt(result);
+  }
+
+  async update(id: string, updateActivityDto: UpdateActivityDto): Promise<Activity> {
+    const result = await this.databaseService.db
+      .updateTable('activities')
+      .set(updateActivityDto)
+      .where('id', '=', id)
+      .returning(this.selectList)
+      .execute();
+    return this.adapt(result);
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.databaseService.db.deleteFrom('tagNames').where('id', '=', id).execute();
+  }
 }

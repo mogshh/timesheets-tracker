@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Query, Delete, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Delete, Param, Patch } from '@nestjs/common';
 import { TagsService } from './tags.service';
 import { CreateTagDto } from './dto/create-tag.dto';
 import type { Tag } from '../types/types';
 import { ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { endOfDay, startOfDay } from 'date-fns';
 import { TagDto } from './dto/response-tag.dto';
+import { UpdateTagDto } from './dto/update-tag.dto';
 
 @ApiTags('tags')
 @Controller('tags')
@@ -45,15 +46,15 @@ export class TagsController {
     return this.tagsService.findAll(startedAt, endedAt);
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.tagsService.findOne(+id);
-  // }
-  //
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateTagDto: UpdateTagDto) {
-  //   return this.tagsService.update(+id, updateTagDto);
-  // }
+  @Get(':id')
+  findOne(@Param('id') id: string): Promise<Tag> {
+    return this.tagsService.findOne(id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateTagDto: UpdateTagDto) {
+    return this.tagsService.update(id, updateTagDto);
+  }
 
   @ApiOkResponse({
     description: 'Delete one tag by id',

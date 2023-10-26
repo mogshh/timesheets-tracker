@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Query, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Param, Patch, Delete } from '@nestjs/common';
 import { TagNamesService } from './tag-names.service';
 import { CreateTagNameDto } from './dto/create-tag-name.dto';
 import { ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { TagNameDto } from './dto/response-tag-name.dto';
+import { UpdateTagNameDto } from './dto/update-tag-name.dto';
+import { TagName } from '../types/types';
 // import { UpdateTagNameDto } from './dto/update-tag-name.dto';
 
 @ApiTags('tag-names')
@@ -50,13 +52,13 @@ export class TagNamesController {
     return this.tagNamesService.findOne(id);
   }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateTagNameDto: UpdateTagNameDto) {
-  //   return this.tagNamesService.update(+id, updateTagNameDto);
-  // }
-  //
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.tagNamesService.remove(+id);
-  // }
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateTagNameDto: UpdateTagNameDto): Promise<TagName> {
+    return this.tagNamesService.update(id, updateTagNameDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.tagNamesService.remove(id);
+  }
 }

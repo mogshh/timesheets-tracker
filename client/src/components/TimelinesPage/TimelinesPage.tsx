@@ -43,7 +43,7 @@ function TimelinesPage() {
     refetch: refetchTagNamesCount,
   } = useTagNamesServiceTagNamesControllerCount();
   const { mutateAsync: deleteTag } = useTagsServiceTagsControllerRemove();
-  const tagEvents = (tags || []).map((tag: Tag, tagIndex: number): TimelineEvent => {
+  const tagEvents = ((tags || []) as Tag[]).map((tag: Tag, tagIndex: number): TimelineEvent => {
     return {
       id: tag.id,
       info: {
@@ -158,9 +158,9 @@ function TimelinesPage() {
     return createTagName({
       requestBody: {
         name,
-        color: COLOR_LIST[(tagNamesCount?.count || 0) % COLOR_LIST.length], // Get a new color that has,'t been recently used
+        color: COLOR_LIST[(tagNamesCount || 0) % COLOR_LIST.length], // Get a new color that hasn't been recently used
       },
-    });
+    }) as Promise<TagName>;
   };
 
   const handleCreateTag = async (tagNameId: string): Promise<void> => {

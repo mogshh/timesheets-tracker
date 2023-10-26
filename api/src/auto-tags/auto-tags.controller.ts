@@ -1,9 +1,12 @@
-import { Controller, Get, Post, Body, Query, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Param, Patch, Delete } from '@nestjs/common';
 // import { AutoTagsService } from './auto-tags.service';
 import { CreateAutoTagDto } from './dto/create-auto-tag.dto';
 import { ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AutoTagsService } from './auto-tags.service';
 import { AutoTagDto } from './dto/response-auto-tag.dto';
+import { UpdateTagNameDto } from '../tag-names/dto/update-tag-name.dto';
+import { AutoTag } from '../types/types';
+import { UpdateAutoTagsDto } from './dto/update-auto-tags.dto';
 // import { UpdateTagNameDto } from './dto/update-tag-name.dto';
 
 @ApiTags('auto-tags')
@@ -52,14 +55,17 @@ export class AutoTagsController {
   findOne(@Param('id') id: string) {
     return this.tagNamesService.findOne(id);
   }
-  //
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateTagNameDto: UpdateTagNameDto) {
-  //   return this.tagNamesService.update(+id, updateTagNameDto);
-  // }
-  //
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.tagNamesService.remove(+id);
-  // }
+
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateAutoTagNameDto: UpdateAutoTagsDto
+  ): Promise<AutoTag> {
+    return this.tagNamesService.update(id, updateAutoTagNameDto);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.tagNamesService.delete(id);
+  }
 }

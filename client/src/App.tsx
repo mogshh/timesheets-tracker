@@ -4,6 +4,7 @@ import React from 'react';
 import TimelinesPage from './components/TimelinesPage/TimelinesPage';
 import AutoTagsPage from './components/AutoTagsPage/AutoTagsPage';
 import { useNavigate, useParams } from 'react-router-dom';
+import TagNamesPage from './components/TagNamesPage/TagNamesPage';
 
 function App() {
   const params = useParams();
@@ -14,20 +15,27 @@ function App() {
     <div>
       <div className="c-tabs">
         <span
-          className={params.tabId === 'timelines' ? 'c-tabs__tab--active' : ''}
+          className={tabId === 'timelines' ? 'c-tabs__tab--active' : ''}
           onClick={() => navigate('/timelines')}
         >
           timeline
         </span>
         <span
-          className={params.tabId === 'autoTagRules' ? 'c-tabs__tab--active' : ''}
+          className={tabId === 'autoTagRules' ? 'c-tabs__tab--active' : ''}
           onClick={() => navigate('/auto-tag-rules')}
         >
           auto tag rules
         </span>
+        <span
+          className={tabId === 'tagNames' ? 'c-tabs__tab--active' : ''}
+          onClick={() => navigate('/tag-names')}
+        >
+          tag names
+        </span>
       </div>
-      {params.tabId === 'timelines' && <TimelinesPage></TimelinesPage>}
-      {params.tabId === 'auto-tag-rules' && <AutoTagsPage></AutoTagsPage>}
+      {tabId === 'timelines' && <TimelinesPage></TimelinesPage>}
+      {tabId === 'auto-tag-rules' && <AutoTagsPage></AutoTagsPage>}
+      {tabId === 'tag-names' && <TagNamesPage></TagNamesPage>}
     </div>
   );
 }

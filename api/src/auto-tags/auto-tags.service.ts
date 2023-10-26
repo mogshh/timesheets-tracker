@@ -4,6 +4,7 @@ import { DatabaseService } from '../database/database.service';
 import { v4 as uuid } from 'uuid';
 import type { AutoTag } from '../types/types';
 import { unflatten } from 'nested-objects-util';
+import { UpdateAutoTagsDto } from './dto/update-auto-tags.dto';
 
 @Injectable()
 export class AutoTagsService {
@@ -43,7 +44,7 @@ export class AutoTagsService {
   }
 
   async findAll(searchTerm: string | undefined): Promise<AutoTag[]> {
-    let rawAutoTags;
+    let rawAutoTags: Record<string, string>[];
     if (searchTerm) {
       rawAutoTags = await this.databaseService.db
         .selectFrom('autoTags')
@@ -77,12 +78,18 @@ export class AutoTagsService {
       .where('id', '=', id)
       .executeTakeFirstOrThrow();
   }
-  //
-  // update(id: number, updateTagDto: UpdateTagDto) {
-  //   return `This action updates a #${id} tag`;
-  // }
-  //
-  // remove(id: number) {
-  //   return `This action removes a #${id} tag`;
-  // }
+
+  async update(id: string, updateAutoTagDto: UpdateAutoTagsDto): Promise<AutoTag> {
+    const result = this.databaseService.db
+      .updateTable('autoTags')
+      .set(updateAutoTagDto)
+      .where('id', '=', id)
+      .returning(this.selectList)
+      .execute();
+    return this.adapt(result);
+  }
+
+  async delete(id: string) {
+    await this.databaseService.db.deleteFrom('autoTags').where('id', '=', id).execute();
+  }
 }

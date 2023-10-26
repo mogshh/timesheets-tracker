@@ -3,36 +3,49 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { v4 as uuid } from 'uuid';
 import type { TagName } from '../types/types';
+import { UpdateTagDto } from '../tags/dto/update-tag.dto';
+import { UpdateTagNameDto } from './dto/update-tag-name.dto';
 
 @Injectable()
 export class TagNamesService {
+  private selectList: string[] = ['id', 'name', 'color'];
   constructor(@Inject(DatabaseService) private databaseService: DatabaseService) {}
 
+  private adapt(rawTagName: Record<string, any>): TagName {
+    return {
+      id: rawTagName.id,
+      name: rawTagName.name,
+      color: rawTagName.color,
+    };
+  }
+
   async create(tagName: CreateTagNameDto): Promise<TagName> {
-    return this.databaseService.db
+    return (await this.databaseService.db
       .insertInto('tagNames')
       .values({
         id: uuid(),
         name: tagName.name,
         color: tagName.color,
       })
-      .returning(['id', 'name', 'color'])
-      .executeTakeFirstOrThrow();
+      .returning(this.selectList)
+      .executeTakeFirstOrThrow()) as unknown as Promise<TagName>;
   }
 
   async findAll(searchTerm: string | undefined): Promise<TagName[]> {
+    let rawTagNames: Record<string, string>[];
     if (searchTerm) {
-      return this.databaseService.db
+      rawTagNames = await this.databaseService.db
         .selectFrom('tagNames')
-        .select(['id', 'name', 'color'])
+        .select(this.selectList)
         .where('name', 'like', '%' + searchTerm + '%')
         .execute();
     } else {
-      return this.databaseService.db
+      rawTagNames = await this.databaseService.db
         .selectFrom('tagNames')
-        .select(['id', 'name', 'color'])
+        .select(this.selectList)
         .execute();
     }
+    return rawTagNames.map(this.adapt);
   }
 
   async count(): Promise<number> {
@@ -43,7 +56,7 @@ export class TagNamesService {
     return result.count;
   }
 
-  findOne(id: string) {
+  async findOne(id: string) {
     return this.databaseService.db
       .selectFrom('tagNames')
       .selectAll()
@@ -51,11 +64,17 @@ export class TagNamesService {
       .executeTakeFirstOrThrow();
   }
 
-  // update(id: number, updateTagDto: UpdateTagDto) {
-  //   return `This action updates a #${id} tag`;
-  // }
-  //
-  // remove(id: number) {
-  //   return `This action removes a #${id} tag`;
-  // }
+  async update(id: string, updateTagDto: UpdateTagNameDto): Promise<TagName> {
+    const result = await this.databaseService.db
+      .updateTable('tagNames')
+      .set(updateTagDto)
+      .where('id', '=', id)
+      .returning(this.selectList)
+      .execute();
+    return this.adapt(result);
+  }
+
+  async remove(id: string): Promise<void> {
+    await this.databaseService.db.deleteFrom('tagNames').where('id', '=', id).execute();
+  }
 }
