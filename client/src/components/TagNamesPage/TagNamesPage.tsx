@@ -47,7 +47,7 @@ function TagNamesPage({}: TagNamesPageProps) {
   };
 
   return (
-    <div>
+    <div className="p-tag-names">
       <button
         className="c-button"
         onClick={() => navigate('/' + ROUTE_PARTS.tagNames + '/' + ROUTE_PARTS.create)}
