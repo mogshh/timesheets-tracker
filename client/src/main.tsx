@@ -3,18 +3,27 @@ import './main.scss';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import App from './App';
+import App, { ROUTE_PARTS } from './App';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createBrowserRouter, redirect, RouterProvider } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      networkMode: 'always',
+    },
+    mutations: {
+      networkMode: 'always',
+    },
+  },
+});
 
 const router = createBrowserRouter([
   {
     path: '/',
     loader: () => {
-      return redirect('/timelines');
+      return redirect('/' + ROUTE_PARTS.timelines);
     },
   },
   {
@@ -26,15 +35,11 @@ const router = createBrowserRouter([
     element: <App />,
   },
   {
-    path: '/:tabId/:action',
+    path: '/:tabId/' + ROUTE_PARTS.create,
     element: <App />,
   },
   {
-    path: '/:tabId/:action',
-    element: <App />,
-  },
-  {
-    path: '/:tabId/:id/:action',
+    path: '/:tabId/:id/' + ROUTE_PARTS.edit,
     element: <App />,
   },
 ]);

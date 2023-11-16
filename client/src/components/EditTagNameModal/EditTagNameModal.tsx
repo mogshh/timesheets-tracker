@@ -2,8 +2,8 @@ import './EditTagNameModal.scss';
 
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Modal } from 'react-responsive-modal';
-import { TagName } from '../../../../types/types';
 import { COLOR_LIST } from '../TimelinesPage/TimelinesPage.consts';
+import { TagName } from '../../types/types';
 
 interface EditTagNameProps {
   isOpen: boolean;

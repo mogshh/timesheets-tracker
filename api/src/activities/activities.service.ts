@@ -26,7 +26,7 @@ export class ActivitiesService implements OnApplicationBootstrap {
     ActiveWindow.initialize();
 
     if (!ActiveWindow.requestPermissions()) {
-      console.log(
+      console.error(
         'Error: You need to grant screen recording permission in System Preferences > Security & Privacy > Privacy > Screen Recording'
       );
       process.exit(0);

@@ -1,12 +1,14 @@
 import './TagNamesPage.scss';
 import { useNavigate, useParams } from 'react-router-dom';
-import type { AutoTag, TagName } from '../../types/types';
+import type { TagName } from '../../types/types';
 import {
   useTagNamesServiceTagNamesControllerCreate,
   useTagNamesServiceTagNamesControllerFindAll,
+  useTagNamesServiceTagNamesControllerRemove,
 } from '../../generated/api/queries';
 import React, { ReactNode, useEffect, useState } from 'react';
 import EditTagNameModal from '../EditTagNameModal/EditTagNameModal';
+import { ROUTE_PARTS } from '../../App';
 
 interface TagNamesPageProps {}
 
@@ -21,6 +23,7 @@ function TagNamesPage({}: TagNamesPageProps) {
     term: '',
   });
   const { mutateAsync: createTagName } = useTagNamesServiceTagNamesControllerCreate();
+  const { mutateAsync: deleteTagName } = useTagNamesServiceTagNamesControllerRemove();
 
   useEffect(() => {
     if (tagNames) {
@@ -31,7 +34,7 @@ function TagNamesPage({}: TagNamesPageProps) {
     }
   }, [id, tagNames]);
 
-  const handleClose = () => navigate('/tag-names');
+  const handleClose = () => navigate('/' + ROUTE_PARTS.tagNames);
 
   const handleSave = (tagName: Omit<TagName, 'id'>) => {
     handleClose();
@@ -45,27 +48,34 @@ function TagNamesPage({}: TagNamesPageProps) {
 
   return (
     <div>
-      <button className="c-button" onClick={() => navigate('/tag-names/create')}>
-        Add auto tag
+      <button
+        className="c-button"
+        onClick={() => navigate('/' + ROUTE_PARTS.tagNames + '/' + ROUTE_PARTS.create)}
+      >
+        Add tag name
       </button>
       <ul>
         {(tagNames || []).map(
           (tagName): ReactNode => (
-            <li className="c-row" key={'auto-tag-' + tagName.id}>
+            <li className="c-row" key={'tag-name-' + tagName.id}>
               <span>{tagName.name}</span>
               <button
                 className="c-button"
                 onClick={() => {
                   setSelectedTagName(tagName as unknown as TagName);
-                  navigate('/tag-names/' + tagName.id + '/edit'); // TODO make ROUTE_PARTS variable
+                  navigate('/' + ROUTE_PARTS.tagNames + '/' + tagName.id + '/' + ROUTE_PARTS.edit);
                 }}
               >
                 EDIT
               </button>
               <button
                 className="c-button"
-                onClick={() => {
-                  deleteTagName(tagName.id);
+                onClick={async () => {
+                  if (tagName.id) {
+                    await deleteTagName({
+                      id: tagName.id,
+                    });
+                  }
                 }}
               >
                 DELETE
@@ -77,7 +87,7 @@ function TagNamesPage({}: TagNamesPageProps) {
       {!!action && tagNames && (
         <EditTagNameModal
           tagName={selectedTagName}
-          isOpen={action === 'create' || action === 'edit'}
+          isOpen={action === ROUTE_PARTS.create || action === ROUTE_PARTS.edit}
           onClose={handleClose}
           onSave={handleSave}
         ></EditTagNameModal>

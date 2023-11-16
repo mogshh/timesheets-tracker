@@ -9,6 +9,7 @@ import {
 import { ReactNode, useEffect, useState } from 'react';
 import { sortBy } from 'lodash-es';
 import { AutoTagConditionDto } from '../../generated/api/requests';
+import { ROUTE_PARTS } from '../../App';
 
 interface AutoTagsPageProps {}
 
@@ -33,7 +34,7 @@ function AutoTagsPage({}: AutoTagsPageProps) {
     }
   }, [id, autoTags]);
 
-  const handleClose = () => navigate('/auto-tag-rules');
+  const handleClose = () => navigate('/' + ROUTE_PARTS.autoTagRules);
 
   const handleSave = (autoTag: Omit<AutoTag, 'id'>) => {
     handleClose();
@@ -49,7 +50,10 @@ function AutoTagsPage({}: AutoTagsPageProps) {
 
   return (
     <div>
-      <button className="c-button" onClick={() => navigate('/auto-tag-rules/create')}>
+      <button
+        className="c-button"
+        onClick={() => navigate('/' + ROUTE_PARTS.autoTagRules + '/' + ROUTE_PARTS.create)}
+      >
         Add auto tag
       </button>
       <ul>
@@ -61,7 +65,9 @@ function AutoTagsPage({}: AutoTagsPageProps) {
                 className="c-button"
                 onClick={() => {
                   setSelectedAutoTag(autoTag as unknown as AutoTag);
-                  navigate('/auto-tag-rules/' + autoTag.id + '/edit');
+                  navigate(
+                    '/' + ROUTE_PARTS.autoTagRules + '/' + autoTag.id + '/' + ROUTE_PARTS.edit
+                  );
                 }}
               >
                 EDIT
@@ -73,7 +79,7 @@ function AutoTagsPage({}: AutoTagsPageProps) {
       {!!action && autoTags && (
         <EditAutoTagModal
           autoTag={selectedAutoTag}
-          isOpen={action === 'create' || action === 'edit'}
+          isOpen={action === ROUTE_PARTS.create || action === ROUTE_PARTS.edit}
           onClose={handleClose}
           onSave={handleSave}
         ></EditAutoTagModal>

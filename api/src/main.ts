@@ -51,7 +51,6 @@ const systray = new SysTray({
 systray.onClick((action) => {
   if (action.seq_id === 0) {
     // open the pwa
-    console.log('open the url', action);
     open('http://localhost:55588');
   } else if (action.seq_id === 1) {
     systray.kill();

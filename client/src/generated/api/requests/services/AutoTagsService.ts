@@ -3,6 +3,7 @@
 /* eslint-disable */
 import type { AutoTagDto } from '../models/AutoTagDto';
 import type { CreateAutoTagDto } from '../models/CreateAutoTagDto';
+import type { UpdateAutoTagsDto } from '../models/UpdateAutoTagsDto';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
@@ -64,6 +65,44 @@ id: string,
 ): CancelablePromise<AutoTagDto> {
         return __request(OpenAPI, {
             method: 'GET',
+            url: '/auto-tags/{id}',
+            path: {
+                'id': id,
+            },
+        });
+    }
+
+    /**
+     * @param id 
+     * @param requestBody 
+     * @returns any 
+     * @throws ApiError
+     */
+    public static autoTagsControllerUpdate(
+id: string,
+requestBody: UpdateAutoTagsDto,
+): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/auto-tags/{id}',
+            path: {
+                'id': id,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+
+    /**
+     * @param id 
+     * @returns any 
+     * @throws ApiError
+     */
+    public static autoTagsControllerDelete(
+id: string,
+): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
             url: '/auto-tags/{id}',
             path: {
                 'id': id,

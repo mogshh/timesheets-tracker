@@ -40,10 +40,12 @@ export enum BooleanOperator {
   AND = 'AND',
   OR = 'OR',
 }
+
 export enum ConditionVariable {
   windowTitle = 'windowTitle',
   programName = 'programName',
 }
+
 export enum ConditionOperator {
   contains = 'contains',
   doesNotContains = 'doesNotContains',

@@ -13,6 +13,9 @@ export type { CreateTagDto } from './models/CreateTagDto';
 export type { CreateTagNameDto } from './models/CreateTagNameDto';
 export type { TagDto } from './models/TagDto';
 export type { TagNameDto } from './models/TagNameDto';
+export type { UpdateAutoTagsDto } from './models/UpdateAutoTagsDto';
+export type { UpdateTagDto } from './models/UpdateTagDto';
+export type { UpdateTagNameDto } from './models/UpdateTagNameDto';
 
 export { ActivitiesService } from './services/ActivitiesService';
 export { AutoTagsService } from './services/AutoTagsService';

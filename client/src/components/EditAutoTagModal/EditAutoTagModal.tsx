@@ -12,7 +12,7 @@ import {
   ConditionOperator,
   ConditionVariable,
   TagName,
-} from '../../../../types/types';
+} from '../../types/types';
 
 interface EditAutoTagProps {
   isOpen: boolean;

@@ -3,6 +3,7 @@
 /* eslint-disable */
 import type { CreateTagNameDto } from '../models/CreateTagNameDto';
 import type { TagNameDto } from '../models/TagNameDto';
+import type { UpdateTagNameDto } from '../models/UpdateTagNameDto';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
@@ -64,6 +65,44 @@ id: string,
 ): CancelablePromise<TagNameDto> {
         return __request(OpenAPI, {
             method: 'GET',
+            url: '/tag-names/{id}',
+            path: {
+                'id': id,
+            },
+        });
+    }
+
+    /**
+     * @param id 
+     * @param requestBody 
+     * @returns any 
+     * @throws ApiError
+     */
+    public static tagNamesControllerUpdate(
+id: string,
+requestBody: UpdateTagNameDto,
+): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/tag-names/{id}',
+            path: {
+                'id': id,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+
+    /**
+     * @param id 
+     * @returns any 
+     * @throws ApiError
+     */
+    public static tagNamesControllerRemove(
+id: string,
+): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
             url: '/tag-names/{id}',
             path: {
                 'id': id,

@@ -24,6 +24,10 @@ import { COLOR_LIST } from './TimelinesPage.consts';
 import { clamp, maxBy, minBy } from 'lodash-es';
 
 function TimelinesPage() {
+  const tagsResponse = useTagsServiceTagsControllerFindAll({
+    startedAt: startOfDay(new Date()).toISOString(),
+    endedAt: endOfDay(new Date()).toISOString(),
+  });
   const {
     data: tags,
     isLoading: isLoadingTags,

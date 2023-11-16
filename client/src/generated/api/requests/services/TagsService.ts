@@ -3,6 +3,7 @@
 /* eslint-disable */
 import type { CreateTagDto } from '../models/CreateTagDto';
 import type { TagDto } from '../models/TagDto';
+import type { UpdateTagDto } from '../models/UpdateTagDto';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
@@ -43,6 +44,44 @@ endedAt: string,
                 'startedAt': startedAt,
                 'endedAt': endedAt,
             },
+        });
+    }
+
+    /**
+     * @param id 
+     * @returns any 
+     * @throws ApiError
+     */
+    public static tagsControllerFindOne(
+id: string,
+): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/tags/{id}',
+            path: {
+                'id': id,
+            },
+        });
+    }
+
+    /**
+     * @param id 
+     * @param requestBody 
+     * @returns any 
+     * @throws ApiError
+     */
+    public static tagsControllerUpdate(
+id: string,
+requestBody: UpdateTagDto,
+): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/tags/{id}',
+            path: {
+                'id': id,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
         });
     }
 

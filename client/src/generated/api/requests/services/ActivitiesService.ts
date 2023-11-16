@@ -38,4 +38,38 @@ endedAt: string,
         });
     }
 
+    /**
+     * @param id 
+     * @returns any 
+     * @throws ApiError
+     */
+    public static activitiesControllerFindOne(
+id: string,
+): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/activities',
+            path: {
+                'id': id,
+            },
+        });
+    }
+
+    /**
+     * @param id 
+     * @returns any 
+     * @throws ApiError
+     */
+    public static activitiesControllerDelete(
+id: string,
+): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/activities',
+            path: {
+                'id': id,
+            },
+        });
+    }
+
 }
