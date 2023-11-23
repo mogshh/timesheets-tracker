@@ -89,6 +89,7 @@ function EditAutoTagModal({ isOpen, onClose, onSave, autoTag }: EditAutoTagProps
       <h3>Add auto tag</h3>
       <h4>Name</h4>
       <input
+        className="c-input"
         value={name}
         onChange={(evt: ChangeEvent<HTMLInputElement>) => setName(evt.target?.value)}
       />

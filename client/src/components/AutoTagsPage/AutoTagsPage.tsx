@@ -59,8 +59,10 @@ function AutoTagsPage({}: AutoTagsPageProps) {
       <ul>
         {sortBy(autoTags || [], (autoTag) => autoTag.priority).map(
           (autoTag): ReactNode => (
-            <li key={'auto-tag-' + autoTag.id}>
-              {autoTag.priority} {autoTag.name}{' '}
+            <li className="c-row" key={'auto-tag-' + autoTag.id}>
+              <span>
+                {autoTag.priority} {autoTag.name}{' '}
+              </span>
               <button
                 className="c-button"
                 onClick={() => {
@@ -76,10 +78,10 @@ function AutoTagsPage({}: AutoTagsPageProps) {
           )
         )}
       </ul>
-      {!!action && autoTags && (
+      {(action === ROUTE_PARTS.create || action === ROUTE_PARTS.edit) && autoTags && (
         <EditAutoTagModal
           autoTag={selectedAutoTag}
-          isOpen={action === ROUTE_PARTS.create || action === ROUTE_PARTS.edit}
+          isOpen={true}
           onClose={handleClose}
           onSave={handleSave}
         ></EditAutoTagModal>

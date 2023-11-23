@@ -1,0 +1,28 @@
+@use './variables' as *;
+
+.c-button {
+  padding: 1rem;
+  background-color: darkslategray;
+  color: white;
+  text-transform: uppercase;
+  border: 0;
+  cursor: pointer;
+  outline: 0 !important;
+  margin: 0.5rem;
+
+  &:hover {
+    background-color: lighten(darkslategray, 20%);
+  }
+
+  &:focus {
+    background-color: $focus-color;
+  }
+
+  &--small {
+    padding: 0.5rem;
+  }
+
+  + .c-button {
+    margin-left: 0;
+  }
+}

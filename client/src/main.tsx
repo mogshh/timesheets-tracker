@@ -35,11 +35,11 @@ const router = createBrowserRouter([
     element: <App />,
   },
   {
-    path: '/:tabId/' + ROUTE_PARTS.create,
+    path: '/:tabId/:action',
     element: <App />,
   },
   {
-    path: '/:tabId/:id/' + ROUTE_PARTS.edit,
+    path: '/:tabId/:id/:action',
     element: <App />,
   },
 ]);

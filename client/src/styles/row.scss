@@ -1,0 +1,24 @@
+@use './variables' as *;
+
+.c-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  flex-direction: row;
+
+  &:nth-child(odd) {
+    background-color: $bg-alternative;
+  }
+
+  &:hover {
+    background-color: $hover-highlight;
+  }
+
+  > span:first-child {
+    flex-grow: 1;
+  }
+
+  span {
+    padding: 0.5rem 2rem;
+  }
+}

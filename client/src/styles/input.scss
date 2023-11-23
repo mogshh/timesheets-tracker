@@ -1,0 +1,13 @@
+@use './variables' as *;
+
+.c-input {
+  padding-left: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: 0 !important;
+
+  &:focus {
+    border: 1px solid $focus-color;
+    box-shadow: 0 0 0 1px $focus-color;
+  }
+}

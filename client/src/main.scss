@@ -1,4 +1,4 @@
-@use 'variables' as *;
+@use 'styles' as *;
 
 @import 'react-responsive-modal/styles.css';
 
@@ -12,59 +12,4 @@ body {
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-.c-button {
-  padding: 1rem;
-  background-color: darkslategray;
-  color: white;
-  text-transform: uppercase;
-  border: 0;
-  cursor: pointer;
-  outline: 0 !important;
-
-  &:hover {
-    background-color: lighten(darkslategray, 20%);
-  }
-
-  &:focus {
-    background-color: $focus-color;
-  }
-
-  &--small {
-    padding: 0.5rem;
-  }
-}
-
-.c-input {
-  padding-left: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  outline: 0 !important;
-
-  &:focus {
-    border: 1px solid $focus-color;
-    box-shadow: 0 0 0 1px $focus-color;
-  }
-}
-
-.react-responsive-modal-modal {
-  padding: 2rem;
-
-  .react-responsive-modal-closeButton {
-    background-color: white;
-
-    &:hover {
-      background-color: #ddd;
-    }
-
-    &:focus {
-      background-color: lighten($focus-color, 20%);
-    }
-  }
-}
-
-.c-row {
-  display: flex;
-  flex-direction: row;
 }

@@ -1,0 +1,17 @@
+@use './variables' as *;
+
+.react-responsive-modal-modal {
+  padding: 2rem;
+
+  .react-responsive-modal-closeButton {
+    background-color: white;
+
+    &:hover {
+      background-color: #ddd;
+    }
+
+    &:focus {
+      background-color: lighten($focus-color, 20%);
+    }
+  }
+}
