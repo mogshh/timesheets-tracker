@@ -87,15 +87,15 @@ function EditAutoTagModal({ isOpen, onClose, onSave, autoTag }: EditAutoTagProps
       classNames={{ modal: 'c-add-auto-tag-modal', closeButton: 'c-button c-button--small' }}
     >
       <h3>Add auto tag</h3>
-      <h4>Name</h4>
+      <label>Name</label>
       <input
         className="c-input"
         value={name}
         onChange={(evt: ChangeEvent<HTMLInputElement>) => setName(evt.target?.value)}
       />
-      <h4>Tag</h4>
+      <label>Tag</label>
       <TagSelectSingle value={tagName || null} onChange={setTagName} autoFocus={true} />
-      <h4>Conditions</h4>
+      <label>Conditions</label>
       <div>
         {conditions.map((condition, i) => (
           <AutoTagConditionInput

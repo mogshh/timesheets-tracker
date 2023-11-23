@@ -9,11 +9,13 @@ interface TagSelectProps {
   value: TagName | null;
   onChange: (newTagName: TagName | null) => void;
   autoFocus?: boolean;
+  className?: string;
 }
 
-function TagSelectSingle({ value, onChange, autoFocus }: TagSelectProps) {
+function TagSelectSingle({ className, value, onChange, autoFocus }: TagSelectProps) {
   return (
     <AsyncCreatableSelect
+      className={'c-tag-input ' + className}
       value={value}
       getOptionValue={(value) => value.id}
       loadOptions={(searchTerm) =>

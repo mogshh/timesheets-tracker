@@ -7,6 +7,7 @@ import type { TagName } from '../../types/types';
 import { ActionMeta, OnChangeValue } from 'react-select/dist/declarations/src/types';
 
 interface TagSelectProps {
+  className?: string;
   selectedValues?: TagName[];
   onChange: (
     option: OnChangeValue<TagName, true> | { label: string; value: string }[],
@@ -14,11 +15,14 @@ interface TagSelectProps {
   ) => void;
 }
 
-function TagSelectMulti({ selectedValues, onChange }: TagSelectProps) {
+function TagSelectMulti({ className, selectedValues, onChange }: TagSelectProps) {
   return (
     <AsyncCreatableSelect
+      className={'c-tag-select ' + className}
       value={selectedValues}
-      loadOptions={(searchTerm) => TagNamesService.tagNamesControllerFindAll(searchTerm)}
+      loadOptions={(searchTerm) =>
+        TagNamesService.tagNamesControllerFindAll(searchTerm) as Promise<TagName[]>
+      }
       autoFocus={true}
       formatOptionLabel={(option: TagName) => option.name}
       placeholder="Tag selection..."
