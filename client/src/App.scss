@@ -2,7 +2,7 @@
   display: block;
   background-color: #ccc;
 
-  > span {
+  > a {
     display: inline-block;
     padding: 1rem;
     cursor: pointer;
@@ -11,7 +11,7 @@
       background-color: #ddd;
     }
 
-    &.c-tabs__tab--active {
+    &.active {
       background-color: white;
     }
   }

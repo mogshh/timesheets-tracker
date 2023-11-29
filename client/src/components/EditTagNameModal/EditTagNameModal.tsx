@@ -2,19 +2,28 @@ import './EditTagNameModal.scss';
 
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Modal } from 'react-responsive-modal';
-import { COLOR_LIST } from '../TimelinesPage/TimelinesPage.consts';
+import { COLOR_LIST } from '../../views/TimelinesPage/TimelinesPage.consts';
 import { TagName } from '../../types/types';
+import { ROUTE_PARTS } from '../../App';
+import {
+  useAutoTagsServiceAutoTagsControllerFindOne,
+  useAutoTagsServiceAutoTagsControllerFindOneKey,
+  useTagNamesServiceTagNamesControllerCreate,
+} from '../../generated/api/queries';
+import { useNavigate, useParams } from 'react-router-dom';
 
-interface EditTagNameProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (tagName: Omit<TagName, 'id'>) => void;
-  tagName: TagName | null;
-}
-
-function EditTagNameModal({ isOpen, onClose, onSave, tagName }: EditTagNameProps) {
+function EditTagNameModal() {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [name, setName] = useState<string>('');
   const [color, setColor] = useState<string>(COLOR_LIST[0]);
+  const { mutateAsync: createTagName } = useTagNamesServiceTagNamesControllerCreate();
+  const { data: tagNameResponse } = useAutoTagsServiceAutoTagsControllerFindOne(
+    { id: id as string },
+    [useAutoTagsServiceAutoTagsControllerFindOneKey, id as string],
+    { enabled: !!id }
+  );
+  const tagName = tagNameResponse as TagName;
 
   useEffect(() => {
     if (tagName) {
@@ -23,10 +32,22 @@ function EditTagNameModal({ isOpen, onClose, onSave, tagName }: EditTagNameProps
     }
   }, [tagName]);
 
+  const handleClose = () => navigate('/' + ROUTE_PARTS.tagNames);
+
+  const handleSave = async (tagName: Omit<TagName, 'id'>) => {
+    await createTagName({
+      requestBody: {
+        name: tagName.name,
+        color: tagName.color,
+      },
+    });
+    handleClose();
+  };
+
   return (
     <Modal
-      open={isOpen}
-      onClose={onClose}
+      open
+      onClose={handleClose}
       classNames={{ modal: 'c-add-tag-name-modal', closeButton: 'c-button c-button--small' }}
     >
       <h3>Add tag name</h3>
@@ -41,14 +62,14 @@ function EditTagNameModal({ isOpen, onClose, onSave, tagName }: EditTagNameProps
         onChange={(evt: ChangeEvent<HTMLInputElement>) => setColor(evt.target?.value)}
       />
       <div className="flex flex-row justify-end gap-2 mt-48">
-        <button className="c-button" onClick={onClose}>
+        <button className="c-button" onClick={handleClose}>
           Cancel
         </button>
         <button
           className="c-button"
           disabled={!name || !color}
-          onClick={() => {
-            onSave({
+          onClick={async () => {
+            await handleSave({
               name,
               color,
             });

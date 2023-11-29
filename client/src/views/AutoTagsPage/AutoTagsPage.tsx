@@ -1,12 +1,12 @@
 import './AutoTagsPage.scss';
-import EditAutoTagModal from '../EditAutoTagModal/EditAutoTagModal';
-import { useNavigate, useParams } from 'react-router-dom';
+import EditAutoTagModal from '../../components/EditAutoTagModal/EditAutoTagModal';
+import { NavLink, Outlet, Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import type { AutoTag } from '../../types/types';
 import {
   useAutoTagsServiceAutoTagsControllerCreate,
   useAutoTagsServiceAutoTagsControllerFindAll,
 } from '../../generated/api/queries';
-import { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { sortBy } from 'lodash-es';
 import { AutoTagConditionDto } from '../../generated/api/requests';
 import { ROUTE_PARTS } from '../../App';
@@ -14,16 +14,14 @@ import { ROUTE_PARTS } from '../../App';
 interface AutoTagsPageProps {}
 
 function AutoTagsPage({}: AutoTagsPageProps) {
-  const navigate = useNavigate();
   const params = useParams();
-  const action = params.action;
+  const navigate = useNavigate();
   const id = params.id;
   const [selectedAutoTag, setSelectedAutoTag] = useState<AutoTag | null>(null);
 
   const { data: autoTags } = useAutoTagsServiceAutoTagsControllerFindAll({
     term: '',
   });
-  const { mutateAsync: createAutoTag } = useAutoTagsServiceAutoTagsControllerCreate();
 
   useEffect(() => {
     if (autoTags) {
@@ -34,28 +32,12 @@ function AutoTagsPage({}: AutoTagsPageProps) {
     }
   }, [id, autoTags]);
 
-  const handleClose = () => navigate('/' + ROUTE_PARTS.autoTagRules);
-
-  const handleSave = (autoTag: Omit<AutoTag, 'id'>) => {
-    handleClose();
-    createAutoTag({
-      requestBody: {
-        name: autoTag.name,
-        priority: autoTag.priority,
-        tagNameId: autoTag.tagNameId,
-        conditions: autoTag.conditions as unknown as AutoTagConditionDto[],
-      },
-    });
-  };
-
   return (
     <div>
-      <button
-        className="c-button"
-        onClick={() => navigate('/' + ROUTE_PARTS.autoTagRules + '/' + ROUTE_PARTS.create)}
-      >
+      <NavLink className="c-button" to={'/' + ROUTE_PARTS.autoTagRules + '/' + ROUTE_PARTS.create}>
         Add auto tag
-      </button>
+      </NavLink>
+
       <ul>
         {sortBy(autoTags || [], (autoTag) => autoTag.priority).map(
           (autoTag): ReactNode => (
@@ -63,29 +45,21 @@ function AutoTagsPage({}: AutoTagsPageProps) {
               <span>
                 {autoTag.priority} {autoTag.name}{' '}
               </span>
-              <button
+              <NavLink
                 className="c-button"
+                to={'/' + ROUTE_PARTS.autoTagRules + '/' + autoTag.id + '/' + ROUTE_PARTS.edit}
                 onClick={() => {
                   setSelectedAutoTag(autoTag as unknown as AutoTag);
-                  navigate(
-                    '/' + ROUTE_PARTS.autoTagRules + '/' + autoTag.id + '/' + ROUTE_PARTS.edit
-                  );
                 }}
               >
                 EDIT
-              </button>
+              </NavLink>
             </li>
           )
         )}
       </ul>
-      {(action === ROUTE_PARTS.create || action === ROUTE_PARTS.edit) && autoTags && (
-        <EditAutoTagModal
-          autoTag={selectedAutoTag}
-          isOpen={true}
-          onClose={handleClose}
-          onSave={handleSave}
-        ></EditAutoTagModal>
-      )}
+
+      <Outlet />
     </div>
   );
 }

@@ -1,10 +1,7 @@
 import './App.scss';
 
 import React from 'react';
-import TimelinesPage from './components/TimelinesPage/TimelinesPage';
-import AutoTagsPage from './components/AutoTagsPage/AutoTagsPage';
-import { useNavigate, useParams } from 'react-router-dom';
-import TagNamesPage from './components/TagNamesPage/TagNamesPage';
+import { NavLink, Outlet } from 'react-router-dom';
 
 export enum ROUTE_PARTS {
   timelines = 'timelines',
@@ -15,35 +12,14 @@ export enum ROUTE_PARTS {
 }
 
 function App() {
-  const params = useParams();
-  const navigate = useNavigate();
-  const tabId = params.tabId || ROUTE_PARTS.timelines;
-
   return (
     <div>
       <div className="c-tabs">
-        <span
-          className={tabId === ROUTE_PARTS.timelines ? 'c-tabs__tab--active' : ''}
-          onClick={() => navigate('/' + ROUTE_PARTS.timelines)}
-        >
-          timeline
-        </span>
-        <span
-          className={tabId === ROUTE_PARTS.autoTagRules ? 'c-tabs__tab--active' : ''}
-          onClick={() => navigate('/' + ROUTE_PARTS.autoTagRules)}
-        >
-          auto tag rules
-        </span>
-        <span
-          className={tabId === ROUTE_PARTS.tagNames ? 'c-tabs__tab--active' : ''}
-          onClick={() => navigate('/' + ROUTE_PARTS.tagNames)}
-        >
-          tag names
-        </span>
+        <NavLink to={'/' + ROUTE_PARTS.timelines}>timeline</NavLink>
+        <NavLink to={'/' + ROUTE_PARTS.autoTagRules}>auto tag rules</NavLink>
+        <NavLink to={'/' + ROUTE_PARTS.tagNames}>tag names</NavLink>
       </div>
-      {tabId === ROUTE_PARTS.timelines && <TimelinesPage></TimelinesPage>}
-      {tabId === ROUTE_PARTS.autoTagRules && <AutoTagsPage></AutoTagsPage>}
-      {tabId === ROUTE_PARTS.tagNames && <TagNamesPage></TagNamesPage>}
+      <Outlet />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import './TimelinesPage.scss';
 
 import React, { useEffect, useState } from 'react';
-import Timeline from '../Timeline/Timeline';
+import Timeline from '../../components/Timeline/Timeline';
 import {
   addHours,
   addMilliseconds,
@@ -10,7 +10,7 @@ import {
   startOfDay,
   subHours,
 } from 'date-fns';
-import { TimelineEvent, TimelineEventType } from '../Timeline/Timeline.types';
+import { TimelineEvent, TimelineEventType } from '../../components/Timeline/Timeline.types';
 import {
   useActivitiesServiceActivitiesControllerFindAll,
   useTagNamesServiceTagNamesControllerCount,

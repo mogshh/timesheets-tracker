@@ -9,6 +9,7 @@
   cursor: pointer;
   outline: 0 !important;
   margin: 0.5rem;
+  display: inline-block;
 
   &:hover {
     background-color: lighten(darkslategray, 20%);

@@ -75,7 +75,7 @@ export class AutoTagsService {
       .selectFrom('autoTags')
       .leftJoin('tagNames', 'tagNames.id', 'autoTags.tagNameId')
       .select(this.selectList)
-      .where('id', '=', id)
+      .where('autoTags.id', '=', id)
       .executeTakeFirstOrThrow();
   }
 

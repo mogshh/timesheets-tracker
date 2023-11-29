@@ -1,5 +1,5 @@
 import './TagNamesPage.scss';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Outlet, Route, Routes, useMatch, useNavigate, useParams } from 'react-router-dom';
 import type { TagName } from '../../types/types';
 import {
   useTagNamesServiceTagNamesControllerCreate,
@@ -7,7 +7,7 @@ import {
   useTagNamesServiceTagNamesControllerRemove,
 } from '../../generated/api/queries';
 import React, { ReactNode, useEffect, useState } from 'react';
-import EditTagNameModal from '../EditTagNameModal/EditTagNameModal';
+import EditTagNameModal from '../../components/EditTagNameModal/EditTagNameModal';
 import { ROUTE_PARTS } from '../../App';
 
 interface TagNamesPageProps {}
@@ -22,7 +22,6 @@ function TagNamesPage({}: TagNamesPageProps) {
   const { data: tagNames } = useTagNamesServiceTagNamesControllerFindAll({
     term: '',
   });
-  const { mutateAsync: createTagName } = useTagNamesServiceTagNamesControllerCreate();
   const { mutateAsync: deleteTagName } = useTagNamesServiceTagNamesControllerRemove();
 
   useEffect(() => {
@@ -34,18 +33,6 @@ function TagNamesPage({}: TagNamesPageProps) {
     }
   }, [id, tagNames]);
 
-  const handleClose = () => navigate('/' + ROUTE_PARTS.tagNames);
-
-  const handleSave = (tagName: Omit<TagName, 'id'>) => {
-    handleClose();
-    createTagName({
-      requestBody: {
-        name: tagName.name,
-        color: tagName.color,
-      },
-    });
-  };
-
   return (
     <div className="p-tag-names">
       <button
@@ -54,6 +41,7 @@ function TagNamesPage({}: TagNamesPageProps) {
       >
         Add tag name
       </button>
+
       <ul>
         {(tagNames || []).map(
           (tagName): ReactNode => (
@@ -84,14 +72,8 @@ function TagNamesPage({}: TagNamesPageProps) {
           )
         )}
       </ul>
-      {!!action && tagNames && (
-        <EditTagNameModal
-          tagName={selectedTagName}
-          isOpen={action === ROUTE_PARTS.create || action === ROUTE_PARTS.edit}
-          onClose={handleClose}
-          onSave={handleSave}
-        ></EditTagNameModal>
-      )}
+
+      <Outlet />
     </div>
   );
 }
