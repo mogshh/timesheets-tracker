@@ -83,21 +83,6 @@ export class ActivitiesService implements OnApplicationBootstrap {
     return unflatten(rawActivity) as Activity;
   }
 
-  async create(activity: CreateActivityDto): Promise<Activity> {
-    const createdActivity = await this.databaseService.db
-      .insertInto('activities')
-      .values({
-        id: uuid(),
-        programName: activity.programName,
-        windowTitle: activity.windowTitle,
-        startedAt: min([new Date(activity.startedAt), new Date(activity.endedAt)]).toISOString(),
-        endedAt: max([new Date(activity.startedAt), new Date(activity.endedAt)]).toISOString(),
-      })
-      .returning(this.selectList)
-      .execute();
-    return this.adapt(createdActivity);
-  }
-
   async findAll(startedAt: string, endedAt: string): Promise<Activity[]> {
     const results = await this.databaseService.db
       .selectFrom('activities')
@@ -118,7 +103,23 @@ export class ActivitiesService implements OnApplicationBootstrap {
       .select(this.selectList)
       .where('id', '>', id)
       .executeTakeFirstOrThrow();
+
     return this.adapt(result);
+  }
+
+  async create(activity: CreateActivityDto): Promise<Activity> {
+    const createdActivity = await this.databaseService.db
+      .insertInto('activities')
+      .values({
+        id: uuid(),
+        programName: activity.programName,
+        windowTitle: activity.windowTitle,
+        startedAt: min([new Date(activity.startedAt), new Date(activity.endedAt)]).toISOString(),
+        endedAt: max([new Date(activity.startedAt), new Date(activity.endedAt)]).toISOString(),
+      })
+      .returning(this.selectList)
+      .execute();
+    return this.adapt(createdActivity);
   }
 
   async update(id: string, updateActivityDto: UpdateActivityDto): Promise<Activity> {
@@ -126,9 +127,10 @@ export class ActivitiesService implements OnApplicationBootstrap {
       .updateTable('activities')
       .set(updateActivityDto)
       .where('id', '=', id)
-      .returning(this.selectList)
-      .execute();
-    return this.adapt(result);
+      .returning('id')
+      .executeTakeFirstOrThrow();
+
+    return this.findOne(result.id);
   }
 
   async delete(id: string): Promise<void> {

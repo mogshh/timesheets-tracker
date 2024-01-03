@@ -8,6 +8,7 @@ import { CreateTagNameDto } from "../requests/models/CreateTagNameDto";
 import { CreateTagDto } from "../requests/models/CreateTagDto";
 import { CreateAutoTagDto } from "../requests/models/CreateAutoTagDto";
 import { AutoTagDto } from "../requests/models/AutoTagDto";
+import { AutoTagCountDto } from "../requests/models/AutoTagCountDto";
 import { AutoTagConditionDto } from "../requests/models/AutoTagConditionDto";
 import { TagsService } from "../requests/services/TagsService";
 import { TagNamesService } from "../requests/services/TagNamesService";

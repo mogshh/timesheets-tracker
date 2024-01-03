@@ -109,3 +109,13 @@ export class AutoTagDto implements AutoTag {
   })
   tagName: TagName;
 }
+
+export class AutoTagCountDto {
+  @IsNumber()
+  @Type(() => Number)
+  @ApiPropertyOptional({
+    type: Number,
+    description: 'Number of auto tags that exist',
+  })
+  count: number;
+}

@@ -1,13 +1,10 @@
 import { Controller, Get, Post, Body, Query, Param, Patch, Delete } from '@nestjs/common';
-// import { AutoTagsService } from './auto-tags.service';
 import { CreateAutoTagDto } from './dto/create-auto-tag.dto';
-import { ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AutoTagsService } from './auto-tags.service';
-import { AutoTagDto } from './dto/response-auto-tag.dto';
-import { UpdateTagNameDto } from '../tag-names/dto/update-tag-name.dto';
+import { AutoTagCountDto, AutoTagDto } from './dto/response-auto-tag.dto';
 import { AutoTag } from '../types/types';
 import { UpdateAutoTagsDto } from './dto/update-auto-tags.dto';
-// import { UpdateTagNameDto } from './dto/update-tag-name.dto';
 
 @ApiTags('auto-tags')
 @Controller('auto-tags')
@@ -38,10 +35,10 @@ export class AutoTagsController {
 
   @ApiOkResponse({
     description: 'Returns the number of auto tags that exist',
-    type: Number,
+    type: AutoTagCountDto,
   })
   @Get('/count')
-  async count(): Promise<{ count: number }> {
+  async count(): Promise<AutoTagCountDto> {
     return {
       count: await this.tagNamesService.count(),
     };

@@ -7,6 +7,7 @@ export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
 export { AutoTagConditionDto } from './models/AutoTagConditionDto';
+export type { AutoTagCountDto } from './models/AutoTagCountDto';
 export type { AutoTagDto } from './models/AutoTagDto';
 export type { CreateAutoTagDto } from './models/CreateAutoTagDto';
 export type { CreateTagDto } from './models/CreateTagDto';

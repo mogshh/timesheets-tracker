@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AutoTagCountDto } from '../models/AutoTagCountDto';
 import type { AutoTagDto } from '../models/AutoTagDto';
 import type { CreateAutoTagDto } from '../models/CreateAutoTagDto';
 import type { UpdateAutoTagsDto } from '../models/UpdateAutoTagsDto';
@@ -45,10 +46,10 @@ term?: string,
     }
 
     /**
-     * @returns number Returns the number of auto tags that exist
+     * @returns AutoTagCountDto Returns the number of auto tags that exist
      * @throws ApiError
      */
-    public static autoTagsControllerCount(): CancelablePromise<number> {
+    public static autoTagsControllerCount(): CancelablePromise<AutoTagCountDto> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/auto-tags/count',

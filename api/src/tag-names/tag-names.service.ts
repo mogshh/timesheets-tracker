@@ -19,18 +19,6 @@ export class TagNamesService {
     };
   }
 
-  async create(tagName: CreateTagNameDto): Promise<TagName> {
-    return (await this.databaseService.db
-      .insertInto('tagNames')
-      .values({
-        id: uuid(),
-        name: tagName.name,
-        color: tagName.color,
-      })
-      .returning(this.selectList)
-      .executeTakeFirstOrThrow()) as unknown as Promise<TagName>;
-  }
-
   async findAll(searchTerm: string | undefined): Promise<TagName[]> {
     let rawTagNames: Record<string, string>[];
     if (searchTerm) {
@@ -45,6 +33,7 @@ export class TagNamesService {
         .select(this.selectList)
         .execute();
     }
+
     return rawTagNames.map(this.adapt);
   }
 
@@ -53,15 +42,32 @@ export class TagNamesService {
       .selectFrom('tagNames')
       .select(({ fn }) => [fn.count<number>('id').as('count')])
       .executeTakeFirstOrThrow();
+
     return result.count;
   }
 
-  async findOne(id: string) {
-    return this.databaseService.db
+  async findOne(id: string): Promise<TagName> {
+    const result = await this.databaseService.db
       .selectFrom('tagNames')
-      .selectAll()
+      .select(this.selectList)
       .where('id', '=', id)
       .executeTakeFirstOrThrow();
+
+    return this.adapt(result);
+  }
+
+  async create(tagName: CreateTagNameDto): Promise<TagName> {
+    const result = await this.databaseService.db
+      .insertInto('tagNames')
+      .values({
+        id: uuid(),
+        name: tagName.name,
+        color: tagName.color,
+      })
+      .returning('id')
+      .executeTakeFirstOrThrow();
+
+    return this.adapt(await this.findOne(result.id));
   }
 
   async update(id: string, updateTagDto: UpdateTagNameDto): Promise<TagName> {
@@ -69,9 +75,10 @@ export class TagNamesService {
       .updateTable('tagNames')
       .set(updateTagDto)
       .where('id', '=', id)
-      .returning(this.selectList)
-      .execute();
-    return this.adapt(result);
+      .returning('id')
+      .executeTakeFirstOrThrow();
+
+    return this.adapt(await this.findOne(result.id));
   }
 
   async remove(id: string): Promise<void> {

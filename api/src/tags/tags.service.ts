@@ -25,8 +25,31 @@ export class TagsService {
     return unflatten(rawTag);
   }
 
+  async findAll(startedAt: string, endedAt: string): Promise<Tag[]> {
+    const rawTags = await this.databaseService.db
+      .selectFrom('tags')
+      .leftJoin('tagNames', 'tagNames.id', 'tags.tagNameId')
+      .select(this.selectList)
+      .where('startedAt', '>', startedAt)
+      .where('endedAt', '<', endedAt)
+      .execute();
+
+    return rawTags.map(this.adapt);
+  }
+
+  async findOne(id: string): Promise<Tag> {
+    const rawTag = await this.databaseService.db
+      .selectFrom('tags')
+      .leftJoin('tagNames', 'tagNames.id', 'tags.tagNameId')
+      .select(this.selectList)
+      .where('tags.id', '=', id)
+      .executeTakeFirstOrThrow();
+
+    return this.adapt(rawTag);
+  }
+
   async create(createTagDto: CreateTagDto): Promise<Tag> {
-    const newTag = await this.databaseService.db
+    const result = await this.databaseService.db
       .insertInto('tags')
       .values({
         id: uuid(),
@@ -40,40 +63,20 @@ export class TagsService {
           new Date(createTagDto.endedAt),
         ]).toISOString(),
       })
-      .returning(this.selectList)
+      .returning('id')
       .executeTakeFirstOrThrow();
 
-    return this.adapt(newTag);
-  }
-
-  async findAll(startedAt: string, endedAt: string): Promise<Tag[]> {
-    const rawTags = await this.databaseService.db
-      .selectFrom('tags')
-      .leftJoin('tagNames', 'tagNames.id', 'tags.tagNameId')
-      .select(this.selectList)
-      .where('startedAt', '>', startedAt)
-      .where('endedAt', '<', endedAt)
-      .execute();
-    return rawTags.map(this.adapt);
-  }
-
-  async findOne(id: string): Promise<Tag> {
-    const rawTag = await this.databaseService.db
-      .selectFrom('tags')
-      .leftJoin('tagNames', 'tagNames.id', 'tags.tagNameId')
-      .select(this.selectList)
-      .where('tags.id', '=', id)
-      .executeTakeFirstOrThrow();
-    return this.adapt(rawTag);
+    return this.findOne(result.id);
   }
 
   async update(id: string, updateTagDto: UpdateTagDto): Promise<Tag> {
     const result = await this.databaseService.db
       .selectFrom('tags')
-      .select(this.selectList)
+      .select('id')
       .where('id', '=', id)
-      .execute();
-    return this.adapt(result);
+      .executeTakeFirstOrThrow();
+
+    return this.findOne(result.id);
   }
 
   async remove(id: string): Promise<void> {

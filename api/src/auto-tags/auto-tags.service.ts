@@ -28,21 +28,6 @@ export class AutoTagsService {
     };
   }
 
-  async create(autoTag: CreateAutoTagDto): Promise<AutoTag> {
-    const createdAutoTag = await this.databaseService.db
-      .insertInto('autoTags')
-      .values({
-        id: uuid(),
-        tagNameId: autoTag.tagNameId,
-        priority: autoTag.priority,
-        conditions: JSON.stringify(autoTag.conditions),
-      })
-      .returning(this.selectList)
-      .executeTakeFirstOrThrow();
-
-    return this.adapt(createdAutoTag);
-  }
-
   async findAll(searchTerm: string | undefined): Promise<AutoTag[]> {
     let rawAutoTags: Record<string, string>[];
     if (searchTerm) {
@@ -79,14 +64,31 @@ export class AutoTagsService {
       .executeTakeFirstOrThrow();
   }
 
+  async create(autoTag: CreateAutoTagDto): Promise<AutoTag> {
+    const createdAutoTag = await this.databaseService.db
+      .insertInto('autoTags')
+      .values({
+        id: uuid(),
+        name: autoTag.name,
+        tagNameId: autoTag.tagNameId,
+        priority: autoTag.priority,
+        conditions: JSON.stringify(autoTag.conditions),
+      })
+      .returning('id')
+      .executeTakeFirstOrThrow();
+
+    return this.adapt(await this.findOne(createdAutoTag.id));
+  }
+
   async update(id: string, updateAutoTagDto: UpdateAutoTagsDto): Promise<AutoTag> {
-    const result = this.databaseService.db
+    const result = await this.databaseService.db
       .updateTable('autoTags')
       .set(updateAutoTagDto)
       .where('id', '=', id)
-      .returning(this.selectList)
-      .execute();
-    return this.adapt(result);
+      .returning('id')
+      .executeTakeFirstOrThrow();
+
+    return this.adapt(await this.findOne(result.id));
   }
 
   async delete(id: string) {

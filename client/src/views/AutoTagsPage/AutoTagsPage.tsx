@@ -15,22 +15,11 @@ interface AutoTagsPageProps {}
 
 function AutoTagsPage({}: AutoTagsPageProps) {
   const params = useParams();
-  const navigate = useNavigate();
   const id = params.id;
-  const [selectedAutoTag, setSelectedAutoTag] = useState<AutoTag | null>(null);
 
   const { data: autoTags } = useAutoTagsServiceAutoTagsControllerFindAll({
     term: '',
   });
-
-  useEffect(() => {
-    if (autoTags) {
-      // Set autoTag from url id
-      const autoTagFromUrl = (autoTags.find((autoTag) => autoTag.id === id) ||
-        null) as AutoTag | null;
-      setSelectedAutoTag(autoTagFromUrl);
-    }
-  }, [id, autoTags]);
 
   return (
     <div>
@@ -48,9 +37,6 @@ function AutoTagsPage({}: AutoTagsPageProps) {
               <NavLink
                 className="c-button"
                 to={'/' + ROUTE_PARTS.autoTagRules + '/' + autoTag.id + '/' + ROUTE_PARTS.edit}
-                onClick={() => {
-                  setSelectedAutoTag(autoTag as unknown as AutoTag);
-                }}
               >
                 EDIT
               </NavLink>

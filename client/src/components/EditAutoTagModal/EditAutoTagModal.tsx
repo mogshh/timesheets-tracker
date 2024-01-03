@@ -15,13 +15,19 @@ import {
 } from '../../types/types';
 import ToggleButton from '../ToggleButton/ToggleButton';
 import {
+  useAutoTagsServiceAutoTagsControllerCount,
   useAutoTagsServiceAutoTagsControllerCreate,
+  useAutoTagsServiceAutoTagsControllerFindAllKey,
   useAutoTagsServiceAutoTagsControllerFindOne,
   useAutoTagsServiceAutoTagsControllerFindOneKey,
+  useAutoTagsServiceAutoTagsControllerUpdate,
+  useTagNamesServiceTagNamesControllerCreate,
 } from '../../generated/api/queries';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ROUTE_PARTS } from '../../App';
-import { AutoTagConditionDto } from '../../generated/api/requests';
+import { CreateAutoTagDto, UpdateAutoTagsDto } from '../../generated/api/requests';
+import { COLOR_LIST } from '../../views/TimelinesPage/TimelinesPage.consts';
+import { QueryClient } from '@tanstack/react-query';
 
 const NEW_CONDITION = {
   booleanOperator: BooleanOperator.OR,
@@ -34,11 +40,12 @@ function EditAutoTagModal() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [name, setName] = useState<string>('');
-  const [tagName, setTagName] = useState<TagName | null>(null);
+  const [selectedTagName, setSelectedTagName] = useState<TagName | null>(null);
   const [priority, setPriority] = useState<number>(0); // TODO allow drag and drop
   const [conditions, setConditions] = useState<AutoTagCondition[]>([NEW_CONDITION, NEW_CONDITION]);
   const [showCreateNewTagControls, setShowCreateNewTagControls] = useState<boolean>(false);
-  const [createTagName, setCreateTagName] = useState<string>('');
+  const [newTagName, setNewTagName] = useState<string>('');
+  const { data: autoTagsCount } = useAutoTagsServiceAutoTagsControllerCount();
   const { data: autoTagResponse } = useAutoTagsServiceAutoTagsControllerFindOne(
     { id: id as string },
     [useAutoTagsServiceAutoTagsControllerFindOneKey, id as string],
@@ -46,12 +53,14 @@ function EditAutoTagModal() {
   );
   const autoTag = autoTagResponse as AutoTag;
   const { mutateAsync: createAutoTag } = useAutoTagsServiceAutoTagsControllerCreate();
+  const { mutateAsync: updateAutoTag } = useAutoTagsServiceAutoTagsControllerUpdate();
+  const { mutateAsync: createTagName } = useTagNamesServiceTagNamesControllerCreate();
 
   useEffect(() => {
     if (autoTag) {
       setName(autoTag.name);
       if (autoTag.tagName) {
-        setTagName(autoTag.tagName);
+        setSelectedTagName(autoTag.tagName);
       }
       setPriority(autoTag.priority);
       if (autoTag.conditions?.length !== 0) {
@@ -95,15 +104,49 @@ function EditAutoTagModal() {
 
   const handleClose = () => navigate('/' + ROUTE_PARTS.autoTagRules);
 
-  const handleSave = async (autoTag: Omit<AutoTag, 'id'>) => {
-    await createAutoTag({
-      requestBody: {
-        name: autoTag.name,
-        priority: autoTag.priority,
-        tagNameId: autoTag.tagNameId,
-        conditions: autoTag.conditions as unknown as AutoTagConditionDto[],
-      },
+  const handleSave = async () => {
+    // TODO add validation
+    let tagNameId: string;
+    if (showCreateNewTagControls) {
+      // create tag and get its id
+      const createdTagName = await createTagName({
+        requestBody: { name: newTagName, color: COLOR_LIST[0] },
+      });
+      tagNameId = createdTagName.id as string;
+    } else {
+      tagNameId = selectedTagName?.id as string;
+    }
+
+    const updatedAutoTag: Omit<AutoTag, 'id'> & { id?: string } = {
+      tagNameId,
+      name,
+      priority: autoTagsCount?.count || 0,
+      conditions: conditions.filter((condition) => !!condition.value),
+    };
+    if (id) {
+      // edit existing auto tag
+      updatedAutoTag.id = autoTag.id;
+      await updateAutoTag({
+        id: autoTag.id,
+        requestBody: updatedAutoTag as UpdateAutoTagsDto,
+      });
+      // TODO show toast: auto tag has been updated
+    } else {
+      // create new auto tag
+      await createAutoTag({
+        requestBody: updatedAutoTag as CreateAutoTagDto,
+      });
+      // TODO show toast: auto tag has been created
+    }
+
+    // clear cache for autotags
+    await new QueryClient().invalidateQueries({
+      queryKey: [useAutoTagsServiceAutoTagsControllerFindAllKey],
     });
+    await new QueryClient().invalidateQueries({
+      queryKey: [useAutoTagsServiceAutoTagsControllerFindOneKey],
+    });
+
     handleClose();
   };
 
@@ -129,14 +172,19 @@ function EditAutoTagModal() {
         label2="Create new tag"
       ></ToggleButton>
       {!showCreateNewTagControls && (
-        <TagSelectSingle value={tagName || null} onChange={setTagName} autoFocus={true} />
+        <TagSelectSingle
+          value={selectedTagName || null}
+          onChange={setSelectedTagName}
+          autoFocus={true}
+        />
       )}
       {showCreateNewTagControls && (
         <div>
           <input
             className="c-input"
-            value={createTagName}
-            onChange={(evt) => setCreateTagName(evt.target.value)}
+            value={newTagName}
+            onChange={(evt) => setNewTagName(evt.target.value)}
+            placeholder={'Name of the tag that should be created'}
           />
         </div>
       )}
@@ -162,25 +210,7 @@ function EditAutoTagModal() {
         <button className="c-button" onClick={handleClose}>
           Cancel
         </button>
-        <button
-          className="c-button"
-          disabled={
-            !tagName ||
-            !conditions[0]?.variable ||
-            !conditions[0]?.operator ||
-            !conditions[0]?.value
-          }
-          onClick={async () => {
-            if (tagName) {
-              await handleSave({
-                tagNameId: tagName.id,
-                name,
-                priority,
-                conditions: conditions.filter((condition) => !!condition.value),
-              });
-            }
-          }}
-        >
+        <button className="c-button" onClick={handleSave}>
           Save
         </button>
       </div>
