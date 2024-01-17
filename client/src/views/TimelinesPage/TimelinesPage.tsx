@@ -24,24 +24,28 @@ import type { Activity, AutoTag, Tag, TagName } from '../../types/types';
 import { COLOR_LIST } from './TimelinesPage.consts';
 import { clamp, maxBy, minBy } from 'lodash-es';
 import { calculateAutoTagEvents } from '../../helpers/computeAutoTagEvents';
+import { useAtom } from 'jotai/index';
+import { viewDateAtom } from '../../store/store';
 
 function TimelinesPage() {
+  const [viewDate] = useAtom(viewDateAtom);
+
   const tagsResponse = useTagsServiceTagsControllerFindAll({
-    startedAt: startOfDay(new Date()).toISOString(),
-    endedAt: endOfDay(new Date()).toISOString(),
+    startedAt: startOfDay(viewDate).toISOString(),
+    endedAt: endOfDay(viewDate).toISOString(),
   });
   const {
     data: tags,
     isLoading: isLoadingTags,
     refetch: refetchTags,
   } = useTagsServiceTagsControllerFindAll({
-    startedAt: startOfDay(new Date()).toISOString(),
-    endedAt: endOfDay(new Date()).toISOString(),
+    startedAt: startOfDay(viewDate).toISOString(),
+    endedAt: endOfDay(viewDate).toISOString(),
   });
   const { data: programs, isLoading: isLoadingPrograms } =
     useActivitiesServiceActivitiesControllerFindAll({
-      startedAt: startOfDay(new Date()).toISOString(),
-      endedAt: endOfDay(new Date()).toISOString(),
+      startedAt: startOfDay(viewDate).toISOString(),
+      endedAt: endOfDay(viewDate).toISOString(),
     });
   const {
     data: tagNamesCount,
@@ -122,7 +126,7 @@ function TimelinesPage() {
     if (!isLoadingPrograms && !isLoadingAllAutoTags) {
       setAutoTagEvents(calculateAutoTagEvents(programs as Activity[], AllAutoTags as AutoTag[]));
     }
-  }, [isLoadingPrograms, isLoadingAllAutoTags, AllAutoTags]);
+  }, [isLoadingPrograms, isLoadingAllAutoTags, AllAutoTags, programs]);
 
   const handleKeyUpEvent = async (evt: KeyboardEvent) => {
     if (evt.key === 'Delete') {
