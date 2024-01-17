@@ -13,15 +13,17 @@ import {
 import { TimelineEvent, TimelineEventType } from '../../components/Timeline/Timeline.types';
 import {
   useActivitiesServiceActivitiesControllerFindAll,
+  useAutoTagsServiceAutoTagsControllerFindAll,
   useTagNamesServiceTagNamesControllerCount,
   useTagNamesServiceTagNamesControllerCreate,
   useTagsServiceTagsControllerCreate,
   useTagsServiceTagsControllerFindAll,
   useTagsServiceTagsControllerRemove,
 } from '../../generated/api/queries';
-import type { Activity, Tag, TagName } from '../../types/types';
+import type { Activity, AutoTag, Tag, TagName } from '../../types/types';
 import { COLOR_LIST } from './TimelinesPage.consts';
 import { clamp, maxBy, minBy } from 'lodash-es';
+import { calculateAutoTagEvents } from '../../helpers/computeAutoTagEvents';
 
 function TimelinesPage() {
   const tagsResponse = useTagsServiceTagsControllerFindAll({
@@ -46,6 +48,8 @@ function TimelinesPage() {
     isLoading: isLoadingTagNamesCount,
     refetch: refetchTagNamesCount,
   } = useTagNamesServiceTagNamesControllerCount();
+  const { data: AllAutoTags, isLoading: isLoadingAllAutoTags } =
+    useAutoTagsServiceAutoTagsControllerFindAll({ term: undefined });
   const { mutateAsync: deleteTag } = useTagsServiceTagsControllerRemove();
   const tagEvents = ((tags || []) as Tag[]).map((tag: Tag, tagIndex: number): TimelineEvent => {
     return {
@@ -74,6 +78,7 @@ function TimelinesPage() {
       };
     }
   );
+  const [autoTagEvents, setAutoTagEvents] = useState<TimelineEvent[]>([]);
 
   const { mutateAsync: createTagName } = useTagNamesServiceTagNamesControllerCreate();
   const { mutateAsync: createTag } = useTagsServiceTagsControllerCreate();
@@ -113,10 +118,16 @@ function TimelinesPage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!isLoadingPrograms && !isLoadingAllAutoTags) {
+      setAutoTagEvents(calculateAutoTagEvents(programs as Activity[], AllAutoTags as AutoTag[]));
+    }
+  }, [isLoadingPrograms, isLoadingAllAutoTags, AllAutoTags]);
+
   const handleKeyUpEvent = async (evt: KeyboardEvent) => {
     if (evt.key === 'Delete') {
       // Delete selected event
-      if (selectedEvent && selectedEvent.type === TimelineEventType.Tag) {
+      if (selectedEvent?.id && selectedEvent?.type === TimelineEventType.Tag) {
         await deleteTag({
           id: selectedEvent.id,
         });
@@ -215,7 +226,7 @@ function TimelinesPage() {
       ></Timeline>
       <Timeline
         name="Auto tags"
-        events={[]}
+        events={autoTagEvents}
         minTime={minTime}
         maxTime={maxTime}
         onMouseDown={(posX: number) => handleMouseDown('autoTags', posX)}

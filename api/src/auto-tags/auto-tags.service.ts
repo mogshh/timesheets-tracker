@@ -55,13 +55,15 @@ export class AutoTagsService {
     return result.count;
   }
 
-  findOne(id: string): Promise<AutoTag> {
-    return this.databaseService.db
+  async findOne(id: string): Promise<AutoTag> {
+    const autoTag = await this.databaseService.db
       .selectFrom('autoTags')
       .leftJoin('tagNames', 'tagNames.id', 'autoTags.tagNameId')
       .select(this.selectList)
       .where('autoTags.id', '=', id)
       .executeTakeFirstOrThrow();
+
+    return this.adapt(autoTag);
   }
 
   async create(autoTag: CreateAutoTagDto): Promise<AutoTag> {
@@ -77,13 +79,13 @@ export class AutoTagsService {
       .returning('id')
       .executeTakeFirstOrThrow();
 
-    return this.adapt(await this.findOne(createdAutoTag.id));
+    return await this.findOne(createdAutoTag.id); // is already adapted
   }
 
   async update(id: string, updateAutoTagDto: UpdateAutoTagsDto): Promise<AutoTag> {
     const result = await this.databaseService.db
       .updateTable('autoTags')
-      .set(updateAutoTagDto)
+      .set({ ...updateAutoTagDto, conditions: JSON.stringify(updateAutoTagDto.conditions) })
       .where('id', '=', id)
       .returning('id')
       .executeTakeFirstOrThrow();

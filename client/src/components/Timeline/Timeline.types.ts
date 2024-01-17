@@ -5,7 +5,7 @@ export enum TimelineEventType {
 }
 
 export interface TimelineEvent {
-  id: string;
+  id?: string;
   info: Record<string, string>;
   color: string;
   startedAt: Date;

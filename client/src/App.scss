@@ -1,6 +1,13 @@
+.m-main-navigation {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 .c-tabs {
   display: block;
   background-color: #ccc;
+  flex-grow: 1;
 
   > a {
     display: inline-block;

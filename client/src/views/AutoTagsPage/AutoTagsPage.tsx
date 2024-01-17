@@ -1,25 +1,20 @@
 import './AutoTagsPage.scss';
-import EditAutoTagModal from '../../components/EditAutoTagModal/EditAutoTagModal';
-import { NavLink, Outlet, Route, Routes, useNavigate, useParams } from 'react-router-dom';
-import type { AutoTag } from '../../types/types';
+import { NavLink, Outlet, useParams } from 'react-router-dom';
 import {
-  useAutoTagsServiceAutoTagsControllerCreate,
+  useAutoTagsServiceAutoTagsControllerDelete,
   useAutoTagsServiceAutoTagsControllerFindAll,
 } from '../../generated/api/queries';
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode } from 'react';
 import { sortBy } from 'lodash-es';
-import { AutoTagConditionDto } from '../../generated/api/requests';
 import { ROUTE_PARTS } from '../../App';
 
 interface AutoTagsPageProps {}
 
 function AutoTagsPage({}: AutoTagsPageProps) {
-  const params = useParams();
-  const id = params.id;
-
-  const { data: autoTags } = useAutoTagsServiceAutoTagsControllerFindAll({
+  const { data: autoTags, refetch: refetchAutoTags } = useAutoTagsServiceAutoTagsControllerFindAll({
     term: '',
   });
+  const { mutateAsync: deleteAutoTag } = useAutoTagsServiceAutoTagsControllerDelete();
 
   return (
     <div>
@@ -40,6 +35,19 @@ function AutoTagsPage({}: AutoTagsPageProps) {
               >
                 EDIT
               </NavLink>
+              <button
+                className="c-button"
+                onClick={async () => {
+                  if (autoTag.id) {
+                    await deleteAutoTag({
+                      id: autoTag.id,
+                    });
+                    await refetchAutoTags();
+                  }
+                }}
+              >
+                DELETE
+              </button>
             </li>
           )
         )}

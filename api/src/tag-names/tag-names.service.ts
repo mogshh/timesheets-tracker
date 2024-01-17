@@ -67,7 +67,7 @@ export class TagNamesService {
       .returning('id')
       .executeTakeFirstOrThrow();
 
-    return this.adapt(await this.findOne(result.id));
+    return await this.findOne(result.id);
   }
 
   async update(id: string, updateTagDto: UpdateTagNameDto): Promise<TagName> {
@@ -78,7 +78,7 @@ export class TagNamesService {
       .returning('id')
       .executeTakeFirstOrThrow();
 
-    return this.adapt(await this.findOne(result.id));
+    return await this.findOne(result.id);
   }
 
   async remove(id: string): Promise<void> {

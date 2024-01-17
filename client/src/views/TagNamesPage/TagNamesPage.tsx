@@ -2,13 +2,16 @@ import './TagNamesPage.scss';
 import { Outlet, Route, Routes, useMatch, useNavigate, useParams } from 'react-router-dom';
 import type { TagName } from '../../types/types';
 import {
+  useAutoTagsServiceAutoTagsControllerFindOneKey,
   useTagNamesServiceTagNamesControllerCreate,
   useTagNamesServiceTagNamesControllerFindAll,
+  useTagNamesServiceTagNamesControllerFindAllKey,
   useTagNamesServiceTagNamesControllerRemove,
 } from '../../generated/api/queries';
 import React, { ReactNode, useEffect, useState } from 'react';
 import EditTagNameModal from '../../components/EditTagNameModal/EditTagNameModal';
 import { ROUTE_PARTS } from '../../App';
+import { QueryClient } from '@tanstack/react-query';
 
 interface TagNamesPageProps {}
 
@@ -19,7 +22,7 @@ function TagNamesPage({}: TagNamesPageProps) {
   const id = params.id;
   const [selectedTagName, setSelectedTagName] = useState<TagName | null>(null);
 
-  const { data: tagNames } = useTagNamesServiceTagNamesControllerFindAll({
+  const { data: tagNames, refetch: refetchTagNames } = useTagNamesServiceTagNamesControllerFindAll({
     term: '',
   });
   const { mutateAsync: deleteTagName } = useTagNamesServiceTagNamesControllerRemove();
@@ -63,6 +66,7 @@ function TagNamesPage({}: TagNamesPageProps) {
                     await deleteTagName({
                       id: tagName.id,
                     });
+                    await refetchTagNames();
                   }
                 }}
               >
