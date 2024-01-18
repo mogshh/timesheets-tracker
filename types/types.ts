@@ -6,6 +6,13 @@ export interface Activity {
   endedAt: string;
 }
 
+export interface ActiveState {
+  id: string;
+  active: boolean;
+  startedAt: string;
+  endedAt: string;
+}
+
 export interface Tag {
   id: string;
   tagNameId: string;

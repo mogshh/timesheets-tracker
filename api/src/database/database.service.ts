@@ -32,6 +32,16 @@ export class DatabaseService implements OnModuleInit {
     `.execute(this.db);
 
     await sql`
+      CREATE TABLE IF NOT EXISTS activeStates
+      (
+        "id"          text NOT NULL PRIMARY KEY,
+        "isActive"    boolean,
+        "startedAt"   text NOT NULL,
+        "endedAt"     text NOT NULL
+      );
+    `.execute(this.db);
+
+    await sql`
             CREATE TABLE IF NOT EXISTS tagNames
             (
                 "id"        text NOT NULL PRIMARY KEY,

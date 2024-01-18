@@ -1,9 +1,9 @@
-import { IsString } from 'class-validator';
+import { IsBoolean, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Activity } from '../../types/types';
+import { ActiveState } from '../../types/types';
 
-export class ResponseActivityDto implements Activity {
+export class ResponseActiveStateDto implements ActiveState {
   @IsString()
   @Type(() => String)
   @ApiPropertyOptional({
@@ -13,23 +13,15 @@ export class ResponseActivityDto implements Activity {
   })
   id: string;
 
-  @IsString()
-  @Type(() => String)
+  @IsBoolean()
+  @Type(() => Boolean)
   @ApiPropertyOptional({
-    type: String,
-    description: 'Name of the program that is open',
+    type: Boolean,
+    description:
+      'If the operating system is currently being used by the user (true) or the user is idle (false)',
     default: undefined,
   })
-  programName: string;
-
-  @IsString()
-  @Type(() => String)
-  @ApiPropertyOptional({
-    type: String,
-    description: 'Title of the active window',
-    default: undefined,
-  })
-  windowTitle: string;
+  active: boolean;
 
   @IsString()
   @Type(() => String)
