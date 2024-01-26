@@ -18,6 +18,7 @@ export type { UpdateAutoTagsDto } from './models/UpdateAutoTagsDto';
 export type { UpdateTagDto } from './models/UpdateTagDto';
 export type { UpdateTagNameDto } from './models/UpdateTagNameDto';
 
+export { ActiveStatesService } from './services/ActiveStatesService';
 export { ActivitiesService } from './services/ActivitiesService';
 export { AutoTagsService } from './services/AutoTagsService';
 export { StatusService } from './services/StatusService';

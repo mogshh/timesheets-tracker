@@ -12,6 +12,7 @@ import {
 } from 'date-fns';
 import { TimelineEvent, TimelineEventType } from '../../components/Timeline/Timeline.types';
 import {
+  useActiveStatesServiceActiveStatesControllerFindAll,
   useActivitiesServiceActivitiesControllerFindAll,
   useAutoTagsServiceAutoTagsControllerFindAll,
   useTagNamesServiceTagNamesControllerCount,
@@ -20,7 +21,7 @@ import {
   useTagsServiceTagsControllerFindAll,
   useTagsServiceTagsControllerRemove,
 } from '../../generated/api/queries';
-import type { Activity, AutoTag, Tag, TagName } from '../../types/types';
+import type { ActiveState, Activity, AutoTag, Tag, TagName } from '../../types/types';
 import { COLOR_LIST } from './TimelinesPage.consts';
 import { clamp, maxBy, minBy } from 'lodash-es';
 import { calculateAutoTagEvents } from '../../helpers/computeAutoTagEvents';
@@ -44,6 +45,11 @@ function TimelinesPage() {
   });
   const { data: programs, isLoading: isLoadingPrograms } =
     useActivitiesServiceActivitiesControllerFindAll({
+      startedAt: startOfDay(viewDate).toISOString(),
+      endedAt: endOfDay(viewDate).toISOString(),
+    });
+  const { data: activeStates, isLoading: isLoadingActiveStates } =
+    useActiveStatesServiceActiveStatesControllerFindAll({
       startedAt: startOfDay(viewDate).toISOString(),
       endedAt: endOfDay(viewDate).toISOString(),
     });
@@ -78,6 +84,20 @@ function TimelinesPage() {
         color: COLOR_LIST[programIndex % COLOR_LIST.length],
         startedAt: new Date(program.startedAt),
         endedAt: new Date(program.endedAt),
+        type: TimelineEventType.Activity,
+      };
+    }
+  );
+  const activeStateEvents = (activeStates || []).map(
+    (activeState: ActiveState, activeStateIndex: number): TimelineEvent => {
+      return {
+        id: activeState.id,
+        info: {
+          state: activeState.isActive,
+        },
+        color: activeState.isActive ? '#00FF00' : '#FF0000',
+        startedAt: new Date(activeState.startedAt),
+        endedAt: new Date(activeState.endedAt),
         type: TimelineEventType.Activity,
       };
     }

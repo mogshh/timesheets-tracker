@@ -8,7 +8,7 @@ export interface Activity {
 
 export interface ActiveState {
   id: string;
-  active: boolean;
+  isActive: boolean;
   startedAt: string;
   endedAt: string;
 }

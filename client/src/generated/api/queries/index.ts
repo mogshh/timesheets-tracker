@@ -15,6 +15,7 @@ import { TagNamesService } from "../requests/services/TagNamesService";
 import { StatusService } from "../requests/services/StatusService";
 import { AutoTagsService } from "../requests/services/AutoTagsService";
 import { ActivitiesService } from "../requests/services/ActivitiesService";
+import { ActiveStatesService } from "../requests/services/ActiveStatesService";
 export const useTagsServiceTagsControllerCreate = (options?: Omit<UseMutationOptions<Awaited<ReturnType<typeof TagsService.tagsControllerCreate>>, unknown, {
     requestBody: CreateTagDto;
 }, unknown>, "mutationFn">) => useMutation({ mutationFn: ({ requestBody }) => TagsService.tagsControllerCreate(requestBody), ...options });
@@ -88,3 +89,15 @@ export const useActivitiesServiceActivitiesControllerFindOne = (options?: Omit<U
 export const useActivitiesServiceActivitiesControllerDelete = (options?: Omit<UseMutationOptions<Awaited<ReturnType<typeof ActivitiesService.activitiesControllerDelete>>, unknown, {
     id: string;
 }, unknown>, "mutationFn">) => useMutation({ mutationFn: ({ id }) => ActivitiesService.activitiesControllerDelete(id), ...options });
+export const useActiveStatesServiceActiveStatesControllerCreate = (options?: Omit<UseMutationOptions<Awaited<ReturnType<typeof ActiveStatesService.activeStatesControllerCreate>>, unknown, void, unknown>, "mutationFn">) => useMutation({ mutationFn: () => ActiveStatesService.activeStatesControllerCreate(), ...options });
+export const useActiveStatesServiceActiveStatesControllerFindAllKey = "ActiveStatesServiceActiveStatesControllerFindAll";
+export const useActiveStatesServiceActiveStatesControllerFindAll = <TQueryKey extends Array<unknown> = unknown[]>({ startedAt, endedAt }: {
+    startedAt: string;
+    endedAt: string;
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<Awaited<ReturnType<typeof ActiveStatesService.activeStatesControllerFindAll>>, unknown, Awaited<ReturnType<typeof ActiveStatesService.activeStatesControllerFindAll>>, unknown[]>, "queryKey" | "queryFn" | "initialData">) => useQuery({ queryKey: [useActiveStatesServiceActiveStatesControllerFindAllKey, ...(queryKey ?? [{ startedAt, endedAt }])], queryFn: () => ActiveStatesService.activeStatesControllerFindAll(startedAt, endedAt), ...options });
+export const useActiveStatesServiceActiveStatesControllerFindOne = (options?: Omit<UseMutationOptions<Awaited<ReturnType<typeof ActiveStatesService.activeStatesControllerFindOne>>, unknown, {
+    id: string;
+}, unknown>, "mutationFn">) => useMutation({ mutationFn: ({ id }) => ActiveStatesService.activeStatesControllerFindOne(id), ...options });
+export const useActiveStatesServiceActiveStatesControllerDelete = (options?: Omit<UseMutationOptions<Awaited<ReturnType<typeof ActiveStatesService.activeStatesControllerDelete>>, unknown, {
+    id: string;
+}, unknown>, "mutationFn">) => useMutation({ mutationFn: ({ id }) => ActiveStatesService.activeStatesControllerDelete(id), ...options });

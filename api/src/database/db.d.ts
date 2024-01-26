@@ -1,3 +1,10 @@
+export interface ActiveStates {
+  id: string;
+  isActive: number | null;
+  startedAt: string;
+  endedAt: string;
+}
+
 export interface Activities {
   id: string;
   programName: string | null;
@@ -28,6 +35,7 @@ export interface Tags {
 }
 
 export interface DB {
+  activeStates: ActiveStates;
   activities: Activities;
   autoTags: AutoTags;
   tagNames: TagNames;

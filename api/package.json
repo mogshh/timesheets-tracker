@@ -27,6 +27,7 @@
     "@nestjs/core": "^10.0.0",
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/schedule": "^4.0.0",
     "@nestjs/swagger": "^7.1.6",
     "@paymoapp/active-window": "^1.2.3",
     "@paymoapp/real-idle": "^1.0.5",

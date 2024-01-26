@@ -21,7 +21,7 @@ export class ResponseActiveStateDto implements ActiveState {
       'If the operating system is currently being used by the user (true) or the user is idle (false)',
     default: undefined,
   })
-  active: boolean;
+  isActive: boolean;
 
   @IsString()
   @Type(() => String)

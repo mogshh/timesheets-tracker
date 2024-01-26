@@ -8,7 +8,7 @@ import { UpdateTagNameDto } from './dto/update-tag-name.dto';
 
 @Injectable()
 export class TagNamesService {
-  private selectList: string[] = ['id', 'name', 'color'];
+  private selectList: (keyof TagName)[] = ['id', 'name', 'color'];
   constructor(@Inject(DatabaseService) private databaseService: DatabaseService) {}
 
   private adapt(rawTagName: Record<string, any>): TagName {
