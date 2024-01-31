@@ -12,6 +12,9 @@ function DateSelect({}: DateSelectProps) {
 
   return (
     <div className="c-date-select">
+      <button className="c-button" onClick={() => setViewDate(new Date())}>
+        TODAY
+      </button>
       <button className="c-button" onClick={() => setViewDate((prevDate) => addDays(prevDate, -1))}>
         -
       </button>

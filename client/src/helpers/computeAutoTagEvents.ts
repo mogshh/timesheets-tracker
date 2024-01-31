@@ -2,6 +2,7 @@ import { TimelineEvent, TimelineEventType } from '../components/Timeline/Timelin
 import { Activity, BooleanOperator, ConditionVariable } from '../../../types/types';
 import { AutoTag, AutoTagCondition, ConditionOperator } from '../types/types';
 import { compact } from 'lodash-es';
+import { v4 as uuid } from 'uuid';
 
 function splitConditionsOnOrOperators(conditions: AutoTagCondition[]): AutoTagCondition[][] {
   const groupedConditions: AutoTagCondition[][] = [];
@@ -64,6 +65,7 @@ export function calculateAutoTagEvents(
           endedAt: new Date(activity.endedAt),
           color: autoTag.tagName?.color || '',
           info: { tag: autoTag.tagName?.name || '', autoTagRule: autoTag.name },
+          id: uuid(),
         };
       } else {
         return null;
@@ -71,8 +73,8 @@ export function calculateAutoTagEvents(
     })
   );
 
-  const combinedAutoTagEvents = compact([autoTagEvents[0]]);
-  if (autoTagEvents.length) {
+  const combinedAutoTagEvents = compact([compact(autoTagEvents)[0]]);
+  if (autoTagEvents.length >= 2) {
     // Combine auto tags that evaluate to the same tag name
     let index = 1;
     do {

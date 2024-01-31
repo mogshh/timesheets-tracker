@@ -93,7 +93,7 @@ function TimelinesPage() {
       return {
         id: activeState.id,
         info: {
-          state: activeState.isActive,
+          state: String(activeState.isActive),
         },
         color: activeState.isActive ? '#00FF00' : '#FF0000',
         startedAt: new Date(activeState.startedAt),
@@ -264,7 +264,7 @@ function TimelinesPage() {
       ></Timeline>
       <Timeline
         name="Active"
-        events={[]}
+        events={activeStateEvents}
         minTime={minTime}
         maxTime={maxTime}
         onMouseDown={(posX: number) => handleMouseDown('active', posX)}

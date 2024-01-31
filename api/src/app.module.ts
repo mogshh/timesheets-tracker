@@ -11,13 +11,13 @@ import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ActivitiesModule,
     ActiveStatesModule,
     DatabaseModule,
     TagsModule,
     TagNamesModule,
     AutoTagsModule,
-    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],

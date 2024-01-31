@@ -1,3 +1,5 @@
+@use '../../styles/variables' as *;
+
 $timelineHeight: 10rem;
 
 .c-timeline {
@@ -53,12 +55,22 @@ $timelineHeight: 10rem;
   }
 }
 
+.tippy-arrow {
+  color: $primary;
+}
+
 .tippy-content {
+  background-color: $primary;
+
   ul {
     padding: 0 1rem;
   }
 
   li {
     list-style: none;
+  }
+
+  [id*='react-select-'] {
+    color: black;
   }
 }

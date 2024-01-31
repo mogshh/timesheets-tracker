@@ -2,7 +2,7 @@
 
 .c-button {
   padding: 1rem;
-  background-color: darkslategray;
+  background-color: $primary;
   color: white;
   text-transform: uppercase;
   border: 0;
@@ -12,7 +12,7 @@
   display: inline-block;
 
   &:hover {
-    background-color: lighten(darkslategray, 20%);
+    background-color: lighten($primary, 20%);
   }
 
   &:focus {

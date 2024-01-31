@@ -1,23 +1,21 @@
-import { Inject, Injectable, OnApplicationBootstrap, Scope } from '@nestjs/common';
-import { Cron, CronExpression, Interval, SchedulerRegistry } from '@nestjs/schedule';
-import type { ActiveState } from '../types/types';
-import { DatabaseService } from '../database/database.service';
-import { v4 as uuid } from 'uuid';
+import { Inject, Injectable } from '@nestjs/common';
+import { Interval } from '@nestjs/schedule';
 import { CreateActiveStateDto } from './dto/create-active-state.dto';
-import { unflatten } from 'nested-objects-util';
 import { UpdateActiveStateDto } from './dto/update-active-state.dto';
 import RealIdle from '@paymoapp/real-idle';
 import { ResponseActiveStateDto } from './dto/response-active-state.dto';
-import { CustomError } from '../shared/CustomError';
 import { ActiveStatesService } from './active-states.service';
+import { noop } from 'lodash';
 
-const ACTIVE_STATE_POLLING_INTERVAL_SECONDS = 5 * 60;
+const ACTIVE_STATE_POLLING_INTERVAL_SECONDS = 10;
 
 @Injectable()
 export class ActiveStatesListener {
   private lastActiveState: Partial<ResponseActiveStateDto> | null = null;
 
-  constructor(@Inject(ActiveStatesService) private activeStatesService: ActiveStatesService) {}
+  constructor(@Inject(ActiveStatesService) private activeStatesService: ActiveStatesService) {
+    this.checkActiveState().then(noop);
+  }
 
   @Interval(ACTIVE_STATE_POLLING_INTERVAL_SECONDS * 1000)
   private async checkActiveState(): Promise<void> {
@@ -54,6 +52,7 @@ export class ActiveStatesListener {
       } else {
         // ActiveState changes, write last activeState to database
         // Keep track of new active state locally
+        console.log('active state changed to ' + currentIsActiveState);
         this.lastActiveState.endedAt = new Date().toISOString();
         await this.activeStatesService.update(
           this.lastActiveState.id,

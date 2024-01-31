@@ -206,7 +206,8 @@ function Timeline({
           return (
             <Tippy
               key={'c-timeline__' + name + '__event__tippy__' + event.startedAt.toISOString()}
-              visible={selectedEvent?.id === event.id}
+              visible={!!selectedEvent?.id && selectedEvent.id === event.id}
+              interactive
               content={
                 <ul
                   className="c-timeline__event__tooltip"
@@ -251,7 +252,9 @@ function Timeline({
                   width,
                   backgroundColor: event.color,
                 }}
-                onClick={() => setSelectedEvent(event)}
+                onClick={() => {
+                  setSelectedEvent(event);
+                }}
               ></div>
             </Tippy>
           );
@@ -262,6 +265,7 @@ function Timeline({
           <Tippy
             key={'c-timeline__' + name + '__selection__tippy'}
             className="c-timeline__selection__tooltip--ended"
+            interactive
             content={
               <ul
                 onMouseMove={(evt) => evt.stopPropagation()}
@@ -277,9 +281,6 @@ function Timeline({
               </ul>
             }
             visible={!!selectionPercentages.start && !!selectionPercentages.end && !selectedEvent}
-            // followCursor={
-            //   !!selectionPercentages.start && !selectionPercentages.end ? 'horizontal' : false
-            // }
             placement="top-end"
           >
             <div

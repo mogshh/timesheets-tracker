@@ -1,12 +1,6 @@
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import type { Activity } from '../types/types';
-import { DatabaseService } from '../database/database.service';
 import ActiveWindow, { WindowInfo } from '@paymoapp/active-window';
-import { v4 as uuid } from 'uuid';
-import { differenceInSeconds, max, min } from 'date-fns';
 import { CreateActivityDto } from './dto/create-activity.dto';
-import { unflatten } from 'nested-objects-util';
-import { UpdateActivityDto } from './dto/update-activity.dto';
 import { ActivitiesService } from './activities.service';
 
 @Injectable()
