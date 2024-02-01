@@ -1,5 +1,5 @@
 import './TimelinesPage.scss';
-
+import { toast } from 'react-toastify';
 import React, { useEffect, useState } from 'react';
 import Timeline from '../../components/Timeline/Timeline';
 import {
@@ -149,18 +149,24 @@ function TimelinesPage() {
   }, [isLoadingPrograms, isLoadingAllAutoTags, AllAutoTags, programs]);
 
   const handleKeyUpEvent = async (evt: KeyboardEvent) => {
-    if (evt.key === 'Delete') {
-      // Delete selected event
-      if (selectedEvent?.id && selectedEvent?.type === TimelineEventType.Tag) {
-        await deleteTag({
-          id: selectedEvent.id,
-        });
-        await refetchTags();
-      } else {
-        // toast
-        // TODO show toast: Can't delete anything since no tags are selected
+    // Use state setter function to get latest state, since this event handler happens outside the react
+    setSelectedEvent((oldSelectedEvent) => {
+      if (evt.key === 'Delete') {
+        // Delete selected event
+        if (oldSelectedEvent?.id && oldSelectedEvent?.type === TimelineEventType.Tag) {
+          (async () => {
+            await deleteTag({
+              id: oldSelectedEvent.id as string,
+            });
+            await refetchTags();
+            toast('Tag was deleted', { type: 'success' });
+          })();
+        } else {
+          toast('No tag was selected', { type: 'warning' });
+        }
       }
-    }
+      return null;
+    });
   };
 
   const handleMouseDown = (timelineId: string, posX: number) => {

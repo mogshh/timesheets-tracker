@@ -3,6 +3,8 @@ import './App.scss';
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import DateSelect from './components/DateSelect/DateSelect';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export enum ROUTE_PARTS {
   timelines = 'timelines',
@@ -24,6 +26,7 @@ function App() {
         <DateSelect />
       </nav>
       <Outlet />
+      <ToastContainer position={'bottom-left'} theme="dark" />
     </div>
   );
 }
