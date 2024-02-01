@@ -1,17 +1,13 @@
 import './TagNamesPage.scss';
-import { Outlet, Route, Routes, useMatch, useNavigate, useParams } from 'react-router-dom';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import type { TagName } from '../../types/types';
 import {
-  useAutoTagsServiceAutoTagsControllerFindOneKey,
-  useTagNamesServiceTagNamesControllerCreate,
   useTagNamesServiceTagNamesControllerFindAll,
-  useTagNamesServiceTagNamesControllerFindAllKey,
   useTagNamesServiceTagNamesControllerRemove,
 } from '../../generated/api/queries';
 import React, { ReactNode, useEffect, useState } from 'react';
-import EditTagNameModal from '../../components/EditTagNameModal/EditTagNameModal';
 import { ROUTE_PARTS } from '../../App';
-import { QueryClient } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
 
 interface TagNamesPageProps {}
 
@@ -67,6 +63,10 @@ function TagNamesPage({}: TagNamesPageProps) {
                       id: tagName.id,
                     });
                     await refetchTagNames();
+
+                    toast('Tag name has been deleted', { type: 'success' });
+                  } else {
+                    toast('Tag name could not be deleted, no id has been set', { type: 'warning' });
                   }
                 }}
               >

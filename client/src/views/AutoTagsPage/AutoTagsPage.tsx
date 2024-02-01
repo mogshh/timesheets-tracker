@@ -7,6 +7,7 @@ import {
 import React, { ReactNode } from 'react';
 import { sortBy } from 'lodash-es';
 import { ROUTE_PARTS } from '../../App';
+import { toast } from 'react-toastify';
 
 interface AutoTagsPageProps {}
 
@@ -43,6 +44,11 @@ function AutoTagsPage({}: AutoTagsPageProps) {
                       id: autoTag.id,
                     });
                     await refetchAutoTags();
+                    toast('Auto tag has been deleted', { type: 'success' });
+                  } else {
+                    toast("Cannot delete an auto tag since it doesn't have an id", {
+                      type: 'error',
+                    });
                   }
                 }}
               >

@@ -9,8 +9,10 @@ import {
   useAutoTagsServiceAutoTagsControllerFindOne,
   useAutoTagsServiceAutoTagsControllerFindOneKey,
   useTagNamesServiceTagNamesControllerCreate,
+  useTagNamesServiceTagNamesControllerUpdate,
 } from '../../generated/api/queries';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function EditTagNameModal() {
   const { id } = useParams();
@@ -18,6 +20,7 @@ function EditTagNameModal() {
   const [name, setName] = useState<string>('');
   const [color, setColor] = useState<string>(COLOR_LIST[0]);
   const { mutateAsync: createTagName } = useTagNamesServiceTagNamesControllerCreate();
+  const { mutateAsync: updateTagName } = useTagNamesServiceTagNamesControllerUpdate();
   const { data: tagNameResponse } = useAutoTagsServiceAutoTagsControllerFindOne(
     { id: id as string },
     [useAutoTagsServiceAutoTagsControllerFindOneKey, id as string],
@@ -35,12 +38,31 @@ function EditTagNameModal() {
   const handleClose = () => navigate('/' + ROUTE_PARTS.tagNames);
 
   const handleSave = async (tagName: Omit<TagName, 'id'>) => {
-    await createTagName({
-      requestBody: {
-        name: tagName.name,
-        color: tagName.color,
-      },
-    });
+    if (id) {
+      await updateTagName({
+        id,
+        requestBody: {
+          name: tagName.name,
+          color: tagName.color,
+        },
+      });
+
+      toast('Tag name has been updated', {
+        type: 'success',
+      });
+    } else {
+      await createTagName({
+        requestBody: {
+          name: tagName.name,
+          color: tagName.color,
+        },
+      });
+
+      toast('Tag name has been created', {
+        type: 'success',
+      });
+    }
+
     handleClose();
   };
 
@@ -48,16 +70,18 @@ function EditTagNameModal() {
     <Modal
       open
       onClose={handleClose}
-      classNames={{ modal: 'c-add-tag-name-modal', closeButton: 'c-button c-button--small' }}
+      classNames={{ modal: 'c-edit-tag-name-modal', closeButton: 'c-button c-button--small' }}
     >
-      <h3>Add tag name</h3>
-      <h4>Name</h4>
+      <h3>{id ? 'Update tag name' : 'Add tag name'}</h3>
+      <h4 className="mt-4">Name</h4>
       <input
+        className="c-input"
         value={name}
         onChange={(evt: ChangeEvent<HTMLInputElement>) => setName(evt.target?.value)}
       />
-      <h4>Color</h4>
+      <h4 className="mt-4">Color</h4>
       <input
+        className="c-input"
         value={color}
         onChange={(evt: ChangeEvent<HTMLInputElement>) => setColor(evt.target?.value)}
       />

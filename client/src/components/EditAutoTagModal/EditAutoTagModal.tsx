@@ -28,6 +28,7 @@ import { ROUTE_PARTS } from '../../App';
 import { CreateAutoTagDto, UpdateAutoTagsDto } from '../../generated/api/requests';
 import { COLOR_LIST } from '../../views/TimelinesPage/TimelinesPage.consts';
 import { QueryClient } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
 
 const NEW_CONDITION = {
   booleanOperator: BooleanOperator.OR,
@@ -130,22 +131,14 @@ function EditAutoTagModal() {
         id: autoTag.id,
         requestBody: updatedAutoTag as UpdateAutoTagsDto,
       });
-      // TODO show toast: auto tag has been updated
+      toast('Auto tag has been updated', { type: 'success' });
     } else {
       // create new auto tag
       await createAutoTag({
         requestBody: updatedAutoTag as CreateAutoTagDto,
       });
-      // TODO show toast: auto tag has been created
+      toast('Auto tag has been created', { type: 'success' });
     }
-
-    // clear cache for autotags
-    await new QueryClient().invalidateQueries({
-      queryKey: [useAutoTagsServiceAutoTagsControllerFindAllKey],
-    });
-    await new QueryClient().invalidateQueries({
-      queryKey: [useAutoTagsServiceAutoTagsControllerFindOneKey],
-    });
 
     handleClose();
   };

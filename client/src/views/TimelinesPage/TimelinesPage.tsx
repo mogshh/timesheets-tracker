@@ -58,7 +58,7 @@ function TimelinesPage() {
     isLoading: isLoadingTagNamesCount,
     refetch: refetchTagNamesCount,
   } = useTagNamesServiceTagNamesControllerCount();
-  const { data: AllAutoTags, isLoading: isLoadingAllAutoTags } =
+  const { data: allAutoTags, isLoading: isLoadingAllAutoTags } =
     useAutoTagsServiceAutoTagsControllerFindAll({ term: undefined });
   const { mutateAsync: deleteTag } = useTagsServiceTagsControllerRemove();
   const tagEvents = ((tags || []) as Tag[]).map((tag: Tag, tagIndex: number): TimelineEvent => {
@@ -143,10 +143,10 @@ function TimelinesPage() {
   }, []);
 
   useEffect(() => {
-    if (!isLoadingPrograms && !isLoadingAllAutoTags) {
-      setAutoTagEvents(calculateAutoTagEvents(programs as Activity[], AllAutoTags as AutoTag[]));
+    if (!isLoadingPrograms && !isLoadingAllAutoTags && !!programs && !!allAutoTags) {
+      setAutoTagEvents(calculateAutoTagEvents(programs as Activity[], allAutoTags as AutoTag[]));
     }
-  }, [isLoadingPrograms, isLoadingAllAutoTags, AllAutoTags, programs]);
+  }, [isLoadingPrograms, isLoadingAllAutoTags, allAutoTags, programs]);
 
   const handleKeyUpEvent = async (evt: KeyboardEvent) => {
     // Use state setter function to get latest state, since this event handler happens outside the react
