@@ -1,0 +1,26 @@
+.c-color-input {
+  width: 300px;
+  background: #f0f0f4;
+  border-radius: 9px;
+}
+
+.c-color-input .react-colorful {
+  width: auto;
+}
+
+.c-color-input__swatches {
+  display: flex;
+  padding: 12px;
+  flex-wrap: wrap;
+}
+
+.c-color-input__swatch {
+  width: 24px;
+  height: 24px;
+  margin: 4px;
+  border: none;
+  padding: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+}

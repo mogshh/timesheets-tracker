@@ -1,3 +1,20 @@
 import distinctColors from 'distinct-colors';
 
-export const COLOR_LIST = distinctColors({ count: 50, lightMin: 50, lightMax: 70 }).map((color) => color.hex());
+export const COLOR_LIST = [
+  '#2f4f4f',
+  '#800000',
+  '#191970',
+  '#006400',
+  '#d2b48c',
+  '#ff0000',
+  '#00ced1',
+  '#ffa500',
+  '#ffff00',
+  '#00ff00',
+  '#0000ff',
+  '#ff00ff',
+  '#1e90ff',
+  '#dda0dd',
+  '#ff1493',
+  '#98fb98',
+];

@@ -10,9 +10,11 @@ import {
   useAutoTagsServiceAutoTagsControllerFindOneKey,
   useTagNamesServiceTagNamesControllerCreate,
   useTagNamesServiceTagNamesControllerUpdate,
+  useTagsServiceTagsControllerFindOne,
 } from '../../generated/api/queries';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { ColorInput } from '../ColorInput/ColorInput';
 
 function EditTagNameModal() {
   const { id } = useParams();
@@ -21,7 +23,7 @@ function EditTagNameModal() {
   const [color, setColor] = useState<string>(COLOR_LIST[0]);
   const { mutateAsync: createTagName } = useTagNamesServiceTagNamesControllerCreate();
   const { mutateAsync: updateTagName } = useTagNamesServiceTagNamesControllerUpdate();
-  const { data: tagNameResponse } = useAutoTagsServiceAutoTagsControllerFindOne(
+  const { data: tagNameResponse } = useTagsServiceTagsControllerFindOne(
     { id: id as string },
     [useAutoTagsServiceAutoTagsControllerFindOneKey, id as string],
     { enabled: !!id }
@@ -73,18 +75,17 @@ function EditTagNameModal() {
       classNames={{ modal: 'c-edit-tag-name-modal', closeButton: 'c-button c-button--small' }}
     >
       <h3>{id ? 'Update tag name' : 'Add tag name'}</h3>
+
       <h4 className="mt-4">Name</h4>
       <input
         className="c-input"
         value={name}
         onChange={(evt: ChangeEvent<HTMLInputElement>) => setName(evt.target?.value)}
       />
+
       <h4 className="mt-4">Color</h4>
-      <input
-        className="c-input"
-        value={color}
-        onChange={(evt: ChangeEvent<HTMLInputElement>) => setColor(evt.target?.value)}
-      />
+      <ColorInput color={color} onChange={setColor} />
+
       <div className="flex flex-row justify-end gap-2 mt-48">
         <button className="c-button" onClick={handleClose}>
           Cancel
