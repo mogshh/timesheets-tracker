@@ -45,7 +45,11 @@ function TagNamesPage({}: TagNamesPageProps) {
         {(tagNames || []).map(
           (tagName): ReactNode => (
             <li className="c-row" key={'tag-name-' + tagName.id}>
-              <span>{tagName.name}</span>
+              <span
+                className="block h-16 w-16 ml-2"
+                style={{ backgroundColor: tagName.color }}
+              ></span>
+              <span className="flex-grow">{tagName.name}</span>
               <button
                 className="c-button"
                 onClick={() => {

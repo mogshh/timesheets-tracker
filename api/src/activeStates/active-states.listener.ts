@@ -7,7 +7,7 @@ import { ResponseActiveStateDto } from './dto/response-active-state.dto';
 import { ActiveStatesService } from './active-states.service';
 import { noop } from 'lodash';
 
-const ACTIVE_STATE_POLLING_INTERVAL_SECONDS = 10;
+const ACTIVE_STATE_POLLING_INTERVAL_SECONDS = 2 * 60;
 
 @Injectable()
 export class ActiveStatesListener {

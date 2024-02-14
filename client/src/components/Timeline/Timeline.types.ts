@@ -1,7 +1,8 @@
-export enum TimelineEventType {
-  Activity = 'Activity',
+export enum TimelineType {
+  Program = 'Program',
   Tag = 'Tag',
   AutoTag = 'AutoTag',
+  Active = 'Active',
 }
 
 export interface TimelineEvent {
@@ -10,5 +11,5 @@ export interface TimelineEvent {
   color: string;
   startedAt: Date;
   endedAt: Date;
-  type: TimelineEventType;
+  type: TimelineType;
 }

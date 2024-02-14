@@ -10,7 +10,7 @@ import {
   startOfDay,
   subHours,
 } from 'date-fns';
-import { TimelineEvent, TimelineEventType } from '../../components/Timeline/Timeline.types';
+import { TimelineEvent, TimelineType } from '../../components/Timeline/Timeline.types';
 import {
   useActiveStatesServiceActiveStatesControllerFindAll,
   useActivitiesServiceActivitiesControllerFindAll,
@@ -70,7 +70,7 @@ function TimelinesPage() {
       color: tag.tagName?.color as string,
       startedAt: new Date(tag.startedAt),
       endedAt: new Date(tag.endedAt),
-      type: TimelineEventType.Tag,
+      type: TimelineType.Tag,
     };
   });
   const programEvents = (programs || []).map(
@@ -84,7 +84,7 @@ function TimelinesPage() {
         color: COLOR_LIST[programIndex % COLOR_LIST.length],
         startedAt: new Date(program.startedAt),
         endedAt: new Date(program.endedAt),
-        type: TimelineEventType.Activity,
+        type: TimelineType.Program,
       };
     }
   );
@@ -98,7 +98,7 @@ function TimelinesPage() {
         color: activeState.isActive ? '#00FF00' : '#FF0000',
         startedAt: new Date(activeState.startedAt),
         endedAt: new Date(activeState.endedAt),
-        type: TimelineEventType.Activity,
+        type: TimelineType.Program,
       };
     }
   );
@@ -112,6 +112,7 @@ function TimelinesPage() {
   const [selectionEndPercent, setSelectionEndPercent] = useState<number | null>(null);
   const [activeSelectionTimeline, setActiveSelectionTimeline] = useState<string | null>(null);
 
+  const [selectedTimeline, setSelectedTimeline] = useState<TimelineType>(TimelineType.Programs);
   const [selectedEvent, setSelectedEvent] = useState<TimelineEvent | null>(null);
 
   const minTime = subHours(
@@ -153,7 +154,7 @@ function TimelinesPage() {
     setSelectedEvent((oldSelectedEvent) => {
       if (evt.key === 'Delete') {
         // Delete selected event
-        if (oldSelectedEvent?.id && oldSelectedEvent?.type === TimelineEventType.Tag) {
+        if (oldSelectedEvent?.id && oldSelectedEvent?.type === TimelineType.Tag) {
           (async () => {
             await deleteTag({
               id: oldSelectedEvent.id as string,
@@ -240,62 +241,68 @@ function TimelinesPage() {
       : null;
   return (
     <div className="c-app">
-      <Timeline
-        name="Tags"
-        events={tagEvents}
-        minTime={minTime}
-        maxTime={maxTime}
-        onMouseDown={(posX: number) => handleMouseDown('tags', posX)}
-        onMouseMove={(posX: number) => handleMouseMove('tags', posX)}
-        onMouseUp={(posX: number) => handleMouseUp('tags', posX)}
-        selectionPercentages={activeSelectionTimeline === 'tags' ? selection : null}
-        onCreateTagName={handleCreateTagName}
-        onCreateTag={handleCreateTag}
-        selectedEvent={selectedEvent}
-        setSelectedEvent={setSelectedEvent}
-      ></Timeline>
-      <Timeline
-        name="Auto tags"
-        events={autoTagEvents}
-        minTime={minTime}
-        maxTime={maxTime}
-        onMouseDown={(posX: number) => handleMouseDown('autoTags', posX)}
-        onMouseMove={(posX: number) => handleMouseMove('autoTags', posX)}
-        onMouseUp={(posX: number) => handleMouseUp('autoTags', posX)}
-        selectionPercentages={activeSelectionTimeline === 'autoTags' ? selection : null}
-        onCreateTagName={handleCreateTagName}
-        onCreateTag={handleCreateTag}
-        selectedEvent={selectedEvent}
-        setSelectedEvent={setSelectedEvent}
-      ></Timeline>
-      <Timeline
-        name="Active"
-        events={activeStateEvents}
-        minTime={minTime}
-        maxTime={maxTime}
-        onMouseDown={(posX: number) => handleMouseDown('active', posX)}
-        onMouseMove={(posX: number) => handleMouseMove('active', posX)}
-        onMouseUp={(posX: number) => handleMouseUp('active', posX)}
-        selectionPercentages={activeSelectionTimeline === 'active' ? selection : null}
-        onCreateTagName={handleCreateTagName}
-        onCreateTag={handleCreateTag}
-        selectedEvent={selectedEvent}
-        setSelectedEvent={setSelectedEvent}
-      ></Timeline>
-      <Timeline
-        name="Programs"
-        events={programEvents}
-        minTime={minTime}
-        maxTime={maxTime}
-        onMouseDown={(posX: number) => handleMouseDown('programs', posX)}
-        onMouseMove={(posX: number) => handleMouseMove('programs', posX)}
-        onMouseUp={(posX: number) => handleMouseUp('programs', posX)}
-        selectionPercentages={activeSelectionTimeline === 'programs' ? selection : null}
-        onCreateTagName={handleCreateTagName}
-        onCreateTag={handleCreateTag}
-        selectedEvent={selectedEvent}
-        setSelectedEvent={setSelectedEvent}
-      ></Timeline>
+      <div>
+        <Timeline
+          name="Tags"
+          events={tagEvents}
+          minTime={minTime}
+          maxTime={maxTime}
+          onMouseDown={(posX: number) => handleMouseDown(TimelineType.Tag, posX)}
+          onMouseMove={(posX: number) => handleMouseMove(TimelineType.Tag, posX)}
+          onMouseUp={(posX: number) => handleMouseUp(TimelineType.Tag, posX)}
+          selectionPercentages={activeSelectionTimeline === TimelineType.Tag ? selection : null}
+          onCreateTagName={handleCreateTagName}
+          onCreateTag={handleCreateTag}
+          selectedEvent={selectedEvent}
+          setSelectedEvent={setSelectedEvent}
+        ></Timeline>
+        <Timeline
+          name="Auto tags"
+          events={autoTagEvents}
+          minTime={minTime}
+          maxTime={maxTime}
+          onMouseDown={(posX: number) => handleMouseDown(TimelineType.AutoTag, posX)}
+          onMouseMove={(posX: number) => handleMouseMove(TimelineType.AutoTag, posX)}
+          onMouseUp={(posX: number) => handleMouseUp(TimelineType.AutoTag, posX)}
+          selectionPercentages={activeSelectionTimeline === TimelineType.AutoTag ? selection : null}
+          onCreateTagName={handleCreateTagName}
+          onCreateTag={handleCreateTag}
+          selectedEvent={selectedEvent}
+          setSelectedEvent={setSelectedEvent}
+        ></Timeline>
+        <Timeline
+          name="Active"
+          events={activeStateEvents}
+          minTime={minTime}
+          maxTime={maxTime}
+          onMouseDown={(posX: number) => handleMouseDown(TimelineType.Active, posX)}
+          onMouseMove={(posX: number) => handleMouseMove(TimelineType.Active, posX)}
+          onMouseUp={(posX: number) => handleMouseUp(TimelineType.Active, posX)}
+          selectionPercentages={activeSelectionTimeline === TimelineType.Active ? selection : null}
+          onCreateTagName={handleCreateTagName}
+          onCreateTag={handleCreateTag}
+          selectedEvent={selectedEvent}
+          setSelectedEvent={setSelectedEvent}
+        ></Timeline>
+        <Timeline
+          name="Programs"
+          events={programEvents}
+          minTime={minTime}
+          maxTime={maxTime}
+          onMouseDown={(posX: number) => handleMouseDown(TimelineType.Program, posX)}
+          onMouseMove={(posX: number) => handleMouseMove(TimelineType.Program, posX)}
+          onMouseUp={(posX: number) => handleMouseUp(TimelineType.Program, posX)}
+          selectionPercentages={activeSelectionTimeline === TimelineType.Program ? selection : null}
+          onCreateTagName={handleCreateTagName}
+          onCreateTag={handleCreateTag}
+          selectedEvent={selectedEvent}
+          setSelectedEvent={setSelectedEvent}
+        ></Timeline>
+      </div>
+      <div>
+        {}
+        <div></div>
+      </div>
     </div>
   );
 }

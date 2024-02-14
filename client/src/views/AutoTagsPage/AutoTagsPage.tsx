@@ -27,7 +27,11 @@ function AutoTagsPage({}: AutoTagsPageProps) {
         {sortBy(autoTags || [], (autoTag) => autoTag.priority).map(
           (autoTag): ReactNode => (
             <li className="c-row" key={'auto-tag-' + autoTag.id}>
-              <span>
+              <span
+                className="w-16 h-16 ml-2"
+                style={{ backgroundColor: autoTag.tagName?.color }}
+              ></span>
+              <span className="flex-grow">
                 {autoTag.priority} {autoTag.name}{' '}
               </span>
               <NavLink

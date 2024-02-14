@@ -57,11 +57,11 @@ export class ActivitiesListener implements OnApplicationBootstrap {
           // ignore entry since it's the same activity as this.lastActivity
         } else {
           // Activity changes, write last activity to database
+          const { icon, ...info } = windowInfo;
           console.log(
             'changed application or title: ',
             new Date().toISOString(),
-            windowInfo?.application,
-            windowInfo?.title
+            JSON.stringify(info)
           );
           await this.activitiesService.create({
             programName: this.lastActivity.programName,

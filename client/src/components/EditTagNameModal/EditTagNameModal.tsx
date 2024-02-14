@@ -9,6 +9,7 @@ import {
   useAutoTagsServiceAutoTagsControllerFindOne,
   useAutoTagsServiceAutoTagsControllerFindOneKey,
   useTagNamesServiceTagNamesControllerCreate,
+  useTagNamesServiceTagNamesControllerFindOne,
   useTagNamesServiceTagNamesControllerUpdate,
   useTagsServiceTagsControllerFindOne,
 } from '../../generated/api/queries';
@@ -23,7 +24,7 @@ function EditTagNameModal() {
   const [color, setColor] = useState<string>(COLOR_LIST[0]);
   const { mutateAsync: createTagName } = useTagNamesServiceTagNamesControllerCreate();
   const { mutateAsync: updateTagName } = useTagNamesServiceTagNamesControllerUpdate();
-  const { data: tagNameResponse } = useTagsServiceTagsControllerFindOne(
+  const { data: tagNameResponse } = useTagNamesServiceTagNamesControllerFindOne(
     { id: id as string },
     [useAutoTagsServiceAutoTagsControllerFindOneKey, id as string],
     { enabled: !!id }

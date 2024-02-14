@@ -1,8 +1,10 @@
-import { TimelineEvent, TimelineEventType } from '../components/Timeline/Timeline.types';
+import { TimelineEvent, TimelineType } from '../components/Timeline/Timeline.types';
 import { Activity, BooleanOperator, ConditionVariable } from '../../../types/types';
 import { AutoTag, AutoTagCondition, ConditionOperator } from '../types/types';
 import { compact } from 'lodash-es';
 import { v4 as uuid } from 'uuid';
+
+const COMBINE_TAGS_THRESHOLD = 5 * 60 * 1000;
 
 function splitConditionsOnOrOperators(conditions: AutoTagCondition[]): AutoTagCondition[][] {
   const groupedConditions: AutoTagCondition[][] = [];
@@ -60,7 +62,7 @@ export function calculateAutoTagEvents(
       const autoTag = validAutoTags.find((autoTag) => doesAutoTagMatch(autoTag, activity));
       if (autoTag) {
         return {
-          type: TimelineEventType.AutoTag,
+          type: TimelineType.AutoTag,
           startedAt: new Date(activity.startedAt),
           endedAt: new Date(activity.endedAt),
           color: autoTag.tagName?.color || '',
@@ -84,7 +86,7 @@ export function calculateAutoTagEvents(
         lastCombinedAutoTagEvent.info.tag === currentAutoTagEvent.info.tag &&
         new Date(currentAutoTagEvent.startedAt).getTime() -
           new Date(lastCombinedAutoTagEvent.endedAt).getTime() <
-          5000
+          COMBINE_TAGS_THRESHOLD
       ) {
         // Combine events
         lastCombinedAutoTagEvent.endedAt = currentAutoTagEvent.endedAt;
