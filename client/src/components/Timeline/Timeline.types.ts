@@ -1,5 +1,6 @@
 export enum TimelineType {
   Program = 'Program',
+  Website = 'Website',
   Tag = 'Tag',
   AutoTag = 'AutoTag',
   Active = 'Active',

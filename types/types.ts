@@ -6,6 +6,14 @@ export interface Activity {
   endedAt: string;
 }
 
+export interface Website {
+  id: string;
+  websiteTitle: string;
+  websiteUrl: string;
+  startedAt: string;
+  endedAt: string;
+}
+
 export interface ActiveState {
   id: string;
   isActive: boolean;

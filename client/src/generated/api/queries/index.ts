@@ -4,18 +4,34 @@ import { UpdateTagDto } from "../requests/models/UpdateTagDto";
 import { UpdateAutoTagsDto } from "../requests/models/UpdateAutoTagsDto";
 import { TagNameDto } from "../requests/models/TagNameDto";
 import { TagDto } from "../requests/models/TagDto";
+import { CreateWebsiteDto } from "../requests/models/CreateWebsiteDto";
 import { CreateTagNameDto } from "../requests/models/CreateTagNameDto";
 import { CreateTagDto } from "../requests/models/CreateTagDto";
 import { CreateAutoTagDto } from "../requests/models/CreateAutoTagDto";
 import { AutoTagDto } from "../requests/models/AutoTagDto";
 import { AutoTagCountDto } from "../requests/models/AutoTagCountDto";
 import { AutoTagConditionDto } from "../requests/models/AutoTagConditionDto";
+import { WebsitesService } from "../requests/services/WebsitesService";
 import { TagsService } from "../requests/services/TagsService";
 import { TagNamesService } from "../requests/services/TagNamesService";
 import { StatusService } from "../requests/services/StatusService";
 import { AutoTagsService } from "../requests/services/AutoTagsService";
 import { ActivitiesService } from "../requests/services/ActivitiesService";
 import { ActiveStatesService } from "../requests/services/ActiveStatesService";
+export const useWebsitesServiceWebsitesControllerCreate = (options?: Omit<UseMutationOptions<Awaited<ReturnType<typeof WebsitesService.websitesControllerCreate>>, unknown, {
+    requestBody: CreateWebsiteDto;
+}, unknown>, "mutationFn">) => useMutation({ mutationFn: ({ requestBody }) => WebsitesService.websitesControllerCreate(requestBody), ...options });
+export const useWebsitesServiceWebsitesControllerFindAllKey = "WebsitesServiceWebsitesControllerFindAll";
+export const useWebsitesServiceWebsitesControllerFindAll = <TQueryKey extends Array<unknown> = unknown[]>({ startedAt, endedAt }: {
+    startedAt: string;
+    endedAt: string;
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<Awaited<ReturnType<typeof WebsitesService.websitesControllerFindAll>>, unknown, Awaited<ReturnType<typeof WebsitesService.websitesControllerFindAll>>, unknown[]>, "queryKey" | "queryFn" | "initialData">) => useQuery({ queryKey: [useWebsitesServiceWebsitesControllerFindAllKey, ...(queryKey ?? [{ startedAt, endedAt }])], queryFn: () => WebsitesService.websitesControllerFindAll(startedAt, endedAt), ...options });
+export const useWebsitesServiceWebsitesControllerFindOne = (options?: Omit<UseMutationOptions<Awaited<ReturnType<typeof WebsitesService.websitesControllerFindOne>>, unknown, {
+    id: string;
+}, unknown>, "mutationFn">) => useMutation({ mutationFn: ({ id }) => WebsitesService.websitesControllerFindOne(id), ...options });
+export const useWebsitesServiceWebsitesControllerDelete = (options?: Omit<UseMutationOptions<Awaited<ReturnType<typeof WebsitesService.websitesControllerDelete>>, unknown, {
+    id: string;
+}, unknown>, "mutationFn">) => useMutation({ mutationFn: ({ id }) => WebsitesService.websitesControllerDelete(id), ...options });
 export const useTagsServiceTagsControllerCreate = (options?: Omit<UseMutationOptions<Awaited<ReturnType<typeof TagsService.tagsControllerCreate>>, unknown, {
     requestBody: CreateTagDto;
 }, unknown>, "mutationFn">) => useMutation({ mutationFn: ({ requestBody }) => TagsService.tagsControllerCreate(requestBody), ...options });

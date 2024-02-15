@@ -20,6 +20,7 @@ import {
   useTagsServiceTagsControllerCreate,
   useTagsServiceTagsControllerFindAll,
   useTagsServiceTagsControllerRemove,
+  useWebsitesServiceWebsitesControllerFindAll,
 } from '../../generated/api/queries';
 import type { ActiveState, Activity, AutoTag, Tag, TagName } from '../../types/types';
 import { COLOR_LIST } from './TimelinesPage.consts';
@@ -31,10 +32,6 @@ import { viewDateAtom } from '../../store/store';
 function TimelinesPage() {
   const [viewDate] = useAtom(viewDateAtom);
 
-  const tagsResponse = useTagsServiceTagsControllerFindAll({
-    startedAt: startOfDay(viewDate).toISOString(),
-    endedAt: endOfDay(viewDate).toISOString(),
-  });
   const {
     data: tags,
     isLoading: isLoadingTags,
@@ -45,6 +42,11 @@ function TimelinesPage() {
   });
   const { data: programs, isLoading: isLoadingPrograms } =
     useActivitiesServiceActivitiesControllerFindAll({
+      startedAt: startOfDay(viewDate).toISOString(),
+      endedAt: endOfDay(viewDate).toISOString(),
+    });
+  const { data: websites, isLoading: isLoadingWebsites } =
+    useWebsitesServiceWebsitesControllerFindAll({
       startedAt: startOfDay(viewDate).toISOString(),
       endedAt: endOfDay(viewDate).toISOString(),
     });
@@ -88,6 +90,21 @@ function TimelinesPage() {
       };
     }
   );
+  const websiteEvents = (websites || []).map(
+    (website: Activity, websiteIndex: number): TimelineEvent => {
+      return {
+        id: website.id,
+        info: {
+          programName: website.programName,
+          windowTitle: website.windowTitle,
+        },
+        color: COLOR_LIST[websiteIndex % COLOR_LIST.length],
+        startedAt: new Date(website.startedAt),
+        endedAt: new Date(website.endedAt),
+        type: TimelineType.Program,
+      };
+    }
+  );
   const activeStateEvents = (activeStates || []).map(
     (activeState: ActiveState, activeStateIndex: number): TimelineEvent => {
       return {
@@ -112,16 +129,17 @@ function TimelinesPage() {
   const [selectionEndPercent, setSelectionEndPercent] = useState<number | null>(null);
   const [activeSelectionTimeline, setActiveSelectionTimeline] = useState<string | null>(null);
 
-  const [selectedTimeline, setSelectedTimeline] = useState<TimelineType>(TimelineType.Programs);
+  const [selectedTimeline, setSelectedTimeline] = useState<TimelineType>(TimelineType.Program);
   const [selectedEvent, setSelectedEvent] = useState<TimelineEvent | null>(null);
 
+  const allEvents = [...programEvents, ...websiteEvents];
   const minTime = subHours(
-    minBy(programEvents, (event: TimelineEvent) => event.startedAt.getTime())?.startedAt ||
+    minBy(allEvents, (event: TimelineEvent) => event.startedAt.getTime())?.startedAt ||
       startOfDay(new Date()),
     1
   );
   const maxTime = addHours(
-    maxBy(programEvents, (event: TimelineEvent) => event.endedAt.getTime())?.endedAt ||
+    maxBy(allEvents, (event: TimelineEvent) => event.endedAt.getTime())?.endedAt ||
       endOfDay(new Date()),
     1
   );
@@ -293,6 +311,20 @@ function TimelinesPage() {
           onMouseMove={(posX: number) => handleMouseMove(TimelineType.Program, posX)}
           onMouseUp={(posX: number) => handleMouseUp(TimelineType.Program, posX)}
           selectionPercentages={activeSelectionTimeline === TimelineType.Program ? selection : null}
+          onCreateTagName={handleCreateTagName}
+          onCreateTag={handleCreateTag}
+          selectedEvent={selectedEvent}
+          setSelectedEvent={setSelectedEvent}
+        ></Timeline>
+        <Timeline
+          name="Websites"
+          events={websiteEvents}
+          minTime={minTime}
+          maxTime={maxTime}
+          onMouseDown={(posX: number) => handleMouseDown(TimelineType.Website, posX)}
+          onMouseMove={(posX: number) => handleMouseMove(TimelineType.Website, posX)}
+          onMouseUp={(posX: number) => handleMouseUp(TimelineType.Website, posX)}
+          selectionPercentages={activeSelectionTimeline === TimelineType.Website ? selection : null}
           onCreateTagName={handleCreateTagName}
           onCreateTag={handleCreateTag}
           selectedEvent={selectedEvent}

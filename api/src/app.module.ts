@@ -8,6 +8,7 @@ import { TagNamesModule } from './tag-names/tag-names.module';
 import { AutoTagsModule } from './auto-tags/auto-tags.module';
 import { ActiveStatesModule } from './activeStates/active-states.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { WebsitesModule } from './websites/websites.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     TagsModule,
     TagNamesModule,
     AutoTagsModule,
+    WebsitesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

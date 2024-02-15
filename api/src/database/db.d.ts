@@ -34,10 +34,19 @@ export interface Tags {
   endedAt: string;
 }
 
+export interface Websites {
+  id: string;
+  websiteTitle: string | null;
+  websiteUrl: string | null;
+  startedAt: string;
+  endedAt: string;
+}
+
 export interface DB {
   activeStates: ActiveStates;
   activities: Activities;
   autoTags: AutoTags;
   tagNames: TagNames;
   tags: Tags;
+  websites: Websites;
 }

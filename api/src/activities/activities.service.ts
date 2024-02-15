@@ -77,6 +77,6 @@ export class ActivitiesService {
   }
 
   async delete(id: string): Promise<void> {
-    await this.databaseService.db.deleteFrom('tagNames').where('id', '=', id).execute();
+    await this.databaseService.db.deleteFrom('activities').where('id', '=', id).execute();
   }
 }

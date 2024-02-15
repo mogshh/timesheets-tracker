@@ -83,6 +83,6 @@ export class ActiveStatesService {
   }
 
   async delete(id: string): Promise<void> {
-    await this.databaseService.db.deleteFrom('tagNames').where('id', '=', id).execute();
+    await this.databaseService.db.deleteFrom('activeStates').where('id', '=', id).execute();
   }
 }
