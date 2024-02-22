@@ -17,12 +17,19 @@ chrome.tabs.onHighlighted.addListener(
 )
 
 async function getTabInfo(tabId) {
-  const tabs = await chrome.tabs.query({active: true, lastFocusedWindow: true});
-  console.log({url: tabs[0].url, title: tabs[0].title});
-  fetch({
-    href: 'http://localhost:55588/websites',
-    body: JSON.stringify({
-      
+  try {
+    const tabs = await chrome.tabs.query({active: true, lastFocusedWindow: true});
+    console.log({url: tabs[0].url, title: tabs[0].title});
+    await fetch({
+      href: 'http://localhost:55588/websites',
+      method: 'POST',
+      body: JSON.stringify({
+        websiteTitle: tabs[0].title,
+        websiteUrl: tabs[0].url,
+        startedAt: new Date().toISOString(),
+      }),
     })
-  })
+  } catch(err) {
+    console.error(err);
+  }
 }

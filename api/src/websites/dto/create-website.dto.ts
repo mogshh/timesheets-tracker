@@ -29,13 +29,4 @@ export class CreateWebsiteDto {
     default: undefined,
   })
   startedAt: string;
-
-  @IsString()
-  @Type(() => String)
-  @ApiPropertyOptional({
-    type: String,
-    description: 'End time in ISO format',
-    default: undefined,
-  })
-  endedAt: string;
 }

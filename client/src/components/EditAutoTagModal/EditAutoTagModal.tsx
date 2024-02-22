@@ -17,7 +17,6 @@ import ToggleButton from '../ToggleButton/ToggleButton';
 import {
   useAutoTagsServiceAutoTagsControllerCount,
   useAutoTagsServiceAutoTagsControllerCreate,
-  useAutoTagsServiceAutoTagsControllerFindAllKey,
   useAutoTagsServiceAutoTagsControllerFindOne,
   useAutoTagsServiceAutoTagsControllerFindOneKey,
   useAutoTagsServiceAutoTagsControllerUpdate,
@@ -27,7 +26,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ROUTE_PARTS } from '../../App';
 import { CreateAutoTagDto, UpdateAutoTagsDto } from '../../generated/api/requests';
 import { COLOR_LIST } from '../../views/TimelinesPage/TimelinesPage.consts';
-import { QueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 
 const NEW_CONDITION = {

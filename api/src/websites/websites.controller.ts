@@ -1,21 +1,36 @@
-import { Controller, Get, Post, Body, Query, Param, Patch, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  Param,
+  Delete,
+  NotFoundException,
+} from '@nestjs/common';
 import { WebsitesService } from './websites.service';
 import type { Website } from '../types/types';
 import { ApiBody, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { endOfDay, startOfDay } from 'date-fns';
 import { CreateWebsiteDto } from './dto/create-website.dto';
+import { ActivitiesService } from '../activities/activities.service';
+import { compact } from 'lodash';
 
 @ApiTags('websites')
 @Controller('websites')
 export class WebsitesController {
-  constructor(private readonly websitesService: WebsitesService) {}
+  constructor(
+    private readonly websitesService: WebsitesService,
+    private readonly activitiesService: ActivitiesService
+  ) {}
 
   @Post()
   @ApiBody({
     type: CreateWebsiteDto,
     required: true,
   })
-  create(@Body() createWebsiteDto: Website) {
+  async create(@Body() createWebsiteDto: Website): Promise<Website | null> {
+    console.log('tracking website: ' + createWebsiteDto.websiteUrl);
     return this.websitesService.create(createWebsiteDto);
   }
 
@@ -32,21 +47,41 @@ export class WebsitesController {
     required: true,
     example: endOfDay(new Date()).toISOString(),
   })
-  findAll(
+  async findAll(
     @Query('startedAt') startedAt: string,
     @Query('endedAt') endedAt: string
   ): Promise<Website[]> {
-    return this.websitesService.findAll(startedAt, endedAt);
+    // Set endedAt to the startedAt of the next program entry
+    const websites = await this.websitesService.findAll(startedAt, endedAt);
+    const programs = await this.activitiesService.findAll(startedAt, endedAt);
+    return compact(
+      websites.map((website) => {
+        const nextProgram = programs.find((program) => program.startedAt > website.startedAt);
+        if (!nextProgram) {
+          return null;
+        }
+        return {
+          ...website,
+          endedAt: nextProgram.startedAt,
+        };
+      })
+    );
   }
 
-  @Patch()
+  @Get(':id')
   @ApiParam({
     type: 'string',
     name: 'id',
     required: true,
   })
-  findOne(@Param('id') id: string): Promise<Website> {
-    return this.websitesService.findOne(id);
+  async findOne(@Param('id') id: string): Promise<Website> {
+    const website = await this.websitesService.findOne(id);
+    const nextProgram = await this.activitiesService.findByNextStartedAt(website.startedAt);
+    if (!nextProgram) {
+      throw new NotFoundException("Couldn't determine the endedAt date of this website");
+    }
+    website.endedAt = nextProgram.endedAt;
+    return website;
   }
 
   @Delete()

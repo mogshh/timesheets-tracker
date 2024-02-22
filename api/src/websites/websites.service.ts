@@ -2,22 +2,13 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { Website } from '../types/types';
 import { DatabaseService } from '../database/database.service';
 import { v4 as uuid } from 'uuid';
-import { differenceInSeconds, max, min } from 'date-fns';
 import { CreateWebsiteDto } from './dto/create-website.dto';
 import { unflatten } from 'nested-objects-util';
 import { UpdateWebsiteDto } from './dto/update-website.dto';
 
-const MINIMUM_ACTIVITY_DURATION_SECONDS = 5;
-
 @Injectable()
 export class WebsitesService {
-  private selectList: (keyof Website)[] = [
-    'id',
-    'websiteTitle',
-    'websiteUrl',
-    'startedAt',
-    'endedAt',
-  ];
+  private selectList: (keyof Website)[] = ['id', 'websiteTitle', 'websiteUrl', 'startedAt'];
 
   constructor(@Inject(DatabaseService) private databaseService: DatabaseService) {}
 
@@ -30,13 +21,9 @@ export class WebsitesService {
       .selectFrom('websites')
       .select(this.selectList)
       .where('websites.startedAt', '>', startedAt)
-      .where('websites.endedAt', '<', endedAt)
+      .where('websites.startedAt', '<', endedAt)
       .execute();
-    const realResults = results.filter((result) => {
-      const diff = differenceInSeconds(new Date(result.endedAt), new Date(result.startedAt));
-      return diff > MINIMUM_ACTIVITY_DURATION_SECONDS;
-    });
-    return realResults.map(this.adapt);
+    return results.map(this.adapt);
   }
 
   async findOne(id: string): Promise<Website> {
@@ -56,8 +43,7 @@ export class WebsitesService {
         id: uuid(),
         websiteTitle: website.websiteTitle,
         websiteUrl: website.websiteUrl,
-        startedAt: min([new Date(website.startedAt), new Date(website.endedAt)]).toISOString(),
-        endedAt: max([new Date(website.startedAt), new Date(website.endedAt)]).toISOString(),
+        startedAt: website.startedAt,
       })
       .returning(this.selectList)
       .execute();
@@ -72,7 +58,7 @@ export class WebsitesService {
       .returning('id')
       .executeTakeFirstOrThrow();
 
-    return this.findOne(result.id);
+    return await this.findOne(result.id);
   }
 
   async delete(id: string): Promise<void> {

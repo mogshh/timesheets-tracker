@@ -34,7 +34,7 @@ export class ActiveStatesController {
     return this.activeStatesService.findAll(startedAt, endedAt);
   }
 
-  @Patch()
+  @Get()
   @ApiParam({
     type: 'string',
     name: 'id',

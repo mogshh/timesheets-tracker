@@ -1,6 +1,6 @@
 import { TimelineEvent, TimelineType } from '../components/Timeline/Timeline.types';
 import { Activity, BooleanOperator, ConditionVariable } from '../../../types/types';
-import { AutoTag, AutoTagCondition, ConditionOperator } from '../types/types';
+import { AutoTag, AutoTagCondition, ConditionOperator, Website } from '../types/types';
 import { compact } from 'lodash-es';
 import { v4 as uuid } from 'uuid';
 
@@ -24,8 +24,17 @@ function splitConditionsOnOrOperators(conditions: AutoTagCondition[]): AutoTagCo
   return groupedConditions;
 }
 
-function doesConditionMatch(activity: Activity, condition: AutoTagCondition): boolean {
-  const toCheckValue = activity[condition.variable as ConditionVariable];
+function doesConditionMatchActivity(
+  activity: Activity | Website,
+  condition: AutoTagCondition
+): boolean {
+  if (!condition.variable) {
+    return false;
+  }
+  const toCheckValue: string = (activity as any)[condition.variable];
+  if (!toCheckValue) {
+    return false;
+  }
   switch (condition.operator) {
     case ConditionOperator.contains:
       return toCheckValue.toLowerCase().includes(condition.value.toLowerCase());
@@ -45,7 +54,7 @@ function doesConditionMatch(activity: Activity, condition: AutoTagCondition): bo
 function doesAutoTagMatch(autoTag: AutoTag, activity: Activity): boolean {
   const groupedConditions = splitConditionsOnOrOperators(autoTag.conditions);
   const matchedGroup = groupedConditions.find((groupedCondition) => {
-    return groupedCondition.every((condition) => doesConditionMatch(activity, condition));
+    return groupedCondition.every((condition) => doesConditionMatchActivity(activity, condition));
   });
   return !!matchedGroup;
 }

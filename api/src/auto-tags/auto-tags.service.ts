@@ -90,7 +90,7 @@ export class AutoTagsService {
       .returning('id')
       .executeTakeFirstOrThrow();
 
-    return this.adapt(await this.findOne(result.id));
+    return await this.findOne(result.id);
   }
 
   async delete(id: string) {

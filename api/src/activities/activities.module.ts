@@ -8,5 +8,6 @@ import { ActivitiesListener } from './activities.listener';
   imports: [DatabaseModule],
   controllers: [ActivitiesController],
   providers: [ActivitiesService, ActivitiesListener],
+  exports: [ActivitiesService],
 })
 export class ActivitiesModule {}

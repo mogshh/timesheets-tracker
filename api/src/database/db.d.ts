@@ -39,7 +39,6 @@ export interface Websites {
   websiteTitle: string | null;
   websiteUrl: string | null;
   startedAt: string;
-  endedAt: string;
 }
 
 export interface DB {

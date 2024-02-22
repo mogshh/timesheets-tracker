@@ -50,6 +50,18 @@ export class ActivitiesService {
     return this.adapt(result);
   }
 
+  async findByNextStartedAt(startedAt: string): Promise<Activity> {
+    const result = await this.databaseService.db
+      .selectFrom('activities')
+      .select(this.selectList)
+      .where('startedAt', '>', startedAt)
+      .orderBy('startedAt', 'asc')
+      .limit(1)
+      .executeTakeFirstOrThrow();
+
+    return this.adapt(result);
+  }
+
   async create(activity: CreateActivityDto): Promise<Activity> {
     const createdActivity = await this.databaseService.db
       .insertInto('activities')
@@ -65,16 +77,16 @@ export class ActivitiesService {
     return this.adapt(createdActivity);
   }
 
-  async update(id: string, updateActivityDto: UpdateActivityDto): Promise<Activity> {
-    const result = await this.databaseService.db
-      .updateTable('activities')
-      .set(updateActivityDto)
-      .where('id', '=', id)
-      .returning('id')
-      .executeTakeFirstOrThrow();
-
-    return this.findOne(result.id);
-  }
+  // async update(id: string, updateActivityDto: UpdateActivityDto): Promise<Activity> {
+  //   const result = await this.databaseService.db
+  //     .updateTable('activities')
+  //     .set(updateActivityDto)
+  //     .where('id', '=', id)
+  //     .returning('id')
+  //     .executeTakeFirstOrThrow();
+  //
+  //   return await this.findOne(result.id);
+  // }
 
   async delete(id: string): Promise<void> {
     await this.databaseService.db.deleteFrom('activities').where('id', '=', id).execute();

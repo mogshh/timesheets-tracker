@@ -79,7 +79,7 @@ export class ActiveStatesService {
       .returning('id')
       .executeTakeFirstOrThrow();
 
-    return this.findOne(id);
+    return await this.findOne(id);
   }
 
   async delete(id: string): Promise<void> {

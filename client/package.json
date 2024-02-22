@@ -9,7 +9,8 @@
     "lint:format": "prettier  --loglevel warn --write \"./**/*.{js,jsx,ts,tsx,css,md,json}\" ",
     "lint": "yarn lint:format && yarn lint:fix ",
     "type-check": "tsc",
-    "generate-api-helpers": "openapi-rq -c fetch -i http://localhost:55577/docs-yaml -o ./src/generated/api"
+    "generate-api-helpers": "openapi-rq -c fetch -i http://localhost:55577/docs-yaml -o ./src/generated/api",
+    "bump": "npx bump-package-versions --part=patch --strategy=highest ./package.json ../package.json ../api/package.json"
   },
   "dependencies": {
     "@tanstack/react-query": "4.36.1",

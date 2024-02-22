@@ -34,7 +34,7 @@ export class ActivitiesController {
     return this.activitiesService.findAll(startedAt, endedAt);
   }
 
-  @Patch()
+  @Get()
   @ApiParam({
     type: 'string',
     name: 'id',

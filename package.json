@@ -5,7 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "bump": ""
+    "bump": "npx bump-package-versions --part=patch --strategy=highest ./package.json ./api/package.json ./client/package.json",
+    "create-exe--build-js": "cd api && npm run build",
+    "create-exe--create-blob": "node --experimental-sea-config exe-config.json",
+    "create-exe--copy-node": "node -e \"require('fs').copyFileSync(process.execPath, 'dist-exe/timesheet-tracker.exe')\"",
+    "create-exe--create-exe": "npx postject dist/timesheet-tracker.exe NODE_SEA_BLOB dist/exe-prep.blob --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2",
+    "create-exe": "npm run create-exe--build-js && npm run create-exe--create-blob && npm run create-exe--copy-node && npm run create-exe--create-exe"
   },
   "author": "Bert Verhelst",
   "license": "MIT",
@@ -20,5 +25,8 @@
     "eslint-plugin-prettier": "^4.2.1",
     "prettier": "^3.0.0",
     "ts-node": "^10.9.1"
+  },
+  "dependencies": {
+    "esbuild": "^0.20.1"
   }
 }

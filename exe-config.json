@@ -1,0 +1,4 @@
+{
+  "main": "api/dist/src/main.js",
+  "output": "dist-exe/exe-prep.blob"
+}

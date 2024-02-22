@@ -59,6 +59,8 @@ export enum BooleanOperator {
 export enum ConditionVariable {
   windowTitle = 'windowTitle',
   programName = 'programName',
+  websiteTitle = 'websiteTitle',
+  websiteUrl = 'websiteUrl',
 }
 
 export enum ConditionOperator {

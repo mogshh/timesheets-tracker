@@ -37,8 +37,7 @@ export class DatabaseService implements OnModuleInit {
         "id"           text NOT NULL PRIMARY KEY,
         "websiteTitle" text,
         "websiteUrl"   text,
-        "startedAt"    text NOT NULL,
-        "endedAt"      text NOT NULL
+        "startedAt"    text NOT NULL
       );
     `.execute(this.db);
 

@@ -76,7 +76,7 @@ export class TagsService {
       .where('id', '=', id)
       .executeTakeFirstOrThrow();
 
-    return this.findOne(result.id);
+    return await this.findOne(result.id);
   }
 
   async remove(id: string): Promise<void> {
