@@ -1,5 +1,5 @@
 import './AutoTagsPage.scss';
-import { NavLink, Outlet, useParams } from 'react-router-dom';
+import { NavLink, Outlet } from 'react-router-dom';
 import {
   useAutoTagsServiceAutoTagsControllerDelete,
   useAutoTagsServiceAutoTagsControllerFindAll,
@@ -8,13 +8,16 @@ import React, { ReactNode } from 'react';
 import { sortBy } from 'lodash-es';
 import { ROUTE_PARTS } from '../../App';
 import { toast } from 'react-toastify';
+import { AutoTag } from '../../types/types';
 
 interface AutoTagsPageProps {}
 
 function AutoTagsPage({}: AutoTagsPageProps) {
-  const { data: autoTags, refetch: refetchAutoTags } = useAutoTagsServiceAutoTagsControllerFindAll({
-    term: '',
-  });
+  const { data: autoTagItems, refetch: refetchAutoTags } =
+    useAutoTagsServiceAutoTagsControllerFindAll({
+      term: '',
+    });
+  const autoTags = autoTagItems as AutoTag[];
   const { mutateAsync: deleteAutoTag } = useAutoTagsServiceAutoTagsControllerDelete();
 
   return (

@@ -1,0 +1,17 @@
+[package]
+name = "timesheet-tracker"
+version = "0.1.0"
+edition = "2021"
+
+[build.dependencies]
+winres = "0.1"
+
+[package.metadata.winres]
+icon = "../icon/icon128.ico"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[build-dependencies]
+winres = "0.1.12"

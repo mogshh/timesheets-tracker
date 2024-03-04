@@ -1,4 +1,4 @@
 {
-  "main": "api/dist/src/main.js",
+  "main": "api/dist/src/start-server.js",
   "output": "dist-exe/exe-prep.blob"
 }

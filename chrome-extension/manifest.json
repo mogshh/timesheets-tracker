@@ -23,14 +23,12 @@
       "128": "icons/icon128.png"
     }
   },
+  "host_permissions": ["http://localhost:55577/websites"],
   "background": {
     "service_worker": "src/background/background.js"
   },
   "permissions": [
     "activeTab",
-    "tabs",
-    "scripting",
-    "network",
-    "networking"
+    "tabs"
   ]
 }

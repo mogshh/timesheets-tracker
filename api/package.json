@@ -9,6 +9,7 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
+    "start-server": "cd dist/src && node start-server.js",
     "dev:api": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
@@ -20,8 +21,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "bump": "npx bump-package-versions --part=patch --strategy=highest ./package.json ../package.json ../client/package.json",
-    "generate-database-types": "rm src/database/db.d.ts && kysely-codegen --camel-case --dialect=sqlite --url=./timesheets-tracker-database.sqlite3 --out-file=./src/database/db.d.ts",
-    "build-js": "esbuild src/main.ts --bundle --platform=node --outfile=../dist-exe/main.js"
+    "generate-database-types": "rm src/database/db.d.ts && kysely-codegen --camel-case --dialect=sqlite --url=./timesheets-tracker-database.sqlite3 --out-file=./src/database/db.d.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -29,6 +29,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/schedule": "^4.0.0",
+    "@nestjs/serve-static": "^4.0.1",
     "@nestjs/swagger": "^7.1.6",
     "@paymoapp/active-window": "^1.2.3",
     "@paymoapp/real-idle": "^1.0.5",

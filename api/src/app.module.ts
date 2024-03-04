@@ -9,9 +9,14 @@ import { AutoTagsModule } from './auto-tags/auto-tags.module';
 import { ActiveStatesModule } from './activeStates/active-states.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { WebsitesModule } from './websites/websites.module';
+import { join } from 'node:path';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, 'client'),
+    }),
     ScheduleModule.forRoot(),
     ActivitiesModule,
     ActiveStatesModule,

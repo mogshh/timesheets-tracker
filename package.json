@@ -6,11 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "bump": "npx bump-package-versions --part=patch --strategy=highest ./package.json ./api/package.json ./client/package.json",
-    "create-exe--build-js": "cd api && npm run build",
-    "create-exe--create-blob": "node --experimental-sea-config exe-config.json",
-    "create-exe--copy-node": "node -e \"require('fs').copyFileSync(process.execPath, 'dist-exe/timesheet-tracker.exe')\"",
-    "create-exe--create-exe": "npx postject dist/timesheet-tracker.exe NODE_SEA_BLOB dist/exe-prep.blob --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2",
-    "create-exe": "npm run create-exe--build-js && npm run create-exe--create-blob && npm run create-exe--copy-node && npm run create-exe--create-exe"
+    "build-api": "cd api && npm run build && cp -r dist/* ../dist/api && cd ..",
+    "build-client": "cd client && npm run build && cp -r dist/* ../dist/client && cd ..",
+    "build-exe":  "cd exe && cargo build --release && cp target/release/timesheet-tracker.exe ../dist",
+    "build": "rm -rf ./dist && mkdir dist && cd dist && mkdir api && mkdir client && cd .. && npm run build-api && npm run build-client && npm run build-exe"
   },
   "author": "Bert Verhelst",
   "license": "MIT",
@@ -23,10 +22,8 @@
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
+    "nexe": "^4.0.0-rc.4",
     "prettier": "^3.0.0",
     "ts-node": "^10.9.1"
-  },
-  "dependencies": {
-    "esbuild": "^0.20.1"
   }
 }
