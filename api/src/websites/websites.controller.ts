@@ -29,7 +29,7 @@ export class WebsitesController {
     type: CreateWebsiteDto,
     required: true,
   })
-  async create(@Body() createWebsiteDto: Website): Promise<Website | null> {
+  async create(@Body() createWebsiteDto: CreateWebsiteDto): Promise<Website | null> {
     console.log('tracking website: ' + createWebsiteDto.websiteUrl);
     return this.websitesService.create(createWebsiteDto);
   }

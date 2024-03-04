@@ -23,7 +23,10 @@
       "128": "icons/icon128.png"
     }
   },
-  "host_permissions": ["http://localhost:55577/websites"],
+  "content_security_policy": {
+    "script-src": ["http://localhost:*", "http://127.0.0.1:*"]
+  },
+  "host_permissions": ["http://localhost:*/*"],
   "background": {
     "service_worker": "src/background/background.js"
   },
