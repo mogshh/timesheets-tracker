@@ -129,7 +129,7 @@ function EditAutoTagModal() {
         id: autoTag.id,
         requestBody: updatedAutoTag as UpdateAutoTagsDto,
       });
-      toast('Auto tag has been updated', { type: 'success' });
+      toast('Auto tag has been updated', { type: 'success', autoClose: false });
     } else {
       // create new auto tag
       await createAutoTag({
