@@ -22,12 +22,13 @@ import {
   useTagsServiceTagsControllerRemove,
   useWebsitesServiceWebsitesControllerFindAll,
 } from '../../generated/api/queries';
-import type { ActiveState, Activity, AutoTag, Tag, TagName } from '../../types/types';
+import type { ActiveState, Activity, AutoTag, Tag, TagName, Website } from '../../types/types';
 import { COLOR_LIST } from './TimelinesPage.consts';
 import { clamp, maxBy, minBy } from 'lodash-es';
 import { calculateAutoTagEvents } from '../../helpers/computeAutoTagEvents';
 import { useAtom } from 'jotai/index';
 import { viewDateAtom } from '../../store/store';
+import { stringToColorIndex } from '../../helpers/string-to-color-index';
 
 function TimelinesPage() {
   const [viewDate] = useAtom(viewDateAtom);
@@ -63,7 +64,7 @@ function TimelinesPage() {
   const { data: allAutoTags, isLoading: isLoadingAllAutoTags } =
     useAutoTagsServiceAutoTagsControllerFindAll({ term: undefined });
   const { mutateAsync: deleteTag } = useTagsServiceTagsControllerRemove();
-  const tagEvents = ((tags || []) as Tag[]).map((tag: Tag, tagIndex: number): TimelineEvent => {
+  const tagEvents = ((tags || []) as Tag[]).map((tag: Tag): TimelineEvent => {
     return {
       id: tag.id,
       info: {
@@ -75,36 +76,32 @@ function TimelinesPage() {
       type: TimelineType.Tag,
     };
   });
-  const programEvents = (programs || []).map(
-    (program: Activity, programIndex: number): TimelineEvent => {
-      return {
-        id: program.id,
-        info: {
-          programName: program.programName,
-          windowTitle: program.windowTitle,
-        },
-        color: COLOR_LIST[programIndex % COLOR_LIST.length],
-        startedAt: new Date(program.startedAt),
-        endedAt: new Date(program.endedAt),
-        type: TimelineType.Program,
-      };
-    }
-  );
-  const websiteEvents = (websites || []).map(
-    (website: Activity, websiteIndex: number): TimelineEvent => {
-      return {
-        id: website.id,
-        info: {
-          programName: website.programName,
-          windowTitle: website.windowTitle,
-        },
-        color: COLOR_LIST[websiteIndex % COLOR_LIST.length],
-        startedAt: new Date(website.startedAt),
-        endedAt: new Date(website.endedAt),
-        type: TimelineType.Program,
-      };
-    }
-  );
+  const programEvents = (programs || []).map((program: Activity): TimelineEvent => {
+    return {
+      id: program.id,
+      info: {
+        programName: program.programName,
+        windowTitle: program.windowTitle,
+      },
+      color: COLOR_LIST[stringToColorIndex(program.programName, COLOR_LIST.length)],
+      startedAt: new Date(program.startedAt),
+      endedAt: new Date(program.endedAt),
+      type: TimelineType.Program,
+    };
+  });
+  const websiteEvents = (websites || []).map((website: Website): TimelineEvent => {
+    return {
+      id: website.id,
+      info: {
+        websiteTitle: website.websiteTitle,
+        websiteUrl: website.websiteUrl,
+      },
+      color: COLOR_LIST[stringToColorIndex(new URL(website.websiteUrl).host, COLOR_LIST.length)],
+      startedAt: new Date(website.startedAt),
+      endedAt: new Date(website.endedAt),
+      type: TimelineType.Program,
+    };
+  });
   const activeStateEvents = (activeStates || []).map(
     (activeState: ActiveState, activeStateIndex: number): TimelineEvent => {
       return {
@@ -162,10 +159,28 @@ function TimelinesPage() {
   }, []);
 
   useEffect(() => {
-    if (!isLoadingPrograms && !isLoadingAllAutoTags && !!programs && !!allAutoTags) {
+    if (
+      !isLoadingPrograms &&
+      !isLoadingAllAutoTags &&
+      !isLoadingActiveStates &&
+      !isLoadingWebsites &&
+      !!programs &&
+      !!allAutoTags &&
+      !!activeStates &&
+      !!websites
+    ) {
       setAutoTagEvents(calculateAutoTagEvents(programs as Activity[], allAutoTags as AutoTag[]));
     }
-  }, [isLoadingPrograms, isLoadingAllAutoTags, allAutoTags, programs]);
+  }, [
+    isLoadingPrograms,
+    isLoadingAllAutoTags,
+    isLoadingActiveStates,
+    isLoadingWebsites,
+    allAutoTags,
+    programs,
+    activeStates,
+    websites,
+  ]);
 
   const handleKeyUpEvent = async (evt: KeyboardEvent) => {
     // Use state setter function to get latest state, since this event handler happens outside the react
