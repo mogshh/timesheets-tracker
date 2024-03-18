@@ -1,25 +1,40 @@
+@use './styles/variables' as *;
+
 .m-main-navigation {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-}
 
-.c-tabs {
-  display: block;
-  background-color: #ccc;
-  flex-grow: 1;
+  .c-tabs {
+    display: block;
+    background-color: #ccc;
 
-  > a {
-    display: inline-block;
-    padding: 1rem;
-    cursor: pointer;
+    > a {
+      display: inline-block;
+      padding: 1rem;
+      cursor: pointer;
 
-    &:hover {
-      background-color: #ddd;
+      &:hover {
+        background-color: #ddd;
+      }
+
+      &.active {
+        background-color: white;
+      }
     }
+  }
 
-    &.active {
-      background-color: white;
+  .c-global-search-bar {
+    flex-grow: 1;
+
+    input {
+      padding-left: 1rem;
+      height: $header-height;
+      box-sizing: border-box;
     }
+  }
+
+  .c-date-select {
+    flex-shrink: 1;
   }
 }

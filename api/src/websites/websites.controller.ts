@@ -14,7 +14,7 @@ import { ApiBody, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { endOfDay, startOfDay } from 'date-fns';
 import { CreateWebsiteDto } from './dto/create-website.dto';
 import { ActivitiesService } from '../activities/activities.service';
-import { compact } from 'lodash';
+import { compact, uniqBy } from 'lodash';
 
 @ApiTags('websites')
 @Controller('websites')
@@ -31,6 +31,11 @@ export class WebsitesController {
   })
   async create(@Body() createWebsiteDto: CreateWebsiteDto): Promise<Website | null> {
     console.log('tracking website: ' + createWebsiteDto.websiteUrl);
+    const existingWebsite = this.websitesService.findOneByStartTime(createWebsiteDto.startedAt);
+    if (existingWebsite) {
+      // Do not create the same website entry twice
+      return null;
+    }
     return this.websitesService.create(createWebsiteDto);
   }
 
@@ -55,16 +60,19 @@ export class WebsitesController {
     const websites = await this.websitesService.findAll(startedAt, endedAt);
     const programs = await this.activitiesService.findAll(startedAt, endedAt);
     return compact(
-      websites.map((website) => {
-        const nextProgram = programs.find((program) => program.startedAt > website.startedAt);
-        if (!nextProgram) {
-          return null;
-        }
-        return {
-          ...website,
-          endedAt: nextProgram.startedAt,
-        };
-      })
+      uniqBy(
+        websites.map((website) => {
+          const nextProgram = programs.find((program) => program.startedAt > website.startedAt);
+          if (!nextProgram) {
+            return null;
+          }
+          return {
+            ...website,
+            endedAt: nextProgram.startedAt,
+          };
+        }),
+        (event) => event.startedAt
+      )
     );
   }
 

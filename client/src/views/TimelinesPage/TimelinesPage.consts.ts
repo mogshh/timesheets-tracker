@@ -1,5 +1,3 @@
-import distinctColors from 'distinct-colors';
-
 export const COLOR_LIST = [
   '#2f4f4f',
   '#800000',

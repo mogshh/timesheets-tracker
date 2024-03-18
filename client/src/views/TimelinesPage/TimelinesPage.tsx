@@ -29,6 +29,7 @@ import { calculateAutoTagEvents } from '../../helpers/computeAutoTagEvents';
 import { useAtom } from 'jotai/index';
 import { viewDateAtom } from '../../store/store';
 import { stringToColorIndex } from '../../helpers/string-to-color-index';
+import EventsTable from '../../components/EventsTable/EventsTable';
 
 function TimelinesPage() {
   const [viewDate] = useAtom(viewDateAtom);
@@ -150,6 +151,14 @@ function TimelinesPage() {
     (windowInMilliseconds / 100) * (selectionEndPercent || 0)
   );
 
+  const timelineEvents: Record<TimelineType, TimelineEvent[]> = {
+    [TimelineType.Tag]: tagEvents,
+    [TimelineType.AutoTag]: autoTagEvents,
+    [TimelineType.Active]: activeStateEvents,
+    [TimelineType.Program]: programEvents,
+    [TimelineType.Website]: websiteEvents,
+  };
+
   useEffect(() => {
     document.addEventListener('keyup', handleKeyUpEvent);
 
@@ -253,6 +262,11 @@ function TimelinesPage() {
     await Promise.all([refetchTags(), refetchTagNamesCount()]);
   };
 
+  const setSelectedEventAndTimeline = (event: TimelineEvent) => {
+    setSelectedEvent(event);
+    setSelectedTimeline(event.type);
+  };
+
   if (isLoadingPrograms) {
     return <>Loading program activity...</>;
   }
@@ -272,6 +286,7 @@ function TimelinesPage() {
           ),
         }
       : null;
+
   return (
     <div className="c-app">
       <div>
@@ -287,7 +302,7 @@ function TimelinesPage() {
           onCreateTagName={handleCreateTagName}
           onCreateTag={handleCreateTag}
           selectedEvent={selectedEvent}
-          setSelectedEvent={setSelectedEvent}
+          setSelectedEvent={setSelectedEventAndTimeline}
         ></Timeline>
         <Timeline
           name="Auto tags"
@@ -301,7 +316,7 @@ function TimelinesPage() {
           onCreateTagName={handleCreateTagName}
           onCreateTag={handleCreateTag}
           selectedEvent={selectedEvent}
-          setSelectedEvent={setSelectedEvent}
+          setSelectedEvent={setSelectedEventAndTimeline}
         ></Timeline>
         <Timeline
           name="Active"
@@ -315,7 +330,7 @@ function TimelinesPage() {
           onCreateTagName={handleCreateTagName}
           onCreateTag={handleCreateTag}
           selectedEvent={selectedEvent}
-          setSelectedEvent={setSelectedEvent}
+          setSelectedEvent={setSelectedEventAndTimeline}
         ></Timeline>
         <Timeline
           name="Programs"
@@ -329,7 +344,7 @@ function TimelinesPage() {
           onCreateTagName={handleCreateTagName}
           onCreateTag={handleCreateTag}
           selectedEvent={selectedEvent}
-          setSelectedEvent={setSelectedEvent}
+          setSelectedEvent={setSelectedEventAndTimeline}
         ></Timeline>
         <Timeline
           name="Websites"
@@ -343,13 +358,10 @@ function TimelinesPage() {
           onCreateTagName={handleCreateTagName}
           onCreateTag={handleCreateTag}
           selectedEvent={selectedEvent}
-          setSelectedEvent={setSelectedEvent}
+          setSelectedEvent={setSelectedEventAndTimeline}
         ></Timeline>
       </div>
-      <div>
-        {}
-        <div></div>
-      </div>
+      <EventsTable events={timelineEvents[selectedTimeline]} />
     </div>
   );
 }

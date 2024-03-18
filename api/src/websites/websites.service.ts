@@ -36,6 +36,20 @@ export class WebsitesService {
     return this.adapt(result);
   }
 
+  async findOneByStartTime(startedAt: string): Promise<Website | null> {
+    const result = await this.databaseService.db
+      .selectFrom('websites')
+      .select(this.selectList)
+      .where('startedAt', '=', startedAt)
+      .executeTakeFirst();
+
+    if (!result) {
+      return null;
+    }
+
+    return this.adapt(result);
+  }
+
   async create(website: CreateWebsiteDto): Promise<Website> {
     const createdWebsite = await this.databaseService.db
       .insertInto('websites')
