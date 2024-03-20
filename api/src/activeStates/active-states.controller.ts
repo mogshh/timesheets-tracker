@@ -5,7 +5,7 @@ import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { endOfDay, startOfDay } from 'date-fns';
 
 @ApiTags('active-states')
-@Controller('active-states')
+@Controller('api/active-states')
 export class ActiveStatesController {
   constructor(private readonly activeStatesService: ActiveStatesService) {}
 
@@ -34,7 +34,7 @@ export class ActiveStatesController {
     return this.activeStatesService.findAll(startedAt, endedAt);
   }
 
-  @Get()
+  @Get(':id')
   @ApiParam({
     type: 'string',
     name: 'id',

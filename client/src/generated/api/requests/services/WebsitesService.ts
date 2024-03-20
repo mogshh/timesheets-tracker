@@ -19,7 +19,7 @@ requestBody: CreateWebsiteDto,
 ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/websites',
+            url: '/api/websites',
             body: requestBody,
             mediaType: 'application/json',
         });
@@ -37,27 +37,10 @@ endedAt: string,
 ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/websites',
+            url: '/api/websites',
             query: {
                 'startedAt': startedAt,
                 'endedAt': endedAt,
-            },
-        });
-    }
-
-    /**
-     * @param id 
-     * @returns any 
-     * @throws ApiError
-     */
-    public static websitesControllerFindOne(
-id: string,
-): CancelablePromise<any> {
-        return __request(OpenAPI, {
-            method: 'PATCH',
-            url: '/websites',
-            path: {
-                'id': id,
             },
         });
     }
@@ -72,7 +55,24 @@ id: string,
 ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'DELETE',
-            url: '/websites',
+            url: '/api/websites',
+            path: {
+                'id': id,
+            },
+        });
+    }
+
+    /**
+     * @param id 
+     * @returns any 
+     * @throws ApiError
+     */
+    public static websitesControllerFindOne(
+id: string,
+): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/websites/{id}',
             path: {
                 'id': id,
             },

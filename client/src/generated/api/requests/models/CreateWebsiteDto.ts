@@ -15,8 +15,4 @@ export type CreateWebsiteDto = {
      * Start time in ISO format
      */
     startedAt?: string;
-    /**
-     * End time in ISO format
-     */
-    endedAt?: string;
 };

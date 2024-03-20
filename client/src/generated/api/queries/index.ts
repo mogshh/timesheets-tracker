@@ -69,23 +69,6 @@ export const useWebsitesServiceWebsitesControllerFindAll = <
     queryFn: () => WebsitesService.websitesControllerFindAll(startedAt, endedAt),
     ...options,
   });
-export const useWebsitesServiceWebsitesControllerFindOne = (
-  options?: Omit<
-    UseMutationOptions<
-      Awaited<ReturnType<typeof WebsitesService.websitesControllerFindOne>>,
-      unknown,
-      {
-        id: string;
-      },
-      unknown
-    >,
-    'mutationFn'
-  >
-) =>
-  useMutation({
-    mutationFn: ({ id }) => WebsitesService.websitesControllerFindOne(id),
-    ...options,
-  });
 export const useWebsitesServiceWebsitesControllerDelete = (
   options?: Omit<
     UseMutationOptions<
@@ -100,6 +83,32 @@ export const useWebsitesServiceWebsitesControllerDelete = (
   >
 ) =>
   useMutation({ mutationFn: ({ id }) => WebsitesService.websitesControllerDelete(id), ...options });
+export const useWebsitesServiceWebsitesControllerFindOneKey =
+  'WebsitesServiceWebsitesControllerFindOne';
+export const useWebsitesServiceWebsitesControllerFindOne = <
+  TQueryKey extends Array<unknown> = unknown[]
+>(
+  {
+    id,
+  }: {
+    id: string;
+  },
+  queryKey?: TQueryKey,
+  options?: Omit<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof WebsitesService.websitesControllerFindOne>>,
+      unknown,
+      Awaited<ReturnType<typeof WebsitesService.websitesControllerFindOne>>,
+      unknown[]
+    >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
+) =>
+  useQuery({
+    queryKey: [useWebsitesServiceWebsitesControllerFindOneKey, ...(queryKey ?? [{ id }])],
+    queryFn: () => WebsitesService.websitesControllerFindOne(id),
+    ...options,
+  });
 export const useTagsServiceTagsControllerCreate = (
   options?: Omit<
     UseMutationOptions<
@@ -500,23 +509,6 @@ export const useActivitiesServiceActivitiesControllerFindAll = <
     queryFn: () => ActivitiesService.activitiesControllerFindAll(startedAt, endedAt),
     ...options,
   });
-export const useActivitiesServiceActivitiesControllerFindOne = (
-  options?: Omit<
-    UseMutationOptions<
-      Awaited<ReturnType<typeof ActivitiesService.activitiesControllerFindOne>>,
-      unknown,
-      {
-        id: string;
-      },
-      unknown
-    >,
-    'mutationFn'
-  >
-) =>
-  useMutation({
-    mutationFn: ({ id }) => ActivitiesService.activitiesControllerFindOne(id),
-    ...options,
-  });
 export const useActivitiesServiceActivitiesControllerDelete = (
   options?: Omit<
     UseMutationOptions<
@@ -532,6 +524,32 @@ export const useActivitiesServiceActivitiesControllerDelete = (
 ) =>
   useMutation({
     mutationFn: ({ id }) => ActivitiesService.activitiesControllerDelete(id),
+    ...options,
+  });
+export const useActivitiesServiceActivitiesControllerFindOneKey =
+  'ActivitiesServiceActivitiesControllerFindOne';
+export const useActivitiesServiceActivitiesControllerFindOne = <
+  TQueryKey extends Array<unknown> = unknown[]
+>(
+  {
+    id,
+  }: {
+    id: string;
+  },
+  queryKey?: TQueryKey,
+  options?: Omit<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof ActivitiesService.activitiesControllerFindOne>>,
+      unknown,
+      Awaited<ReturnType<typeof ActivitiesService.activitiesControllerFindOne>>,
+      unknown[]
+    >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
+) =>
+  useQuery({
+    queryKey: [useActivitiesServiceActivitiesControllerFindOneKey, ...(queryKey ?? [{ id }])],
+    queryFn: () => ActivitiesService.activitiesControllerFindOne(id),
     ...options,
   });
 export const useActiveStatesServiceActiveStatesControllerCreate = (
@@ -577,23 +595,6 @@ export const useActiveStatesServiceActiveStatesControllerFindAll = <
     queryFn: () => ActiveStatesService.activeStatesControllerFindAll(startedAt, endedAt),
     ...options,
   });
-export const useActiveStatesServiceActiveStatesControllerFindOne = (
-  options?: Omit<
-    UseMutationOptions<
-      Awaited<ReturnType<typeof ActiveStatesService.activeStatesControllerFindOne>>,
-      unknown,
-      {
-        id: string;
-      },
-      unknown
-    >,
-    'mutationFn'
-  >
-) =>
-  useMutation({
-    mutationFn: ({ id }) => ActiveStatesService.activeStatesControllerFindOne(id),
-    ...options,
-  });
 export const useActiveStatesServiceActiveStatesControllerDelete = (
   options?: Omit<
     UseMutationOptions<
@@ -609,5 +610,31 @@ export const useActiveStatesServiceActiveStatesControllerDelete = (
 ) =>
   useMutation({
     mutationFn: ({ id }) => ActiveStatesService.activeStatesControllerDelete(id),
+    ...options,
+  });
+export const useActiveStatesServiceActiveStatesControllerFindOneKey =
+  'ActiveStatesServiceActiveStatesControllerFindOne';
+export const useActiveStatesServiceActiveStatesControllerFindOne = <
+  TQueryKey extends Array<unknown> = unknown[]
+>(
+  {
+    id,
+  }: {
+    id: string;
+  },
+  queryKey?: TQueryKey,
+  options?: Omit<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof ActiveStatesService.activeStatesControllerFindOne>>,
+      unknown,
+      Awaited<ReturnType<typeof ActiveStatesService.activeStatesControllerFindOne>>,
+      unknown[]
+    >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
+) =>
+  useQuery({
+    queryKey: [useActiveStatesServiceActiveStatesControllerFindOneKey, ...(queryKey ?? [{ id }])],
+    queryFn: () => ActiveStatesService.activeStatesControllerFindOne(id),
     ...options,
   });

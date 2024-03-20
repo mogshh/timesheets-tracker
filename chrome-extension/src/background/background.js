@@ -25,7 +25,7 @@ async function getTabInfo(tabId) {
     const headers = new Headers({
       'Content-Type': 'application/json',
     })
-    await fetch('http://localhost:55577/websites', {
+    await fetch('http://localhost:55577/api/websites', {
       method: 'POST',
       headers,
       body: JSON.stringify({

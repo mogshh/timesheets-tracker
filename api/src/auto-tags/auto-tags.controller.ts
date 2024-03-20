@@ -7,7 +7,7 @@ import { AutoTag } from '../types/types';
 import { UpdateAutoTagsDto } from './dto/update-auto-tags.dto';
 
 @ApiTags('auto-tags')
-@Controller('auto-tags')
+@Controller('api/auto-tags')
 export class AutoTagsController {
   constructor(private readonly tagNamesService: AutoTagsService) {}
 

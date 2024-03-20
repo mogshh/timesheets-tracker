@@ -8,7 +8,7 @@ import { TagName } from '../types/types';
 // import { UpdateTagNameDto } from './dto/update-tag-name.dto';
 
 @ApiTags('tag-names')
-@Controller('tag-names')
+@Controller('api/tag-names')
 export class TagNamesController {
   constructor(private readonly tagNamesService: TagNamesService) {}
 

@@ -8,7 +8,7 @@ import { TagDto } from './dto/response-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
 
 @ApiTags('tags')
-@Controller('tags')
+@Controller('api/tags')
 export class TagsController {
   constructor(private readonly tagsService: TagsService) {}
 

@@ -14,7 +14,7 @@ export class StatusService {
     public static appControllerStatus(): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/',
+            url: '/api/status',
         });
     }
 

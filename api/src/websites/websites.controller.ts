@@ -17,7 +17,7 @@ import { ActivitiesService } from '../activities/activities.service';
 import { compact, uniqBy } from 'lodash';
 
 @ApiTags('websites')
-@Controller('websites')
+@Controller('api/websites')
 export class WebsitesController {
   constructor(
     private readonly websitesService: WebsitesService,

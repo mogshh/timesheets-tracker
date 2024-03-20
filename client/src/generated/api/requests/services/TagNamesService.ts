@@ -21,7 +21,7 @@ requestBody: CreateTagNameDto,
 ): CancelablePromise<TagNameDto> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/tag-names',
+            url: '/api/tag-names',
             body: requestBody,
             mediaType: 'application/json',
         });
@@ -37,7 +37,7 @@ term?: string,
 ): CancelablePromise<Array<TagNameDto>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/tag-names',
+            url: '/api/tag-names',
             query: {
                 'term': term,
             },
@@ -51,7 +51,7 @@ term?: string,
     public static tagNamesControllerCount(): CancelablePromise<number> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/tag-names/count',
+            url: '/api/tag-names/count',
         });
     }
 
@@ -65,7 +65,7 @@ id: string,
 ): CancelablePromise<TagNameDto> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/tag-names/{id}',
+            url: '/api/tag-names/{id}',
             path: {
                 'id': id,
             },
@@ -84,7 +84,7 @@ requestBody: UpdateTagNameDto,
 ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'PATCH',
-            url: '/tag-names/{id}',
+            url: '/api/tag-names/{id}',
             path: {
                 'id': id,
             },
@@ -103,7 +103,7 @@ id: string,
 ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'DELETE',
-            url: '/tag-names/{id}',
+            url: '/api/tag-names/{id}',
             path: {
                 'id': id,
             },

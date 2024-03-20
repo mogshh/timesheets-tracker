@@ -29,6 +29,8 @@ export namespace AutoTagConditionDto {
     export enum variable {
         WINDOW_TITLE = 'windowTitle',
         PROGRAM_NAME = 'programName',
+        WEBSITE_TITLE = 'websiteTitle',
+        WEBSITE_URL = 'websiteUrl',
     }
 
     /**

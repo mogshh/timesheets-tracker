@@ -22,7 +22,7 @@ requestBody: CreateAutoTagDto,
 ): CancelablePromise<AutoTagDto> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/auto-tags',
+            url: '/api/auto-tags',
             body: requestBody,
             mediaType: 'application/json',
         });
@@ -38,7 +38,7 @@ term?: string,
 ): CancelablePromise<Array<AutoTagDto>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/auto-tags',
+            url: '/api/auto-tags',
             query: {
                 'term': term,
             },
@@ -52,7 +52,7 @@ term?: string,
     public static autoTagsControllerCount(): CancelablePromise<AutoTagCountDto> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/auto-tags/count',
+            url: '/api/auto-tags/count',
         });
     }
 
@@ -66,7 +66,7 @@ id: string,
 ): CancelablePromise<AutoTagDto> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/auto-tags/{id}',
+            url: '/api/auto-tags/{id}',
             path: {
                 'id': id,
             },
@@ -85,7 +85,7 @@ requestBody: UpdateAutoTagsDto,
 ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'PATCH',
-            url: '/auto-tags/{id}',
+            url: '/api/auto-tags/{id}',
             path: {
                 'id': id,
             },
@@ -104,7 +104,7 @@ id: string,
 ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'DELETE',
-            url: '/auto-tags/{id}',
+            url: '/api/auto-tags/{id}',
             path: {
                 'id': id,
             },

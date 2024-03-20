@@ -9,13 +9,21 @@ import { AutoTagsModule } from './auto-tags/auto-tags.module';
 import { ActiveStatesModule } from './activeStates/active-states.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { WebsitesModule } from './websites/websites.module';
-import { join } from 'node:path';
+import { resolve } from 'node:path';
+import fs from 'fs';
 import { ServeStaticModule } from '@nestjs/serve-static';
+
+let clientDistFolder: string;
+if (fs.statSync(resolve('../client/dist/index.html'))) {
+  clientDistFolder = resolve('../dist/client');
+} else {
+  clientDistFolder = resolve('../../dist/client');
+}
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, 'client'),
+      rootPath: clientDistFolder,
     }),
     ScheduleModule.forRoot(),
     ActivitiesModule,

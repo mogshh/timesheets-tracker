@@ -21,7 +21,7 @@ requestBody: CreateTagDto,
 ): CancelablePromise<TagDto> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/tags',
+            url: '/api/tags',
             body: requestBody,
             mediaType: 'application/json',
         });
@@ -39,7 +39,7 @@ endedAt: string,
 ): CancelablePromise<Array<TagDto>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/tags',
+            url: '/api/tags',
             query: {
                 'startedAt': startedAt,
                 'endedAt': endedAt,
@@ -57,7 +57,7 @@ id: string,
 ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/tags/{id}',
+            url: '/api/tags/{id}',
             path: {
                 'id': id,
             },
@@ -76,7 +76,7 @@ requestBody: UpdateTagDto,
 ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'PATCH',
-            url: '/tags/{id}',
+            url: '/api/tags/{id}',
             path: {
                 'id': id,
             },
@@ -95,7 +95,7 @@ id: string,
 ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'DELETE',
-            url: '/tags/{id}',
+            url: '/api/tags/{id}',
             path: {
                 'id': id,
             },
