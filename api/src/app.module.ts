@@ -9,16 +9,21 @@ import { AutoTagsModule } from './auto-tags/auto-tags.module';
 import { ActiveStatesModule } from './activeStates/active-states.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { WebsitesModule } from './websites/websites.module';
+import { AutoNotesModule } from './auto-notes/auto-notes.module';
 import { resolve } from 'node:path';
 import fs from 'fs';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { logger } from './shared/logger';
 
 let clientDistFolder: string;
-if (fs.statSync(resolve('../client/dist/index.html'))) {
-  clientDistFolder = resolve('../dist/client');
+if (fs.existsSync(resolve('./client/index.html'))) {
+  // Running api from inside monorepo dist/api folder
+  clientDistFolder = resolve('./client');
 } else {
-  clientDistFolder = resolve('../../dist/client');
+  // Running api from inside api folder
+  clientDistFolder = resolve('../client/dist');
 }
+logger.info('client folder: ' + clientDistFolder);
 
 @Module({
   imports: [
@@ -33,6 +38,7 @@ if (fs.statSync(resolve('../client/dist/index.html'))) {
     TagNamesModule,
     AutoTagsModule,
     WebsitesModule,
+    AutoNotesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

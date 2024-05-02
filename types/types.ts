@@ -35,6 +35,15 @@ export interface TagName {
   color: string;
 }
 
+export interface AutoNote {
+  id: string;
+  name: string;
+  tagNameIds: string[];
+  variable: ConditionVariable;
+  extractRegex: string;
+  extractRegexReplacement: string;
+}
+
 export interface AutoTag {
   id: string;
   name: string;

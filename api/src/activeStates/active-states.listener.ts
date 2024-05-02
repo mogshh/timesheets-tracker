@@ -6,6 +6,7 @@ import RealIdle from '@paymoapp/real-idle';
 import { ResponseActiveStateDto } from './dto/response-active-state.dto';
 import { ActiveStatesService } from './active-states.service';
 import { noop } from 'lodash';
+import { logger } from '../shared/logger';
 
 const ACTIVE_STATE_POLLING_INTERVAL_SECONDS = 2 * 60;
 
@@ -52,7 +53,7 @@ export class ActiveStatesListener {
       } else {
         // ActiveState changes, write last activeState to database
         // Keep track of new active state locally
-        console.log('active state changed to ' + currentIsActiveState);
+        logger.info('active state changed to ' + currentIsActiveState);
         this.lastActiveState.endedAt = new Date().toISOString();
         await this.activeStatesService.update(
           this.lastActiveState.id,

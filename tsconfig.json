@@ -1,6 +1,25 @@
 {
   "compilerOptions": {
-    "noEmit": true,
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2021",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "resolveJsonModule": true,
+    "composite": true,
+    "esModuleInterop": true,
   },
-  "include": ["types/types.ts"],
+  "files": ["install-timesheet-tracker-as-a-windows-service.ts", "uninstall-timesheet-tracker-as-a-windows-service.ts"]
 }

@@ -4,3 +4,5 @@ node_modules/
 api/timesheets-tracker-database.sqlite3
 dist/
 exe/target/release/
+
+timesheets-tracker-database.sqlite3

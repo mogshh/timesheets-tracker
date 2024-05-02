@@ -1,5 +1,5 @@
 {
-  "name": "Timesheet tracker Beta",
+  "name": "Timesheet tracker",
   "version": "0.0.1",
   "manifest_version": 3,
   "description": "Tracks which sites you visit and for how long and sends that info to the timesheet tracker application",

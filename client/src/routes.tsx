@@ -6,6 +6,8 @@ import TagNamesPage from './views/TagNamesPage/TagNamesPage';
 import EditTagNameModal from './components/EditTagNameModal/EditTagNameModal';
 import React from 'react';
 import { redirect, RouteObject } from 'react-router-dom';
+import NotesPage from './views/NotesPage/NotesPage';
+import EditAutoNoteModal from './components/EditNoteModal/EditAutoNoteModal';
 
 export const routes: RouteObject[] = [
   {
@@ -45,6 +47,20 @@ export const routes: RouteObject[] = [
           {
             path: ':id/' + ROUTE_PARTS.edit,
             element: <EditTagNameModal />,
+          },
+        ],
+      },
+      {
+        path: ROUTE_PARTS.notes,
+        element: <NotesPage />,
+        children: [
+          {
+            path: ROUTE_PARTS.create,
+            element: <EditAutoNoteModal />,
+          },
+          {
+            path: ':id/' + ROUTE_PARTS.edit,
+            element: <EditAutoNoteModal />,
           },
         ],
       },

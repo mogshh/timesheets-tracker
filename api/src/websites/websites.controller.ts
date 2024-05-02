@@ -15,6 +15,7 @@ import { endOfDay, startOfDay } from 'date-fns';
 import { CreateWebsiteDto } from './dto/create-website.dto';
 import { ActivitiesService } from '../activities/activities.service';
 import { compact, uniqBy } from 'lodash';
+import { logger } from '../shared/logger';
 
 @ApiTags('websites')
 @Controller('api/websites')
@@ -30,7 +31,7 @@ export class WebsitesController {
     required: true,
   })
   async create(@Body() createWebsiteDto: CreateWebsiteDto): Promise<Website | null> {
-    console.log('tracking website: ' + createWebsiteDto.websiteUrl);
+    logger.info('tracking website: ' + createWebsiteDto.websiteUrl);
     const existingWebsite = this.websitesService.findOneByStartTime(createWebsiteDto.startedAt);
     if (existingWebsite) {
       // Do not create the same website entry twice

@@ -1,16 +1,18 @@
 {
   "name": "api",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "Backend service for collecting and serving data for timesheet tracker",
+  "author": "Bert Verhelst",
   "private": true,
   "license": "MIT",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "start-server": "cd dist/src && node start-server.js",
+    "install-server": "node ./dist/src/install-timesheet-tracker-as-a-windows-service.js",
+    "uninstall-server": "node ./dist/src/uninstall-timesheet-tracker-as-a-windows-service.js",
     "dev:api": "nest start --watch",
+    "dev:api-bun": "bun ./node_modules/@nestjs/cli/bin/nest.js start",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "check-types": "tsc -p ./tsconfig.json --diagnostics",
@@ -38,6 +40,7 @@
     "class-validator": "^0.14.0",
     "date-fns": "^2.30.0",
     "lodash": "^4.17.21",
+    "nest-winston": "^1.9.4",
     "nested-objects-util": "^1.1.2",
     "node-startup-manager": "^0.1.3",
     "reflect-metadata": "^0.1.13",
@@ -45,7 +48,7 @@
     "sqlite3": "^5.1.6",
     "systray": "^1.0.5",
     "uuid": "^9.0.0",
-    "node-windows": "^1.0.0-beta.8"
+    "winston": "^3.13.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

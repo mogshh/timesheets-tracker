@@ -10,6 +10,7 @@ import {
   TableView,
   useAsyncList,
   Selection,
+  AsyncListData,
 } from '@adobe/react-spectrum';
 import { TimelineEvent } from '../Timeline/Timeline.types';
 import { orderBy } from 'lodash-es';
@@ -30,19 +31,25 @@ function EventsTable({ events }: EventsTableProps) {
       column: 'startedAt',
       direction: 'ascending',
     },
-    async load({ signal }) {
+    async load() {
       return {
         items:
           events.filter((event) => JSON.stringify(event).toLowerCase().includes(searchTerm)) || [],
       };
     },
-    async sort({ items, sortDescriptor }) {
+    async sort({
+      items,
+      sortDescriptor,
+    }: {
+      items: TimelineEvent[];
+      sortDescriptor: AsyncListData<TimelineEvent>['sortDescriptor'];
+    }) {
       return {
         items: orderBy(
           items,
           [
             (event) => {
-              switch (sortDescriptor.column) {
+              switch (sortDescriptor?.column) {
                 case 'program':
                   return event.info[Object.keys(event.info)[0]];
 
@@ -60,7 +67,7 @@ function EventsTable({ events }: EventsTableProps) {
               }
             },
           ],
-          sortDescriptor.direction === 'descending' ? ['desc'] : ['asc']
+          sortDescriptor?.direction === 'descending' ? ['desc'] : ['asc']
         ),
       };
     },
@@ -102,7 +109,7 @@ function EventsTable({ events }: EventsTableProps) {
           sortDescriptor={tableEvents.sortDescriptor}
           onSortChange={tableEvents.sort}
           density="compact"
-          renderEmptyState={() => 'No events'}
+          renderEmptyState={() => <>No events</>}
         >
           <TableHeader>
             <Column key="program" allowsSorting width={200}>

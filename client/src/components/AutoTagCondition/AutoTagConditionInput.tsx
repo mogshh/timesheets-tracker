@@ -2,12 +2,8 @@ import './AutoTagConditionInput.scss';
 
 import React from 'react';
 import Select from 'react-select';
-import * as types from '../../types/types'; //{ BooleanOperator, types.ConditionOperator, ConditionVariable } from '../../types/types';
-
-interface SelectOption<T> {
-  label: string;
-  value: T;
-}
+import * as types from '../../types/types';
+import { SelectOption } from '../../helpers/select-option.types'; //{ BooleanOperator, types.ConditionOperator, ConditionVariable } from '../../types/types';
 
 interface AutoTagConditionInputProps {
   index: number;

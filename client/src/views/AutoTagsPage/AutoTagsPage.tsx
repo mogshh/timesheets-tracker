@@ -1,14 +1,20 @@
 import './AutoTagsPage.scss';
 import { NavLink, Outlet } from 'react-router-dom';
 import {
+  useAutoTagsServiceAutoTagsControllerCreate,
   useAutoTagsServiceAutoTagsControllerDelete,
   useAutoTagsServiceAutoTagsControllerFindAll,
 } from '../../generated/api/queries';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useCallback, useEffect } from 'react';
 import { sortBy } from 'lodash-es';
 import { ROUTE_PARTS } from '../../App';
 import { toast } from 'react-toastify';
 import { AutoTag } from '../../types/types';
+import copy from 'copy-to-clipboard';
+import { mapLimit } from 'blend-promise-utils';
+import { AutoTagConditionDto } from '../../generated/api/requests';
+
+const AUTOTAGS_PROPERTY_NAME = 'timesheetTrackerAutoTags';
 
 interface AutoTagsPageProps {}
 
@@ -17,14 +23,65 @@ function AutoTagsPage({}: AutoTagsPageProps) {
     useAutoTagsServiceAutoTagsControllerFindAll({
       term: '',
     });
+  const { mutateAsync: insertAutoTag } = useAutoTagsServiceAutoTagsControllerCreate();
   const autoTags = autoTagItems as AutoTag[];
   const { mutateAsync: deleteAutoTag } = useAutoTagsServiceAutoTagsControllerDelete();
+
+  const handlePasteAutoTags = async (pastedAutoTags: AutoTag[]) => {
+    await mapLimit(pastedAutoTags, 5, async (pastedAutoTag: AutoTag) => {
+      return await insertAutoTag({
+        requestBody: {
+          name: pastedAutoTag.name,
+          priority: pastedAutoTag.priority,
+          tagNameId: pastedAutoTag.tagNameId,
+          conditions: pastedAutoTag.conditions as AutoTagConditionDto[],
+        },
+      });
+    });
+    await refetchAutoTags();
+    toast(pastedAutoTags.length + ' auto tags were added');
+  };
+
+  const onPasteContent = useCallback(
+    async (evt: ClipboardEvent) => {
+      try {
+        if (evt.clipboardData && evt.clipboardData.getData) {
+          const pastedText = evt.clipboardData.getData('text/plain');
+
+          if (pastedText.includes(AUTOTAGS_PROPERTY_NAME)) {
+            await handlePasteAutoTags(JSON.parse(pastedText)[AUTOTAGS_PROPERTY_NAME]);
+          } else {
+            toast("The pasted text doesn't contain any valid auto tags", { type: 'error' });
+          }
+        }
+      } catch (err) {
+        toast("The pasted text doesn't contain any valid auto tags", { type: 'error' });
+      }
+    },
+    [handlePasteAutoTags]
+  );
+
+  useEffect(() => {
+    document.body.addEventListener('paste', onPasteContent);
+
+    return () => {
+      document.body.removeEventListener('paste', onPasteContent);
+    };
+  }, [onPasteContent]);
+
+  const copyAutoTagsToClipboard = () => {
+    copy(JSON.stringify({ [AUTOTAGS_PROPERTY_NAME]: autoTagItems }, null, 2));
+    toast('Auto tag copied to clipboard', { type: 'success' });
+  };
 
   return (
     <div>
       <NavLink className="c-button" to={'/' + ROUTE_PARTS.autoTagRules + '/' + ROUTE_PARTS.create}>
         Add auto tag
       </NavLink>
+      <button className="c-button" onClick={copyAutoTagsToClipboard}>
+        Copy autotags
+      </button>
 
       <ul>
         {sortBy(autoTags || [], (autoTag) => autoTag.priority).map(

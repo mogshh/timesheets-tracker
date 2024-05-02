@@ -9,12 +9,15 @@
     "lint:format": "prettier  --loglevel warn --write \"./**/*.{js,jsx,ts,tsx,css,md,json}\" ",
     "lint": "yarn lint:format && yarn lint:fix ",
     "type-check": "tsc",
-    "generate-api-helpers": "openapi-rq -c fetch -i http://localhost:55577/docs-yaml -o ./src/generated/api",
+    "generate-api-helpers": "openapi-rq -c fetch -i http://localhost:55577/docs-yaml -o ./src/generated/api && npx tsx scripts/ignore-types-in-generated-files.ts",
     "bump": "npx bump-package-versions --part=patch --strategy=highest ./package.json ../package.json ../api/package.json"
   },
   "dependencies": {
+    "@adobe/react-spectrum": "^3.34.1",
     "@tanstack/react-query": "4.36.1",
     "@tippyjs/react": "4.2.6",
+    "blend-promise-utils": "^1.29.0",
+    "copy-to-clipboard": "3.3.3",
     "date-fns": "2.30.0",
     "jotai": "^2.6.2",
     "lodash-es": "4.17.21",
