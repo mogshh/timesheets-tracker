@@ -3,18 +3,18 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { v4 as uuid } from 'uuid';
 import type { TagName } from '../types/types';
-import { UpdateTagDto } from '../tags/dto/update-tag.dto';
 import { UpdateTagNameDto } from './dto/update-tag-name.dto';
 
 @Injectable()
 export class TagNamesService {
-  private selectList: (keyof TagName)[] = ['id', 'name', 'color'];
+  private selectList: (keyof TagName)[] = ['id', 'name', 'code', 'color'];
   constructor(@Inject(DatabaseService) private databaseService: DatabaseService) {}
 
   private adapt(rawTagName: Record<string, any>): TagName {
     return {
       id: rawTagName.id,
       name: rawTagName.name,
+      code: rawTagName.code,
       color: rawTagName.color,
     };
   }

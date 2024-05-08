@@ -1,5 +1,5 @@
 import './AutoTagsPage.scss';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import {
   useAutoTagsServiceAutoTagsControllerCreate,
   useAutoTagsServiceAutoTagsControllerDelete,
@@ -19,6 +19,7 @@ const AUTOTAGS_PROPERTY_NAME = 'timesheetTrackerAutoTags';
 interface AutoTagsPageProps {}
 
 function AutoTagsPage({}: AutoTagsPageProps) {
+  const location = useLocation();
   const { data: autoTagItems, refetch: refetchAutoTags } =
     useAutoTagsServiceAutoTagsControllerFindAll({
       term: '',
@@ -26,6 +27,10 @@ function AutoTagsPage({}: AutoTagsPageProps) {
   const { mutateAsync: insertAutoTag } = useAutoTagsServiceAutoTagsControllerCreate();
   const autoTags = autoTagItems as AutoTag[];
   const { mutateAsync: deleteAutoTag } = useAutoTagsServiceAutoTagsControllerDelete();
+
+  useEffect(() => {
+    refetchAutoTags();
+  }, [location]);
 
   const handlePasteAutoTags = async (pastedAutoTags: AutoTag[]) => {
     await mapLimit(pastedAutoTags, 5, async (pastedAutoTag: AutoTag) => {

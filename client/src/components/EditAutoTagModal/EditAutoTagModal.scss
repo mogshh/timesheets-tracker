@@ -1,2 +1,7 @@
-.c-add-auto-tag-modal {
+.c-edit-auto-tag-modal {
+  .c-toggle-button {
+    .c-button:first-child {
+      margin-left: 0;
+    }
+  }
 }

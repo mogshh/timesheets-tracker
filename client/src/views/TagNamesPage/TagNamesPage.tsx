@@ -1,8 +1,9 @@
 import './TagNamesPage.scss';
-import { Outlet, useNavigate, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import type { TagName } from '../../types/types';
 import {
   useTagNamesServiceTagNamesControllerFindAll,
+  useTagNamesServiceTagNamesControllerFindAllKey,
   useTagNamesServiceTagNamesControllerRemove,
 } from '../../generated/api/queries';
 import React, { ReactNode, useEffect, useState } from 'react';
@@ -12,16 +13,26 @@ import { toast } from 'react-toastify';
 interface TagNamesPageProps {}
 
 function TagNamesPage({}: TagNamesPageProps) {
+  const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();
   const action = params.action;
   const id = params.id;
   const [selectedTagName, setSelectedTagName] = useState<TagName | null>(null);
 
-  const { data: tagNames, refetch: refetchTagNames } = useTagNamesServiceTagNamesControllerFindAll({
-    term: '',
-  });
+  const { data: tagNames, refetch: refetchTagNames } = useTagNamesServiceTagNamesControllerFindAll(
+    {
+      term: '',
+    },
+    [useTagNamesServiceTagNamesControllerFindAllKey],
+    { refetchOnMount: true }
+  );
   const { mutateAsync: deleteTagName } = useTagNamesServiceTagNamesControllerRemove();
+
+  // Refetch tag names when edit or create modal closes
+  useEffect(() => {
+    refetchTagNames();
+  }, [location]);
 
   useEffect(() => {
     if (tagNames) {

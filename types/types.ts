@@ -32,6 +32,7 @@ export interface Tag {
 export interface TagName {
   id: string;
   name: string;
+  code: string;
   color: string;
 }
 
@@ -66,6 +67,7 @@ export enum BooleanOperator {
 }
 
 export enum ConditionVariable {
+  any = 'any',
   windowTitle = 'windowTitle',
   programName = 'programName',
   websiteTitle = 'websiteTitle',

@@ -66,6 +66,7 @@ export class DatabaseService implements OnModuleInit {
             (
                 "id"        text NOT NULL PRIMARY KEY,
                 "name"      text NOT NULL,
+                "code"      text,
                 "color"     text NOT NULL
             );
 				`.execute(this.db);

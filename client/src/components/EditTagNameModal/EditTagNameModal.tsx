@@ -6,21 +6,23 @@ import { COLOR_LIST } from '../../views/TimelinesPage/TimelinesPage.consts';
 import { TagName } from '../../types/types';
 import { ROUTE_PARTS } from '../../App';
 import {
-  useAutoTagsServiceAutoTagsControllerFindOne,
   useAutoTagsServiceAutoTagsControllerFindOneKey,
   useTagNamesServiceTagNamesControllerCreate,
+  useTagNamesServiceTagNamesControllerFindAllKey,
   useTagNamesServiceTagNamesControllerFindOne,
+  useTagNamesServiceTagNamesControllerFindOneKey,
   useTagNamesServiceTagNamesControllerUpdate,
-  useTagsServiceTagsControllerFindOne,
 } from '../../generated/api/queries';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ColorInput } from '../ColorInput/ColorInput';
+import { useQueryClient } from '@tanstack/react-query';
 
 function EditTagNameModal() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [name, setName] = useState<string>('');
+  const [code, setCode] = useState<string>('');
   const [color, setColor] = useState<string>(COLOR_LIST[0]);
   const { mutateAsync: createTagName } = useTagNamesServiceTagNamesControllerCreate();
   const { mutateAsync: updateTagName } = useTagNamesServiceTagNamesControllerUpdate();
@@ -30,15 +32,19 @@ function EditTagNameModal() {
     { enabled: !!id }
   );
   const tagName = tagNameResponse as TagName;
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (tagName) {
       setName(tagName.name);
+      setCode(tagName.code);
       setColor(tagName.color);
     }
   }, [tagName]);
 
-  const handleClose = () => navigate('/' + ROUTE_PARTS.tagNames);
+  const handleClose = async () => {
+    navigate('/' + ROUTE_PARTS.tagNames);
+  };
 
   const handleSave = async (tagName: Omit<TagName, 'id'>) => {
     if (id) {
@@ -46,6 +52,7 @@ function EditTagNameModal() {
         id,
         requestBody: {
           name: tagName.name,
+          code: tagName.code,
           color: tagName.color,
         },
       });
@@ -57,6 +64,7 @@ function EditTagNameModal() {
       await createTagName({
         requestBody: {
           name: tagName.name,
+          code: tagName.code,
           color: tagName.color,
         },
       });
@@ -66,7 +74,7 @@ function EditTagNameModal() {
       });
     }
 
-    handleClose();
+    await handleClose();
   };
 
   return (
@@ -84,6 +92,13 @@ function EditTagNameModal() {
         onChange={(evt: ChangeEvent<HTMLInputElement>) => setName(evt.target?.value)}
       />
 
+      <h4 className="mt-4">Code</h4>
+      <input
+        className="c-input"
+        value={code}
+        onChange={(evt: ChangeEvent<HTMLInputElement>) => setCode(evt.target?.value)}
+      />
+
       <h4 className="mt-4">Color</h4>
       <ColorInput color={color} onChange={setColor} />
 
@@ -97,6 +112,7 @@ function EditTagNameModal() {
           onClick={async () => {
             await handleSave({
               name,
+              code,
               color,
             });
           }}

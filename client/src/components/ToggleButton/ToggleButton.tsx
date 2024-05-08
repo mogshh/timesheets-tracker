@@ -18,7 +18,7 @@ const ToggleButton: FC<ToggleButtonProps> = ({
   label2,
 }: ToggleButtonProps) => {
   return (
-    <div className={'c-toggle-button ' + className}>
+    <div className={'c-toggle-button ' + (className ? className : '')}>
       <button
         className={
           'c-button c-button--small c-toggle-button__option1 ' +

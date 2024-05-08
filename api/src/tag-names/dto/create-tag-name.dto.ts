@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreateTagNameDto {
   @IsString()
@@ -11,6 +11,16 @@ export class CreateTagNameDto {
     default: undefined,
   })
   name: string;
+
+  @IsString()
+  @IsOptional()
+  @Type(() => String)
+  @ApiPropertyOptional({
+    type: String,
+    description: 'Timesheet code for this tag (optional)',
+    default: undefined,
+  })
+  code: string;
 
   @IsString()
   @Type(() => String)

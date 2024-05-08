@@ -30,7 +30,7 @@ import { toast } from 'react-toastify';
 
 const NEW_CONDITION = {
   booleanOperator: BooleanOperator.OR,
-  variable: ConditionVariable.windowTitle,
+  variable: ConditionVariable.any,
   operator: ConditionOperator.contains,
   value: '',
 };
@@ -145,15 +145,9 @@ function EditAutoTagModal() {
     <Modal
       open
       onClose={handleClose}
-      classNames={{ modal: 'c-add-auto-tag-modal', closeButton: 'c-button c-button--small' }}
+      classNames={{ modal: 'c-edit-auto-tag-modal', closeButton: 'c-button c-button--small' }}
     >
       <h3>Add auto tag</h3>
-      <label>Auto tag Name</label>
-      <input
-        className="c-input"
-        value={name}
-        onChange={(evt: ChangeEvent<HTMLInputElement>) => setName(evt.target?.value)}
-      />
 
       <label>Activity Tag</label>
       <ToggleButton
@@ -165,7 +159,12 @@ function EditAutoTagModal() {
       {!showCreateNewTagControls && (
         <TagSelectSingle
           value={selectedTagName || null}
-          onChange={setSelectedTagName}
+          onChange={(newTagName) => {
+            setSelectedTagName(newTagName);
+            if (!name) {
+              setName(newTagName?.name || '');
+            }
+          }}
           autoFocus={true}
         />
       )}
@@ -179,6 +178,13 @@ function EditAutoTagModal() {
           />
         </div>
       )}
+
+      <label>Auto tag Name</label>
+      <input
+        className="c-input"
+        value={name}
+        onChange={(evt: ChangeEvent<HTMLInputElement>) => setName(evt.target?.value)}
+      />
 
       <label>Conditions</label>
       <div>
