@@ -9,14 +9,6 @@ const TAG_NAME_IDS_SEPARATOR = ';';
 
 @Injectable()
 export class AutoNotesService {
-  private selectList: (keyof AutoNote)[] = [
-    'id',
-    'name',
-    'tagNameIds',
-    'variable',
-    'extractRegex',
-    'extractRegexReplacement',
-  ];
   constructor(@Inject(DatabaseService) private databaseService: DatabaseService) {}
 
   private adapt(rawAutoNote: Record<string, any>): AutoNote {
@@ -31,77 +23,61 @@ export class AutoNotesService {
   }
 
   async findAll(searchTerm: string | undefined): Promise<AutoNote[]> {
-    let rawAutoNotes: Record<string, string>[];
+    let rawAutoNotes: AutoNote[];
     if (searchTerm) {
-      rawAutoNotes = await this.databaseService.db
-        .selectFrom('autoNotes')
-        .select(this.selectList)
-        .where('name', 'like', '%' + searchTerm + '%')
-        .execute();
+      rawAutoNotes = await this.databaseService.exec<AutoNote>(
+        './queries/findAllAutoNotesBySearchTerm'
+      );
     } else {
-      rawAutoNotes = await this.databaseService.db
-        .selectFrom('autoNotes')
-        .select(this.selectList)
-        .execute();
+      rawAutoNotes = await this.databaseService.exec<AutoNote>('./queries/findAllAutoNotes');
     }
 
     return rawAutoNotes.map(this.adapt);
   }
 
   async count(): Promise<number> {
-    const result = await this.databaseService.db
-      .selectFrom('autoNotes')
-      .select(({ fn }) => [fn.count<number>('id').as('count')])
-      .executeTakeFirstOrThrow();
+    const result = (
+      await this.databaseService.exec<{ count: number }>('./queries/countAutoNotes')
+    )[0];
 
     return result.count;
   }
 
   async findOne(id: string): Promise<AutoNote> {
-    const result = await this.databaseService.db
-      .selectFrom('autoNotes')
-      .select(this.selectList)
-      .where('id', '=', id)
-      .executeTakeFirstOrThrow();
+    const result = await this.databaseService.exec('./queries/findOneAutoNote', { id });
 
     return this.adapt(result);
   }
 
   async create(autoNote: CreateAutoNoteDto): Promise<AutoNote> {
-    const result = await this.databaseService.db
-      .insertInto('autoNotes')
-      .values({
-        id: uuid(),
-        name: autoNote.name,
-        tagNameIds: autoNote.tagNameIds.join(TAG_NAME_IDS_SEPARATOR),
-        variable: autoNote.variable,
-        extractRegex: autoNote.extractRegex,
-        extractRegexReplacement: autoNote.extractRegexReplacement,
-      })
-      .returning('id')
-      .executeTakeFirstOrThrow();
+    const values = {
+      id: uuid(),
+      name: autoNote.name,
+      tagNameIds: autoNote.tagNameIds.join(TAG_NAME_IDS_SEPARATOR),
+      variable: autoNote.variable,
+      extractRegex: autoNote.extractRegex,
+      extractRegexReplacement: autoNote.extractRegexReplacement,
+    };
+    await this.databaseService.exec('./queries/createAutoNote', values);
 
-    return await this.findOne(result.id);
+    return this.findOne(values.id);
   }
 
   async update(id: string, updateTagDto: UpdateAutoNoteDto): Promise<AutoNote> {
-    const result = await this.databaseService.db
-      .updateTable('autoNotes')
-      .set({
-        name: updateTagDto.name,
-        tagNameIds: updateTagDto.tagNameIds.join(TAG_NAME_IDS_SEPARATOR),
-        variable: updateTagDto.variable,
-        extractRegex: updateTagDto.extractRegex,
-        extractRegexReplacement: updateTagDto.extractRegexReplacement,
-      })
-      .where('id', '=', id)
-      .returning('id')
-      .executeTakeFirstOrThrow();
+    const values = {
+      id,
+      name: updateTagDto.name,
+      tagNameIds: updateTagDto.tagNameIds.join(TAG_NAME_IDS_SEPARATOR),
+      variable: updateTagDto.variable,
+      extractRegex: updateTagDto.extractRegex,
+      extractRegexReplacement: updateTagDto.extractRegexReplacement,
+    };
+    await this.databaseService.exec('./queries/updateAutoNote');
 
-    return await this.findOne(result.id);
+    return await this.findOne(values.id);
   }
 
   async remove(id: string): Promise<void> {
-    await this.databaseService.db.deleteFrom('autoNotes').where('id', '=', id).execute();
+    await this.databaseService.exec('./queries/deleteAutoNote', { id });
   }
 }

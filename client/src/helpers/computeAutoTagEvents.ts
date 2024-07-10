@@ -31,7 +31,26 @@ function doesConditionMatchActivity(
   if (!condition.variable) {
     return false;
   }
-  const toCheckValue: string = (activity as any)[condition.variable];
+
+  if (condition.variable === ConditionVariable.anyVariable) {
+    // Check all variables except for the anyVariable
+    return !!Object.values(ConditionVariable)
+      .filter((conditionVariable) => conditionVariable !== ConditionVariable.anyVariable)
+      .find((conditionVariable) => {
+        return doesConditionValueMatchActivity(activity, condition, conditionVariable);
+      });
+  } else {
+    // Check one variable
+    return doesConditionValueMatchActivity(activity, condition, condition.variable);
+  }
+}
+
+function doesConditionValueMatchActivity(
+  activity: Activity | Website,
+  condition: AutoTagCondition,
+  variable: ConditionVariable
+): boolean {
+  const toCheckValue: string = (activity as any)[variable];
   if (!toCheckValue) {
     return false;
   }

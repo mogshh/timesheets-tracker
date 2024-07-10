@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query, Param, Patch, Delete } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { ActivitiesService } from './activities.service';
 import type { Activity } from '../types/types';
 import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';

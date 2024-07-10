@@ -1,13 +1,14 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { Kysely, sql, SqliteDialect } from 'kysely';
-import Database from 'better-sqlite3';
 import * as path from 'path';
 import { logger } from '../shared/logger';
+import * as fsPromise from 'fs/promises';
 import * as fs from 'fs';
+
+import initSqlJs, { Database } from 'sql.js/dist/sql-wasm.js';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
-  public db: Kysely<any>;
+  private db: Database;
 
   async onModuleInit(): Promise<void> {
     logger.info('starting database module');
@@ -16,95 +17,35 @@ export class DatabaseService implements OnModuleInit {
       databasePath = path.resolve('../timesheets-tracker-database.sqlite3');
     }
     logger.info('databasePath: ' + databasePath);
-    this.db = new Kysely<any>({
-      dialect: new SqliteDialect({
-        database: new Database(databasePath),
-      }),
+    const fileBuffer = fs.readFileSync(databasePath);
+    initSqlJs().then(async (SQL) => {
+      this.db = new SQL.Database(fileBuffer);
+      logger.info('creating database tables');
+      await this.createTables();
+      logger.info('database module started successfully');
     });
-    logger.info('creating database tables');
-    await this.createTables();
-    logger.info('database module started successfully');
+  }
+
+  public async exec<TResult>(sqlFile: string, params?: Record<string, any>): Promise<TResult[]> {
+    const sqlQuery: string = (await fsPromise.readFile(sqlFile)).toString('utf-8');
+    const results = this.db.exec(sqlQuery, params);
+    if (!results.length) {
+      return [];
+    }
+    const columns = results[0].columns;
+    return results.map((result) => {
+      return Object.fromEntries(
+        columns.map((column, index) => {
+          return [column, result.values[index]];
+        })
+      );
+    }) as TResult[];
   }
 
   /**
    * Create database tables if they do not exist yet
    */
   async createTables(): Promise<void> {
-    await sql`
-      CREATE TABLE IF NOT EXISTS activities
-      (
-        "id"          text NOT NULL PRIMARY KEY,
-        "programName" text,
-        "windowTitle" text,
-        "startedAt"   text NOT NULL,
-        "endedAt"     text NOT NULL
-      );
-    `.execute(this.db);
-
-    await sql`
-      CREATE TABLE IF NOT EXISTS websites
-      (
-        "id"           text NOT NULL PRIMARY KEY,
-        "websiteTitle" text,
-        "websiteUrl"   text,
-        "startedAt"    text NOT NULL
-      );
-    `.execute(this.db);
-
-    await sql`
-      CREATE TABLE IF NOT EXISTS activeStates
-      (
-        "id"          text NOT NULL PRIMARY KEY,
-        "isActive"    boolean,
-        "startedAt"   text NOT NULL,
-        "endedAt"     text NOT NULL
-      );
-    `.execute(this.db);
-
-    await sql`
-            CREATE TABLE IF NOT EXISTS tagNames
-            (
-                "id"        text NOT NULL PRIMARY KEY,
-                "name"      text NOT NULL,
-                "code"      text,
-                "color"     text NOT NULL
-            );
-				`.execute(this.db);
-
-    await sql`
-        CREATE TABLE IF NOT EXISTS tags
-        (
-            "id"        text NOT NULL PRIMARY KEY,
-            "tagNameId" text NOT NULL,
-            "startedAt" text NOT NULL,
-            "endedAt"   text NOT NULL,
-            "note"      text,
-            FOREIGN KEY ("tagNameId") REFERENCES "tagNames" ("id") ON DELETE CASCADE ON UPDATE CASCADE
-        );
-		`.execute(this.db);
-
-    await sql`
-        CREATE TABLE IF NOT EXISTS autoTags
-        (
-            "id"         text NOT NULL PRIMARY KEY,
-            "name"       text NOT NULL,
-            "tagNameId"  text NOT NULL,
-            "priority"   int NOT NULL,
-            "conditions" text NOT NULL,
-            FOREIGN KEY ("tagNameId") REFERENCES "tagNames" ("id") ON DELETE CASCADE ON UPDATE CASCADE
-        );
-    `.execute(this.db);
-
-    await sql`
-        CREATE TABLE IF NOT EXISTS autoNotes
-        (
-            "id"         text NOT NULL PRIMARY KEY,
-            "name"       text NOT NULL,
-            "tagNameIds" text,
-            "variable"   text NOT NULL,
-            "extractRegex" text,
-            "extractRegexReplacement" text
-        );
-    `.execute(this.db);
+    await this.exec(path.resolve('./src/database/queries/create-database-tables.sql'));
   }
 }

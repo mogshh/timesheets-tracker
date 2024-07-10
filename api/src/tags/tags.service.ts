@@ -9,16 +9,6 @@ import { UpdateTagDto } from './dto/update-tag.dto';
 
 @Injectable()
 export class TagsService {
-  private selectList = [
-    'tags.id as id',
-    'tags.tagNameId as tagNameId',
-    'tags.startedAt as startedAt',
-    'tags.endedAt as endedAt',
-    'tagNames.id as tagName.id',
-    'tagNames.name as tagName.name',
-    'tagNames.color as tagName.color',
-  ] as const;
-
   constructor(@Inject(DatabaseService) private databaseService: DatabaseService) {}
 
   private adapt(rawTag: Record<string, any>): Tag {
@@ -26,60 +16,51 @@ export class TagsService {
   }
 
   async findAll(startedAt: string, endedAt: string): Promise<Tag[]> {
-    const rawTags = await this.databaseService.db
-      .selectFrom('tags')
-      .leftJoin('tagNames', 'tagNames.id', 'tags.tagNameId')
-      .select(this.selectList)
-      .where('startedAt', '>', startedAt)
-      .where('endedAt', '<', endedAt)
-      .execute();
+    const rawTags = await this.databaseService.exec<Tag>('queries/findAllTags.sql', {
+      startedAt,
+      endedAt,
+    });
 
     return rawTags.map(this.adapt);
   }
 
   async findOne(id: string): Promise<Tag> {
-    const rawTag = await this.databaseService.db
-      .selectFrom('tags')
-      .leftJoin('tagNames', 'tagNames.id', 'tags.tagNameId')
-      .select(this.selectList)
-      .where('tags.id', '=', id)
-      .executeTakeFirstOrThrow();
+    const rawTag = await this.databaseService.exec<Tag>('queries/findOneTag.sql', { id });
 
     return this.adapt(rawTag);
   }
 
   async create(createTagDto: CreateTagDto): Promise<Tag> {
-    const result = await this.databaseService.db
-      .insertInto('tags')
-      .values({
-        id: uuid(),
-        tagNameId: createTagDto.tagNameId,
-        startedAt: min([
-          new Date(createTagDto.startedAt),
-          new Date(createTagDto.endedAt),
-        ]).toISOString(),
-        endedAt: max([
-          new Date(createTagDto.startedAt),
-          new Date(createTagDto.endedAt),
-        ]).toISOString(),
-      })
-      .returning('id')
-      .executeTakeFirstOrThrow();
+    const values = {
+      id: uuid(),
+      tagNameId: createTagDto.tagNameId,
+      startedAt: min([
+        new Date(createTagDto.startedAt),
+        new Date(createTagDto.endedAt),
+      ]).toISOString(),
+      endedAt: max([
+        new Date(createTagDto.startedAt),
+        new Date(createTagDto.endedAt),
+      ]).toISOString(),
+    };
+    await this.databaseService.exec('queries/createTag.sql', values);
 
-    return this.findOne(result.id);
+    return this.findOne(values.id);
   }
 
   async update(id: string, updateTagDto: UpdateTagDto): Promise<Tag> {
-    const result = await this.databaseService.db
-      .selectFrom('tags')
-      .select('id')
-      .where('id', '=', id)
-      .executeTakeFirstOrThrow();
+    const values: Tag = {
+      id,
+      tagNameId: updateTagDto.tagNameId,
+      startedAt: updateTagDto.startedAt,
+      endedAt: updateTagDto.endedAt,
+    };
+    const result = await this.databaseService.exec('queries/updateTag.sql', values);
 
-    return await this.findOne(result.id);
+    return await this.findOne(id);
   }
 
   async remove(id: string): Promise<void> {
-    await this.databaseService.db.deleteFrom('tags').where('id', '=', id).execute();
+    await this.databaseService.exec('queries/removeTag.sql', { id });
   }
 }

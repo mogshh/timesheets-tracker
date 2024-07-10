@@ -30,7 +30,7 @@ import { toast } from 'react-toastify';
 
 const NEW_CONDITION = {
   booleanOperator: BooleanOperator.OR,
-  variable: ConditionVariable.any,
+  variable: ConditionVariable.anyVariable,
   operator: ConditionOperator.contains,
   value: '',
 };

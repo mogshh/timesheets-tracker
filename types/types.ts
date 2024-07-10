@@ -11,7 +11,7 @@ export interface Website {
   websiteTitle: string;
   websiteUrl: string;
   startedAt: string;
-  endedAt: string;
+  endedAt?: string; // Automatically determined by the next change in activity
 }
 
 export interface ActiveState {
@@ -67,7 +67,7 @@ export enum BooleanOperator {
 }
 
 export enum ConditionVariable {
-  any = 'any',
+  anyVariable = 'anyVariable',
   windowTitle = 'windowTitle',
   programName = 'programName',
   websiteTitle = 'websiteTitle',

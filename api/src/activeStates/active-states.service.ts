@@ -9,8 +9,6 @@ import { CustomError } from '../shared/CustomError';
 
 @Injectable()
 export class ActiveStatesService {
-  private selectList: (keyof ActiveState)[] = ['id', 'isActive', 'startedAt', 'endedAt'];
-
   constructor(@Inject(DatabaseService) private databaseService: DatabaseService) {}
 
   adapt(rawActiveState: Record<string, any> | null | undefined): ActiveState | null {
@@ -23,22 +21,16 @@ export class ActiveStatesService {
   }
 
   async findAll(startedAt: string, endedAt: string): Promise<ActiveState[]> {
-    const results = await this.databaseService.db
-      .selectFrom('activeStates')
-      .select(this.selectList)
-      .where('activeStates.startedAt', '>', startedAt)
-      .where('activeStates.endedAt', '<', endedAt)
-      .execute();
+    const results = await this.databaseService.exec('./queries/findAllActiveStates.sql', {
+      startedAt,
+      endedAt,
+    });
     return results.map(this.adapt);
   }
 
   async findOne(id: string): Promise<ActiveState> {
     try {
-      const result = await this.databaseService.db
-        .selectFrom('activeStates')
-        .select(this.selectList)
-        .where('id', '=', id)
-        .executeTakeFirst();
+      const result = await this.databaseService.exec('./queries/findOneActiveState.sql');
 
       return this.adapt(result);
     } catch (err) {
@@ -54,12 +46,9 @@ export class ActiveStatesService {
         startedAt: activeState.startedAt,
         endedAt: activeState.endedAt,
       };
-      const createdActiveState = await this.databaseService.db
-        .insertInto('activeStates')
-        .values(values)
-        .returning(this.selectList)
-        .executeTakeFirstOrThrow();
-      return this.adapt(createdActiveState);
+      await this.databaseService.exec('./queries/createActiveState.sql', values);
+
+      return this.findOne(values.id);
     } catch (err) {
       throw new CustomError('failed to create active state entry in the database', err, {
         activeState,
@@ -68,21 +57,18 @@ export class ActiveStatesService {
   }
 
   async update(id: string, updateActiveStateDto: UpdateActiveStateDto): Promise<ActiveState> {
-    await this.databaseService.db
-      .updateTable('activeStates')
-      .set({
-        isActive: updateActiveStateDto.isActive ? 1 : 0,
-        startedAt: updateActiveStateDto.startedAt,
-        endedAt: updateActiveStateDto.endedAt,
-      })
-      .where('id', '=', id)
-      .returning('id')
-      .executeTakeFirstOrThrow();
+    const values = {
+      id: id,
+      isActive: updateActiveStateDto.isActive ? 1 : 0,
+      startedAt: updateActiveStateDto.startedAt,
+      endedAt: updateActiveStateDto.endedAt,
+    };
+    await this.databaseService.exec('./queries/updateActiveState.sql', values);
 
-    return await this.findOne(id);
+    return this.findOne(id);
   }
 
   async delete(id: string): Promise<void> {
-    await this.databaseService.db.deleteFrom('activeStates').where('id', '=', id).execute();
+    await this.databaseService.exec('./queries/deleteActiveState.sql', { id });
   }
 }

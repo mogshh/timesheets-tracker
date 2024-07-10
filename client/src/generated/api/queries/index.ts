@@ -1,29 +1,26 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import { useQuery, useMutation, UseQueryOptions, UseMutationOptions } from "@tanstack/react-query";
-import { UpdateTagNameDto } from "../requests/models/UpdateTagNameDto";
-import { UpdateTagDto } from "../requests/models/UpdateTagDto";
-import { UpdateAutoTagsDto } from "../requests/models/UpdateAutoTagsDto";
-import { UpdateAutoNoteDto } from "../requests/models/UpdateAutoNoteDto";
-import { TagNameDto } from "../requests/models/TagNameDto";
-import { TagDto } from "../requests/models/TagDto";
-import { CreateWebsiteDto } from "../requests/models/CreateWebsiteDto";
-import { CreateTagNameDto } from "../requests/models/CreateTagNameDto";
-import { CreateTagDto } from "../requests/models/CreateTagDto";
-import { CreateAutoTagDto } from "../requests/models/CreateAutoTagDto";
-import { CreateAutoNoteDto } from "../requests/models/CreateAutoNoteDto";
-import { AutoTagDto } from "../requests/models/AutoTagDto";
-import { AutoTagCountDto } from "../requests/models/AutoTagCountDto";
-import { AutoTagConditionDto } from "../requests/models/AutoTagConditionDto";
-import { AutoNoteDto } from "../requests/models/AutoNoteDto";
-import { WebsitesService } from "../requests/services/WebsitesService";
-import { TagsService } from "../requests/services/TagsService";
-import { TagNamesService } from "../requests/services/TagNamesService";
-import { StatusService } from "../requests/services/StatusService";
-import { AutoTagsService } from "../requests/services/AutoTagsService";
-import { AutoNotesService } from "../requests/services/AutoNotesService";
-import { ActivitiesService } from "../requests/services/ActivitiesService";
-import { ActiveStatesService } from "../requests/services/ActiveStatesService";
+import { useMutation, UseMutationOptions, useQuery, UseQueryOptions } from '@tanstack/react-query';
+import {
+    ActiveStatesService,
+    ActivitiesService,
+    AutoNotesService,
+    AutoTagsService,
+    CreateAutoNoteDto,
+    CreateAutoTagDto,
+    CreateTagDto,
+    CreateTagNameDto,
+    CreateWebsiteDto,
+    StatusService,
+    TagNamesService,
+    TagsService,
+    UpdateAutoNoteDto,
+    UpdateAutoTagsDto,
+    UpdateTagDto,
+    UpdateTagNameDto,
+    WebsitesService
+} from '../requests';
+
 export const useWebsitesServiceWebsitesControllerCreate = (options?: Omit<UseMutationOptions<Awaited<ReturnType<typeof WebsitesService.websitesControllerCreate>>, unknown, {
     requestBody: CreateWebsiteDto;
 }, unknown>, "mutationFn">) => useMutation({ mutationFn: ({ requestBody }) => WebsitesService.websitesControllerCreate(requestBody), ...options });

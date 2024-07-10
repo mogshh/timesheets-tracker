@@ -7,7 +7,6 @@ import { UpdateTagNameDto } from './dto/update-tag-name.dto';
 
 @Injectable()
 export class TagNamesService {
-  private selectList: (keyof TagName)[] = ['id', 'name', 'code', 'color'];
   constructor(@Inject(DatabaseService) private databaseService: DatabaseService) {}
 
   private adapt(rawTagName: Record<string, any>): TagName {
@@ -20,68 +19,57 @@ export class TagNamesService {
   }
 
   async findAll(searchTerm: string | undefined): Promise<TagName[]> {
-    let rawTagNames: Record<string, string>[];
+    let rawTagNames: TagName[];
     if (searchTerm) {
-      rawTagNames = await this.databaseService.db
-        .selectFrom('tagNames')
-        .select(this.selectList)
-        .where('name', 'like', '%' + searchTerm + '%')
-        .execute();
+      rawTagNames = await this.databaseService.exec<TagName>(
+        './queries/findAllTagNamesBySearchTerm'
+      );
     } else {
-      rawTagNames = await this.databaseService.db
-        .selectFrom('tagNames')
-        .select(this.selectList)
-        .execute();
+      rawTagNames = await this.databaseService.exec<TagName>('./queries/findAllTagNames');
     }
 
     return rawTagNames.map(this.adapt);
   }
 
   async count(): Promise<number> {
-    const result = await this.databaseService.db
-      .selectFrom('tagNames')
-      .select(({ fn }) => [fn.count<number>('id').as('count')])
-      .executeTakeFirstOrThrow();
+    const result = (
+      await this.databaseService.exec<{ count: number }>('./queries/countTagNames')
+    )[0];
 
     return result.count;
   }
 
   async findOne(id: string): Promise<TagName> {
-    const result = await this.databaseService.db
-      .selectFrom('tagNames')
-      .select(this.selectList)
-      .where('id', '=', id)
-      .executeTakeFirstOrThrow();
+    const tagNames = await this.databaseService.exec<TagName>('./queries/findOneTagName', { id });
 
-    return this.adapt(result);
+    return this.adapt(tagNames[0]);
   }
 
   async create(tagName: CreateTagNameDto): Promise<TagName> {
-    const result = await this.databaseService.db
-      .insertInto('tagNames')
-      .values({
-        id: uuid(),
-        name: tagName.name,
-        color: tagName.color,
-      })
-      .returning('id')
-      .executeTakeFirstOrThrow();
+    const values = {
+      id: uuid(),
+      name: tagName.name,
+      code: tagName.code,
+      color: tagName.color,
+    };
+    await this.databaseService.exec('./queries/createTagName');
 
-    return await this.findOne(result.id);
+    return await this.findOne(values.id);
   }
 
   async update(id: string, updateTagDto: UpdateTagNameDto): Promise<TagName> {
-    const result = await this.databaseService.db
-      .updateTable('tagNames')
-      .set(updateTagDto)
-      .where('id', '=', id)
-      .returning('id')
-      .executeTakeFirstOrThrow();
+    const values = {
+      id,
+      name: updateTagDto.name,
+      code: updateTagDto.code,
+      color: updateTagDto.color,
+    };
+    await this.databaseService.exec('./queries/updateTagName', values);
 
-    return await this.findOne(result.id);
+    return await this.findOne(id);
   }
 
   async remove(id: string): Promise<void> {
-    await this.databaseService.db.deleteFrom('tagNames').where('id', '=', id).execute();
+    await this.databaseService.exec('./queries/removeTagName', { id });
   }
 }

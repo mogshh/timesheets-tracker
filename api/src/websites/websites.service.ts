@@ -8,8 +8,6 @@ import { UpdateWebsiteDto } from './dto/update-website.dto';
 
 @Injectable()
 export class WebsitesService {
-  private selectList: (keyof Website)[] = ['id', 'websiteTitle', 'websiteUrl', 'startedAt'];
-
   constructor(@Inject(DatabaseService) private databaseService: DatabaseService) {}
 
   adapt(rawWebsite: Record<string, any>): Website {
@@ -17,31 +15,24 @@ export class WebsitesService {
   }
 
   async findAll(startedAt: string, endedAt: string): Promise<Website[]> {
-    const results = await this.databaseService.db
-      .selectFrom('websites')
-      .select(this.selectList)
-      .where('websites.startedAt', '>', startedAt)
-      .where('websites.startedAt', '<', endedAt)
-      .execute();
+    const results = await this.databaseService.exec('queries/findAllWebsites.sql', {
+      startedAt,
+      endedAt,
+    });
+
     return results.map(this.adapt);
   }
 
   async findOne(id: string): Promise<Website> {
-    const result = await this.databaseService.db
-      .selectFrom('websites')
-      .select(this.selectList)
-      .where('id', '=', id)
-      .executeTakeFirstOrThrow();
+    const result = await this.databaseService.exec('queries/findOneWebsite.sql', { id });
 
     return this.adapt(result);
   }
 
   async findOneByStartTime(startedAt: string): Promise<Website | null> {
-    const result = await this.databaseService.db
-      .selectFrom('websites')
-      .select(this.selectList)
-      .where('startedAt', '=', startedAt)
-      .executeTakeFirst();
+    const result = await this.databaseService.exec('queries/findOneWebsiteByStartTime.sql', {
+      startedAt,
+    });
 
     if (!result) {
       return null;
@@ -51,31 +42,30 @@ export class WebsitesService {
   }
 
   async create(website: CreateWebsiteDto): Promise<Website> {
-    const createdWebsite = await this.databaseService.db
-      .insertInto('websites')
-      .values({
-        id: uuid(),
-        websiteTitle: website.websiteTitle,
-        websiteUrl: website.websiteUrl,
-        startedAt: website.startedAt,
-      })
-      .returning(this.selectList)
-      .execute();
-    return this.adapt(createdWebsite);
+    const values = {
+      id: uuid(),
+      websiteTitle: website.websiteTitle,
+      websiteUrl: website.websiteUrl,
+      startedAt: website.startedAt,
+    };
+    await this.databaseService.exec('queries/createWebsite.sql', values);
+
+    return this.findOne(values.id);
   }
 
   async update(id: string, updateWebsiteDto: UpdateWebsiteDto): Promise<Website> {
-    const result = await this.databaseService.db
-      .updateTable('websites')
-      .set(updateWebsiteDto)
-      .where('id', '=', id)
-      .returning('id')
-      .executeTakeFirstOrThrow();
+    const values: Website = {
+      id,
+      websiteTitle: updateWebsiteDto.websiteTitle,
+      websiteUrl: updateWebsiteDto.websiteUrl,
+      startedAt: updateWebsiteDto.startedAt,
+    };
+    await this.databaseService.exec('queries/updateWebsite.sql', values);
 
-    return await this.findOne(result.id);
+    return await this.findOne(id);
   }
 
   async delete(id: string): Promise<void> {
-    await this.databaseService.db.deleteFrom('websites').where('id', '=', id).execute();
+    await this.databaseService.exec('queries/deleteWebsite.sql', { id });
   }
 }
